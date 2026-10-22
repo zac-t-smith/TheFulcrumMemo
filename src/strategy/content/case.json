@@ -1,0 +1,668 @@
+{
+  "meta": {
+    "clientAlias": "Falcon Air",
+    "realName": "Spirit Airlines",
+    "aliases": {
+      "Summit Airlines": "Frontier Airlines",
+      "Bluewing Airways": "JetBlue Airways"
+    },
+    "engagementTitle": "Project Falcon: Survive, Sell, or Shut Down?",
+    "objectives": [
+      "Tell corporate strategy (where to compete) apart from business strategy (how to win there) and use both on a real decision",
+      "Use Five Forces, generic strategies, and Ansoff to explain why a cost leader lost its edge",
+      "Weigh shareholders vs. stakeholders and explain the board's fiduciary duty",
+      "Plan for scenarios, and know when a company is worth more closed than open"
+    ],
+    "startMeters": { "cash": 50, "trust": 50, "fit": 50 },
+    "meterLabels": {
+      "cash": "Cash runway",
+      "trust": "Stakeholder trust",
+      "fit": "Strategic fit"
+    },
+    "disclaimer": "Real company, real numbers, real dates. Consequences marked MODELED are informed estimates of what likely would have happened; consequences marked REAL are what happened.",
+    "roles": [
+      { "id": "cfo", "title": "CFO", "focus": "Cash, debt, what the numbers allow", "color": "red" },
+      { "id": "cso", "title": "Chief Strategy Officer", "focus": "Competitive position and generic strategy", "color": "navy" },
+      { "id": "people", "title": "Chief Stakeholder Officer", "focus": "Employees, customers, shareholders, communities", "color": "amber" },
+      { "id": "gc", "title": "General Counsel", "focus": "Regulators, lenders, legal risk", "color": "slate" }
+    ],
+    "roleRules": "Assign roles round-robin at join. Firms of 3: no General Counsel; the CFO also sees the GC card. Firms of 5+: roles repeat. Each role sees ONLY its own intel card; the firm has to talk to put the picture together."
+  },
+  "splitTests": {
+    "anchor": {
+      "question": "Gut check, no research: what is Falcon Air worth today (equity value, the whole company)?",
+      "highRef": "First: is Falcon worth more or less than $9 billion?",
+      "lowRef": "First: is Falcon worth more or less than $900 million?",
+      "unit": "$ billions",
+      "inputMin": 0,
+      "inputMax": 20,
+      "answerReveal": "Two real offers came in: Summit at about $2.9B and Bluewing at $3.8B. Your guess was pulled toward the first number you saw. Boards and bidders get anchored the same way."
+    },
+    "framing": {
+      "round": 2,
+      "question": "Falcon's restructuring plan is on the table. As a board member, do you approve it?",
+      "gainText": "The plan SAVES 9,000 of Falcon's 12,000 jobs.",
+      "lossText": "The plan ELIMINATES 3,000 of Falcon's 12,000 jobs.",
+      "choices": ["Approve", "Reject"],
+      "answerReveal": "Same plan, same numbers. Half of you saw 'saves 9,000', half saw 'eliminates 3,000'. How a decision is framed to stakeholders changes the vote.",
+      "facilitatorNote": "The job numbers are illustrative, not Spirit's actual figures. Say so if asked."
+    }
+  },
+  "frameworks": [
+    { "id": "mvv", "name": "Mission / Vision / Values", "oneLiner": "Why we exist, where we're going, how we behave." },
+    { "id": "levels", "name": "Strategy levels", "oneLiner": "Corporate = WHERE to compete. Business = HOW to win there. Functional = WHO does what." },
+    { "id": "integration", "name": "Horizontal / vertical integration", "oneLiner": "Buy a rival (horizontal) or a supplier/customer (vertical)." },
+    { "id": "governance", "name": "Governance & fiduciary duty", "oneLiner": "The board works for the owners; the agency problem is when managers don't." },
+    { "id": "generic", "name": "Porter's generic strategies", "oneLiner": "Cost leadership, differentiation, or focus. Try both at once and you're stuck in the middle." },
+    { "id": "fiveforces", "name": "Five Forces", "oneLiner": "Rivalry, new entrants, substitutes, buyer power, supplier power decide how profitable an industry is." },
+    { "id": "value", "name": "Value creation", "oneLiner": "Value = what customers will pay − what it costs to deliver." },
+    { "id": "vrio", "name": "VRIO", "oneLiner": "An advantage lasts only if it's Valuable, Rare, hard to Imitate, and the firm is Organized to use it." },
+    { "id": "ansoff", "name": "Ansoff matrix", "oneLiner": "Grow by market penetration, market development, product development, or diversification." },
+    { "id": "retrench", "name": "Retrenchment / turnaround", "oneLiner": "Shrink to the core, cut costs, sell assets, restructure debt." },
+    { "id": "stakeholders", "name": "Stakeholders vs. shareholders", "oneLiner": "Shareholders own it; stakeholders (workers, lenders, customers, government) are affected by it." },
+    { "id": "scenario", "name": "Scenario planning", "oneLiner": "Test the plan against the bad case before it happens." },
+    { "id": "goingconcern", "name": "Going concern vs. liquidation", "oneLiner": "Keep going only if the business is worth more running than sold for parts." }
+  ],
+  "rounds": [
+    {
+      "id": "r1",
+      "title": "Round 1: The Suitors",
+      "dateLabel": "July 2022",
+      "concepts": [
+        {
+          "label": "CONCEPT: Mission, vision, values",
+          "title": "What is Falcon FOR?",
+          "bullets": [
+            "Mission: why we exist today (Falcon: the lowest fares in America)",
+            "Vision: where we're headed in 5–10 years",
+            "Values: the rules we won't break on the way",
+            "Test every option against the mission: does this deal keep us the cheapest seat?"
+          ]
+        },
+        {
+          "label": "CONCEPT: Corporate strategy",
+          "title": "WHERE to compete: grow, merge, or stay solo",
+          "bullets": [
+            "Corporate level = which businesses and markets we're in",
+            "Horizontal integration = buying a competitor (more scale, less competition)",
+            "Vertical integration = buying a supplier or customer",
+            "Mergers create value only if 1 + 1 > 2 AND regulators allow it"
+          ]
+        },
+        {
+          "label": "CONCEPT: Governance",
+          "title": "Who decides, and for whom?",
+          "bullets": [
+            "The board has a fiduciary duty to act in the owners' best interest",
+            "Shareholders vote on a sale; the board recommends",
+            "Agency problem: managers' interests can differ from owners'",
+            "Price vs. certainty: a bigger offer is worth less if it never closes"
+          ]
+        }
+      ],
+      "briefing": "Two airlines want to buy Falcon. Summit offers less, mostly in its own stock, with low regulatory risk. Bluewing offers more, all cash, but the DOJ may sue to block it. The board backs Summit. The shareholders aren't sold.",
+      "exhibit": {
+        "kpis": [
+          { "label": "Summit offer", "value": "$2.9B", "note": "Cash + Summit stock; ~$25.83/share at announcement" },
+          { "label": "Bluewing offer", "value": "$3.8B", "note": "$33.50/share, all cash" },
+          { "label": "Falcon cost per seat-mile (ex-fuel)", "value": "6.7¢", "note": "Legacy airlines: roughly 12–13¢" },
+          { "label": "2021 net loss", "value": "−$473M", "note": "On $3.2B revenue, still recovering from COVID" },
+          { "label": "Fleet", "value": "173 jets", "note": "End of 2021" }
+        ],
+        "chart": {
+          "type": "bar",
+          "title": "Cost to fly one seat one mile (ex-fuel, cents)",
+          "labels": ["Falcon", "Legacy airlines (approx.)"],
+          "series": [{ "name": "Cents", "values": [6.7, 12.5] }]
+        },
+        "headlines": [
+          { "text": "Summit offers $250M break-up fee in Falcon deal", "outlet": "AP", "date": "Jun 3, 2022" },
+          { "text": "Vote on Falcon–Summit merger is postponed a fourth time", "outlet": "AP", "date": "Jul 13, 2022" },
+          { "text": "Board: Bluewing deal faces 'significantly greater regulatory impediments'", "outlet": "Falcon board letter", "date": "2022" }
+        ],
+        "deepDive": {
+          "title": "Read the fine print",
+          "bullets": [
+            "Bluewing already has a partnership with a legacy carrier that the DOJ is suing over",
+            "Bluewing plans to pull out Falcon's tight seats and raise fares on those routes: the DOJ's main concern",
+            "Bluewing offers $400M to shareholders if regulators block it, paid partly up front as prepayments",
+            "Summit and Falcon are both ultra-low-cost carriers: combined, they'd still be smaller than any legacy airline"
+          ]
+        }
+      },
+      "question": "Your recommendation to Falcon's board?",
+      "options": [
+        {
+          "id": "r1a",
+          "label": "Merge with Summit",
+          "description": "Lower price, mostly stock, much lower antitrust risk. Two low-cost airlines become one bigger low-cost airline.",
+          "consequence": {
+            "title": "The deal likely closes in 2023",
+            "body": "Combining two low-cost airlines keeps the cost-leader model intact, adds scale against the big four, and avoids a 20-month regulatory fight. Shareholders get less on paper, and the combined airline still faces the engine groundings and 2024 overcapacity ahead.",
+            "meters": { "cash": 10, "trust": 5, "fit": 15 },
+            "outcomeType": "modeled"
+          },
+          "setsFlags": ["merged_summit"],
+          "facilitator": {
+            "insight": "Same strategy (cost leadership), more scale. Regulatory certainty was worth more than headline price.",
+            "followUp": "Your shareholders are getting about $8 less per share. How do you defend that under fiduciary duty?",
+            "realTie": "This was the board's choice, but shareholders wouldn't approve it. The vote was postponed four times and the deal died Jul 27, 2022.",
+            "pushback": "You left $8 a share on the table. If I'm your largest shareholder, I'm suing the board. Why am I wrong?",
+            "expertLens": {
+              "rx": "Stock consideration means less certain value. The $350M reverse break fee was Summit pricing its own deal risk.",
+              "consulting": "Expected value = price × probability the deal closes. A lower price that closes can beat a higher one that doesn't.",
+              "strategy": "Horizontal integration that keeps the cost-leadership model intact."
+            }
+          }
+        },
+        {
+          "id": "r1b",
+          "label": "Sell to Bluewing",
+          "description": "Highest price, all cash, shareholder protections if blocked. But a legacy-style airline would remove Falcon's cheap seats, and the DOJ could sue.",
+          "consequence": {
+            "title": "Blocked in court, 20 months frozen",
+            "body": "Shareholders approve (Oct 19, 2022). The DOJ sues (Mar 7, 2023). A federal judge blocks the deal (Jan 16, 2024), ruling it would harm cost-conscious travelers. The deal ends Mar 4, 2024. Falcon receives just $69M, and it spent nearly two years unable to make big moves while costs rose.",
+            "meters": { "cash": -10, "trust": -10, "fit": -15 },
+            "outcomeType": "real"
+          },
+          "setsFlags": ["deal_blocked"],
+          "facilitator": {
+            "insight": "Price vs. certainty. The higher offer had the lower expected value once you priced in a likely DOJ block.",
+            "followUp": "If you're 60% sure the DOJ blocks it, is $33.50 cash really worth more than Summit's offer?",
+            "realTie": "This is what happened. Shareholders collected about $425M in prepayments; the company got $69M and lost two years.",
+            "pushback": "You're betting the company on a judge. What's your plan for the 18 months the deal is stuck in court?",
+            "expertLens": {
+              "rx": "Prepayments and a reverse break fee move risk onto the buyer, but they don't pay the company for 20 lost months.",
+              "consulting": "Price the regulatory risk explicitly. A DOJ block turned $3.8B into $69M for the company.",
+              "strategy": "The acquirer would change the business-level strategy from cost leader to differentiated, which is exactly what regulators feared."
+            }
+          }
+        },
+        {
+          "id": "r1c",
+          "label": "Stay independent",
+          "description": "Reject both. Keep the lowest-cost model and grow alone.",
+          "consequence": {
+            "title": "Free, but alone in the storm",
+            "body": "Falcon keeps its strategy and avoids distraction, but takes on the engine recall, higher labor costs, and big airlines' 'basic economy' fares with no partner and no breakup fee. Shareholders who wanted a sale lose patience with the board.",
+            "meters": { "cash": -5, "trust": -10, "fit": 10 },
+            "outcomeType": "modeled"
+          },
+          "setsFlags": ["independent"],
+          "facilitator": {
+            "insight": "Strategic fit is high, but governance pressure rises: the owners wanted a sale.",
+            "followUp": "Two companies offered a premium. What do you tell shareholders about why 'no' is better for them?",
+            "realTie": "Not an option the market allowed: once two bids existed, the board had to pick one.",
+            "pushback": "Two buyers offered a premium and you said no. What does Falcon do alone that it can't do inside a bigger airline?",
+            "expertLens": {
+              "rx": "Rejecting bids with no plan for 2023–24 headwinds raises the odds of distress later.",
+              "consulting": "The 'do nothing' option is a choice. Benchmark it against both offers.",
+              "strategy": "Highest strategic fit, but the agency problem appears: is the board protecting owners or itself?"
+            }
+          }
+        }
+      ],
+      "whatHappened": {
+        "title": "What Falcon actually did",
+        "body": "The board backed Summit, but shareholders wouldn't vote for it. On Jul 28, 2022 Falcon agreed to Bluewing's $3.8B cash offer. The DOJ sued; a judge blocked the deal on Jan 16, 2024 to protect cost-conscious travelers. The deal died Mar 4, 2024. Falcon received $69M.",
+        "date": "Jul 2022 – Mar 2024"
+      },
+      "injects": [
+        { "title": "BREAKING: Bluewing sweetens the pot", "body": "Bluewing raises its offer to $33.50/share in cash and promises $400M to shareholders if regulators block the deal. Does that change your answer?" },
+        { "title": "BREAKING: Shareholders revolt", "body": "The vote on the Summit deal has been postponed for the fourth time. Big shareholders say they want the higher price." }
+      ],
+      "roleIntel": {
+        "cfo": "Summit's offer is mostly Summit stock: if Summit's share price drops before closing, the offer shrinks. Bluewing's $33.50 is fixed cash.",
+        "cso": "Bluewing would pull out Falcon's tight seating and run its own higher-fare model on Falcon's routes. The Falcon brand and the cheapest-seat position would disappear.",
+        "people": "The shareholder vote on Summit has been postponed four times. Big shareholders are signaling they want the higher price.",
+        "gc": "The DOJ is already in court against Bluewing over its partnership with a big legacy airline. Buying the country's biggest ultra-low-cost carrier would be a much bigger target."
+      },
+      "tradeoffPrompt": "What risk are you accepting, and why is it worth it?"
+    },
+    {
+      "id": "r2",
+      "title": "Round 2: The Squeeze",
+      "dateLabel": "October 2024",
+      "concepts": [
+        {
+          "label": "CONCEPT: Business-level strategy",
+          "title": "HOW to win: pick ONE generic strategy",
+          "bullets": [
+            "Cost leadership: lowest cost, lowest price (Falcon's original model)",
+            "Differentiation: unique enough to charge more",
+            "Focus: serve one narrow niche, by cost or uniqueness",
+            "Stuck in the middle: try to be cheap AND premium, end up best at neither"
+          ]
+        },
+        {
+          "label": "CONCEPT: Competition",
+          "title": "Five Forces: why airlines struggle to profit",
+          "bullets": [
+            "Rivalry: high. Too many seats after 2023 drove fares down",
+            "Buyer power: high. Travelers compare fares in seconds",
+            "Supplier power: high. Two jet makers and a few engine makers (an engine recall is grounding Falcon's jets)",
+            "Substitutes: medium. Driving, or a big airline's 'basic economy' fare",
+            "New entrants: low. Planes, gates, and slots are expensive"
+          ]
+        },
+        {
+          "label": "CONCEPT: Diversification & growth",
+          "title": "Ansoff: where does new revenue come from?",
+          "bullets": [
+            "Penetration: sell more of the same seats",
+            "Product development: new products for current flyers (premium bundles)",
+            "Market development: same product, new routes or cities",
+            "Diversification: new products in new markets. Falcon's loyalty program and credit card are its most valuable 'other business', and they secure its $1.1B in bonds"
+          ]
+        }
+      ],
+      "briefing": "The Bluewing deal is dead. Falcon is losing money, an engine recall is grounding dozens of its jets, and big airlines now sell 'basic economy' at Falcon's prices. $1.1B in bonds come due in 2025. The board needs a new plan.",
+      "exhibit": {
+        "kpis": [
+          { "label": "Net loss (2023)", "value": "−$448M", "note": "Third straight losing year" },
+          { "label": "Liquidity (end of 2023)", "value": "$1.3B", "note": "Down from $1.8B a year earlier" },
+          { "label": "Bonds due 2025", "value": "~$1.1B", "note": "Secured by the loyalty program and brand" },
+          { "label": "Jets grounded by engine recall", "value": "~40", "note": "Expected by Dec 2024" },
+          { "label": "Cost per seat-mile (ex-fuel)", "value": "7.1¢ ↑", "note": "Was 6.7¢; the cost edge is shrinking" }
+        ],
+        "chart": {
+          "type": "line",
+          "title": "Falcon net income ($M)",
+          "labels": ["2021", "2022", "2023"],
+          "series": [{ "name": "Net income", "values": [-473, -554, -448] }]
+        },
+        "headlines": [
+          { "text": "Falcon launches four new 'Go' bundles, including a premium seat option", "outlet": "TravelPulse", "date": "Aug 14, 2024" },
+          { "text": "Falcon plans to cut jobs and sell some planes amid financial struggles", "outlet": "AP", "date": "Oct 25, 2024" },
+          { "text": "Falcon's card processor extends its debt refinancing deadline to December", "outlet": "Nasdaq", "date": "Oct 2024" }
+        ],
+        "deepDive": {
+          "title": "The premium experiment",
+          "bullets": [
+            "New bundles: 'Go Big' (big front seat, bags, Wi-Fi, snacks) and 'Go Comfy' (middle seat blocked)",
+            "To offer them, Falcon removes seats and adds service, which raises cost per seat",
+            "Big airlines already own the premium customer, with lounges, loyalty, and global networks",
+            "Question: does premium make Falcon different, or just more expensive?"
+          ]
+        }
+      },
+      "question": "What's Falcon's plan?",
+      "options": [
+        {
+          "id": "r2a",
+          "label": "Go upmarket",
+          "description": "Launch premium bundles: bigger seats, blocked middle seats, bags included. Chase higher-paying travelers.",
+          "consequence": {
+            "title": "Stuck in the middle",
+            "body": "Premium seats mean fewer seats per plane, so costs rise. In 2024, Falcon's cost per seat-mile jumped 12.9% to 7.97¢, and it lost about $1.2B. It was no longer the cheapest, and big airlines still owned premium travelers.",
+            "meters": { "cash": -15, "trust": -5, "fit": -20 },
+            "outcomeType": "real"
+          },
+          "conditional": [
+            {
+              "ifFlag": "merged_summit",
+              "consequenceOverride": {
+                "title": "Stuck in the middle, at twice the size",
+                "body": "The combined airline was built on low cost. Adding premium raises costs across a bigger fleet, and two low-cost brands are now confused about what they stand for.",
+                "meters": { "cash": -15, "trust": -5, "fit": -20 },
+                "outcomeType": "modeled"
+              }
+            }
+          ],
+          "setsFlags": ["stuck_middle"],
+          "facilitator": {
+            "insight": "Textbook stuck in the middle: leaving cost leadership without a real differentiation advantage (VRIO fails: the big airlines already have it).",
+            "followUp": "Which of Porter's three strategies is Falcon running now? Is that advantage rare or easy to imitate?",
+            "realTie": "Real. Falcon launched 'Go Big' and 'Go Comfy' on Aug 14, 2024. Costs went up, losses got bigger.",
+            "pushback": "You're a discount airline charging premium prices. Name one thing you do better than the big carriers at the front of the plane.",
+            "expertLens": {
+              "rx": "Lenders watch unit costs. A rising cost per seat-mile is a red flag for refinancing.",
+              "consulting": "The fix doesn't address the root cause in the issue tree: the cost advantage is shrinking.",
+              "strategy": "Classic stuck in the middle. It fails VRIO because premium isn't rare when the big carriers already have it."
+            }
+          }
+        },
+        {
+          "id": "r2b",
+          "label": "Double down on low cost",
+          "description": "Shrink to the most profitable routes, sell planes for cash, cut overhead. Be the cheapest again.",
+          "consequence": {
+            "title": "Smaller, leaner, still a cost leader",
+            "body": "Selling jets raises cash (Falcon really sold 23 jets for about $519M), and the cost edge is protected. But shrinking means furloughs, and big airlines' basic economy fares keep pressure on prices.",
+            "meters": { "cash": 10, "trust": -10, "fit": 15 },
+            "outcomeType": "modeled"
+          },
+          "setsFlags": ["lean"],
+          "facilitator": {
+            "insight": "Retrenchment that protects the generic strategy: smaller but coherent.",
+            "followUp": "Your workers and the cities you leave are stakeholders. How do you handle them?",
+            "realTie": "Partly real: Falcon sold 23 jets for ~$519M (Oct 2024) and furloughed ~260 pilots, but also went upmarket at the same time.",
+            "pushback": "Shrinking means fewer routes and less revenue to cover fixed costs. At what size does the math actually work?",
+            "expertLens": {
+              "rx": "Asset sales raise liquidity. Selling and leasing back jets is a common distressed move.",
+              "consulting": "Shrink to the profitable core, then grow from there.",
+              "strategy": "Retrenchment that protects the generic strategy."
+            }
+          }
+        },
+        {
+          "id": "r2c",
+          "label": "Prearranged Chapter 11",
+          "description": "Agree terms with bondholders first, then file. Swap debt for ownership and raise new money.",
+          "consequence": {
+            "title": "In and out in four months",
+            "body": "Filed Nov 18, 2024 with bondholders on board: $795M of debt became equity, $350M of new equity came in, and Falcon exited Mar 12, 2025. Old shareholders were wiped out. The balance sheet was fixed, but the business model wasn't.",
+            "meters": { "cash": 15, "trust": -5, "fit": 0 },
+            "outcomeType": "real"
+          },
+          "setsFlags": ["ch11_once"],
+          "facilitator": {
+            "insight": "Fixes the balance sheet (financial restructuring) without fixing the strategy (operational restructuring).",
+            "followUp": "Bondholders now own the company. Whose interests does the board serve now?",
+            "realTie": "Real. Prearranged Chapter 11, Nov 18, 2024; exit Mar 12, 2025.",
+            "pushback": "You fixed the balance sheet. What changed about why customers pick you? If nothing, why won't you be back in court in a year?",
+            "expertLens": {
+              "rx": "Prearranged means the restructuring support agreement is signed first, so the case is shorter and cheaper. Debt converts to equity, and old shareholders are wiped out.",
+              "consulting": "Separate financial restructuring (the balance sheet) from operational restructuring (the business).",
+              "strategy": "Doesn't change how Falcon competes. Same strategy, cleaner balance sheet."
+            }
+          }
+        },
+        {
+          "id": "r2d",
+          "label": "Merge with Summit after all",
+          "description": "Summit is back with a new offer. Combine the two low-cost airlines.",
+          "consequence": {
+            "title": "Scale, if you can agree on price",
+            "body": "Two struggling low-cost airlines combine routes and cut overlapping costs. Integration is hard and bondholders must agree, but the combined airline has a fighting chance against the big four.",
+            "meters": { "cash": 10, "trust": 5, "fit": 10 },
+            "outcomeType": "modeled"
+          },
+          "conditional": [
+            {
+              "ifFlag": "merged_summit",
+              "consequenceOverride": {
+                "title": "Already merged: speed up the integration",
+                "body": "You merged in Round 1. Use this moment to cut overlapping routes and combine fleets and crews faster. Strong fit, but integration costs hit cash.",
+                "meters": { "cash": -5, "trust": 0, "fit": 15 },
+                "outcomeType": "modeled"
+              }
+            }
+          ],
+          "setsFlags": ["merged_late"],
+          "facilitator": {
+            "insight": "Horizontal integration as a turnaround tool. Same strategy, more scale.",
+            "followUp": "Falcon rejected Summit twice. Why might a board in distress still say no?",
+            "realTie": "Summit returned in Jan 2025 (about $2.1B) and Feb 2025. Falcon rejected both.",
+            "pushback": "You rejected this buyer once. Now you need them. What price do you accept, and who on your side gets hurt in the merger?",
+            "expertLens": {
+              "rx": "Distressed M&A: the buyer has leverage, and bondholders must consent.",
+              "consulting": "Synergies (overlapping routes, fleet, overhead) need to be quantified, not assumed.",
+              "strategy": "Horizontal integration as a turnaround tool."
+            }
+          }
+        }
+      ],
+      "whatHappened": {
+        "title": "What Falcon actually did",
+        "body": "All of it at once. Falcon launched premium bundles (Aug 2024), sold 23 jets (Oct 2024), filed a prearranged Chapter 11 (Nov 18, 2024), and exited Mar 12, 2025. It rejected Summit's renewed offers in Jan and Feb 2025. Its 2024 loss: about $1.2B.",
+        "date": "Aug 2024 – Mar 2025"
+      },
+      "injects": [
+        { "title": "BREAKING: More jets grounded", "body": "The engine maker says up to 40 Falcon jets will be parked by December for inspections. Your capacity just shrank. Does your plan still work?" },
+        { "title": "BREAKING: Deadline extended", "body": "Falcon's card processor gives it until Dec 23 to refinance $1.1B of bonds. Miss it and the processor can hold back ticket cash." }
+      ],
+      "roleIntel": {
+        "cfo": "About $1.1B of bonds, secured by the loyalty program and brand, need refinancing. If they're not refinanced by Dec 23, the card processor can hold back cash from ticket sales.",
+        "cso": "Big airlines' basic-economy fares now match Falcon on many routes, and they come with networks, lounges, and loyalty points Falcon can't match.",
+        "people": "About 260 pilots have been furloughed since Sep 1. Falcon's customers chose it for one reason: price.",
+        "gc": "Bondholders will swap about $795M of debt for ownership and put in new money, but only if Falcon files a prearranged Chapter 11. Current shareholders would likely be wiped out."
+      },
+      "tradeoffPrompt": "What are you giving up to do this?"
+    },
+    {
+      "id": "r3",
+      "title": "Round 3: The Shock",
+      "dateLabel": "April 2026",
+      "concepts": [
+        {
+          "label": "CONCEPT: Strategic planning & decision-making",
+          "title": "Plan for the bad case before it happens",
+          "bullets": [
+            "Falcon's 2026 plan assumed jet fuel at $2.24 a gallon",
+            "Scenario planning: test the plan at base, bad, and worst case",
+            "Rational decision model: define the problem, list options, weigh them, choose, review",
+            "Escalation of commitment: the bias to keep investing in a failing course because of what's already been spent"
+          ]
+        },
+        {
+          "label": "CONCEPT: Stakeholders vs. shareholders",
+          "title": "When there isn't enough money, who gets paid?",
+          "bullets": [
+            "Shareholder view: maximize owners' value",
+            "Stakeholder view: balance workers, customers, lenders, communities, government",
+            "In bankruptcy, the line is set by law (absolute priority): secured lenders first, then other creditors, owners last",
+            "After two bankruptcies, Falcon's lenders ARE the owners"
+          ]
+        },
+        {
+          "label": "CONCEPT: Going concern vs. liquidation",
+          "title": "Worth more running, or sold for parts?",
+          "bullets": [
+            "Going concern value: what the business is worth if it keeps operating",
+            "Liquidation value: what planes, airport slots, buildings, and the loyalty program sell for",
+            "If liquidation value is higher, the board's job is an orderly wind-down",
+            "Closing in an orderly way protects refunds, workers' final pay, and lenders' recovery"
+          ]
+        }
+      ],
+      "briefing": "Falcon just struck a deal with creditors that cut its debt and leases from $7.4B to about $2.1B. Then a war in the Middle East nearly doubled the price of jet fuel. The plan assumed $2.24 a gallon. It's now $4.32.",
+      "exhibit": {
+        "kpis": [
+          { "label": "Jet fuel", "value": "$4.32/gal", "note": "Plan assumed $2.24 (Apr 16, 2026)" },
+          { "label": "Extra fuel cost (est.)", "value": "~$360M/yr", "note": "More than Falcon's year-end 2025 cash" },
+          { "label": "Debt + leases after creditor deal", "value": "~$2.1B", "note": "Down from $7.4B (Feb 24, 2026)" },
+          { "label": "U.S. market share", "value": "3.9%", "note": "Down from 5.1% a year earlier" },
+          { "label": "People employed", "value": "~14,000", "note": "Plus thousands of contractors" }
+        ],
+        "chart": {
+          "type": "bar",
+          "title": "Jet fuel: plan vs. reality ($/gallon)",
+          "labels": ["2026 plan", "Late March", "Apr 16"],
+          "series": [{ "name": "$/gal", "values": [2.24, 4.6, 4.32] }]
+        },
+        "headlines": [
+          { "text": "Falcon Air files for bankruptcy for 2nd time in less than a year", "outlet": "NPR", "date": "Aug 30, 2025" },
+          { "text": "Falcon Air avoids liquidation after second bankruptcy", "outlet": "Axios", "date": "Feb 24, 2026" },
+          { "text": "Falcon seeks $500M federal rescue as fuel prices soar", "outlet": "Reuters", "date": "Apr 2026" }
+        ],
+        "deepDive": {
+          "title": "What Falcon would sell for",
+          "bullets": [
+            "Takeoff and landing rights at LaGuardia (22 slots): rivals want them",
+            "Dozens of owned jets, sellable to other airlines or lessors",
+            "Headquarters campus: about $250M invested",
+            "The loyalty program and its credit card partnership",
+            "Federal offer on the table: $500M for warrants worth 90% of the company"
+          ]
+        }
+      },
+      "question": "Final recommendation to the board?",
+      "options": [
+        {
+          "id": "r3a",
+          "label": "Take the $500M federal rescue",
+          "description": "Government lends $500M and takes warrants for 90% of the company.",
+          "consequence": {
+            "title": "The lenders say no",
+            "body": "The rescue needs creditor approval, and key creditors reject the terms. Washington is divided on it, and no airline steps up to buy Falcon. One creditor: 'you can't breathe life into a corpse.' Weeks pass while cash runs out.",
+            "meters": { "cash": -15, "trust": -10, "fit": -5 },
+            "outcomeType": "real"
+          },
+          "setsFlags": [],
+          "facilitator": {
+            "insight": "Ignores stakeholder power: the lenders own the company and must agree. $500M also doesn't cover a fuel shock that size.",
+            "followUp": "Who has to say yes for this to work, and why would they?",
+            "realTie": "Real. Requested Apr 18, 2026; creditors rejected the terms and the administration was split.",
+            "pushback": "The lenders own you and they hate this deal. How do you get their vote?",
+            "expertLens": {
+              "rx": "A rescue that subordinates or dilutes existing lenders needs their consent, and they control the vote.",
+              "consulting": "Stakeholder mapping: the decision-maker here is the lender group, not the board.",
+              "strategy": "Keeps a failing model alive without changing its competitive position."
+            }
+          }
+        },
+        {
+          "id": "r3b",
+          "label": "Sell to a rival airline",
+          "description": "Find a buyer now and merge before the cash runs out.",
+          "consequence": {
+            "title": "No buyer at any price",
+            "body": "With fuel near $4.50, every airline is cutting flights, not adding them. The Transportation Secretary personally looks for a buyer and finds none. Rivals would rather wait and buy the best parts at auction.",
+            "meters": { "cash": -15, "trust": -5, "fit": -5 },
+            "outcomeType": "real"
+          },
+          "setsFlags": [],
+          "facilitator": {
+            "insight": "Buyer power: why buy the whole company when you can buy the slots at auction for less?",
+            "followUp": "Which parts would a rival actually want? That's your liquidation value.",
+            "realTie": "Real. No airline would buy Falcon whole; Bluewing and Summit later bid on its LaGuardia slots.",
+            "pushback": "Name the buyer. At $4.50 fuel, who's adding an airline?",
+            "expertLens": {
+              "rx": "Buyers in a distressed sale prefer buying assets out of bankruptcy (a 363 sale), free of liabilities.",
+              "consulting": "Ask why a rival would pay for the whole company when the parts are cheaper at auction.",
+              "strategy": "Buyer power is at its peak when the seller has weeks of cash."
+            }
+          }
+        },
+        {
+          "id": "r3c",
+          "label": "Shrink to survive",
+          "description": "Park half the fleet, keep only the best routes, ride out the fuel spike.",
+          "consequence": {
+            "title": "Slower burn, same ending",
+            "body": "Flying less cuts fuel spending, but fixed costs (leases, airports, staff) stay. At $4+ fuel even the best routes lose money, so the runway stretches from weeks to a couple of months. That only works if fuel falls fast. It didn't.",
+            "meters": { "cash": -10, "trust": -10, "fit": 0 },
+            "outcomeType": "modeled"
+          },
+          "conditional": [
+            {
+              "ifFlag": "lean",
+              "consequenceOverride": {
+                "title": "Already lean, nothing left to cut",
+                "body": "You shrank in Round 2, so there's little fat left. Parking more jets barely moves the cash burn at $4+ fuel.",
+                "meters": { "cash": -10, "trust": -10, "fit": 5 },
+                "outcomeType": "modeled"
+              }
+            }
+          ],
+          "setsFlags": [],
+          "facilitator": {
+            "insight": "Escalation of commitment, if it's driven by hope rather than a fuel forecast.",
+            "followUp": "What fuel price does your plan need, and how likely is that in the next 60 days?",
+            "realTie": "Falcon had already shrunk ('shrink to shine') after its second filing. It wasn't enough.",
+            "pushback": "Your plan works if fuel falls. What fuel price does it need, and by when?",
+            "expertLens": {
+              "rx": "Cutting flying reduces variable cost, but leases and fixed costs keep burning. Model the 13-week cash flow.",
+              "consulting": "State the assumption the plan depends on and test it (scenario planning).",
+              "strategy": "Escalation of commitment if it's driven by hope rather than a forecast."
+            }
+          }
+        },
+        {
+          "id": "r3d",
+          "label": "Orderly wind-down",
+          "description": "Stop flying, refund customers, and sell planes, slots, and buildings to repay lenders and workers.",
+          "consequence": {
+            "title": "Worth more in parts",
+            "body": "Falcon stopped flying at 3 a.m. on May 2, 2026. Card purchases were refunded automatically. The auctions: LaGuardia slots to Bluewing for $58.5M (Summit bid $57.5M), headquarters for $93.25M, and jets for about $668M. Painful, but lenders, workers, and customers recovered more than if Falcon had burned its remaining cash.",
+            "meters": { "cash": 10, "trust": 5, "fit": 15 },
+            "outcomeType": "real"
+          },
+          "setsFlags": [],
+          "facilitator": {
+            "insight": "The going-concern test: liquidation value > going-concern value, so the duty to creditors points to a wind-down. Hardest call, best for stakeholders.",
+            "followUp": "About 17,000 jobs end today. How do you defend this to the workers?",
+            "realTie": "Real. 'No viable path' on Apr 30, 2026; shutdown May 2; assets auctioned Jul–Sep 2026.",
+            "pushback": "You just ended 17,000 jobs. Prove that keeping it running would have hurt more people than it helped.",
+            "expertLens": {
+              "rx": "Liquidation value > going-concern value, so the duty to creditors points to an orderly wind-down and asset sales.",
+              "consulting": "Make the hardest recommendation and back it with numbers. That's what the client pays for.",
+              "strategy": "The ultimate retrenchment: the mission can't be delivered at any price that covers cost."
+            }
+          }
+        }
+      ],
+      "whatHappened": {
+        "title": "What Falcon actually did",
+        "body": "Falcon asked for the federal rescue on Apr 18. Creditors rejected the terms and no airline would buy it. On Apr 30 the board concluded there was 'no viable path.' On May 2, 2026, after 34 years, Falcon stopped flying. About 17,000 jobs, including contractors, ended.",
+        "date": "Apr – May 2026"
+      },
+      "injects": [
+        { "title": "BREAKING: Fuel hits $4.60", "body": "Jet fuel spikes to $4.60 a gallon as tanker traffic through the Strait of Hormuz stalls. Re-run your numbers." },
+        { "title": "BREAKING: A creditor speaks", "body": "A major lender on the rescue plan: 'You can't breathe life into a corpse.' Your plan needs their vote." }
+      ],
+      "roleIntel": {
+        "cfo": "At $4.32 fuel, the extra cost is about $360M a year, more than all the cash Falcon had at the end of 2025. Runway is weeks, not months.",
+        "cso": "Every airline is cutting flights because of fuel. Nobody is buying airplanes or capacity right now, but rivals would love Falcon's LaGuardia slots.",
+        "people": "About 14,000 employees plus contractors. If flights stop, card buyers get refunds, but vouchers and loyalty points become bankruptcy claims.",
+        "gc": "After two bankruptcies, the lenders effectively own Falcon. Any rescue needs their yes, and the government offer would hand 90% of the company to the government, ahead of them."
+      },
+      "tradeoffPrompt": "Who loses the most under your plan, and how do you defend that?"
+    }
+  ],
+  "finalReveal": {
+    "identity": "Falcon Air is Spirit Airlines. Summit is Frontier. Bluewing is JetBlue.",
+    "closer": "On May 2, 2026, Spirit stopped flying. Every decision you made today, its board made too, in real time and without knowing the ending."
+  },
+  "predictions": [
+    { "id": "p1", "text": "The group shown $9 billion will value Falcon well above the group shown $900 million.", "check": "anchor_gap" },
+    { "id": "p2", "text": "More of you will approve the restructuring when it 'saves 9,000 jobs' than when it 'eliminates 3,000 jobs' — the same plan.", "check": "framing_gap" },
+    { "id": "p3", "text": "In Round 1, most firms will take Bluewing's bigger offer.", "check": "r1_majority:r1b" },
+    { "id": "p4", "text": "In Round 3, at most one firm will recommend shutting down.", "check": "r3_max:r3d:1" }
+  ],
+  "qaBank": [
+    { "q": "Why did the judge block JetBlue–Spirit?", "a": "JetBlue planned to remove Spirit's tight seats and raise fares. The judge ruled it would harm cost-conscious travelers who rely on Spirit's low fares (Jan 16, 2024).", "tags": ["r1", "competition"] },
+    { "q": "Why did shareholders reject Frontier if the board liked it?", "a": "JetBlue offered more ($33.50 cash vs. about $25.83 mostly in stock) plus protection if blocked. Shareholders weighed price; the board weighed regulatory risk. That tension is governance in action.", "tags": ["r1", "governance"] },
+    { "q": "Isn't merging with a competitor bad for customers?", "a": "It can be; that's why antitrust exists. Frontier–Spirit kept two low-cost models together; JetBlue–Spirit would have removed the lowest fares. Regulators judged them differently.", "tags": ["r1", "stakeholders"] },
+    { "q": "What does 'stuck in the middle' mean here?", "a": "Spirit added premium bundles, which raised costs (7.97¢ per seat-mile in 2024, up 12.9%), but it couldn't beat the big airlines on premium. Neither cheapest nor best.", "tags": ["r2", "generic"] },
+    { "q": "What's the difference between prepackaged and prearranged Chapter 11?", "a": "Prepackaged: creditors have already voted before filing. Prearranged: key creditors have agreed to terms, with the vote after filing. Spirit's 2024 case was prearranged.", "tags": ["r2", "restructuring"] },
+    { "q": "Why didn't the first bankruptcy fix it?", "a": "It fixed the balance sheet (debt to equity) but not the business model. Costs were still too high and market share kept falling.", "tags": ["r2", "r3"] },
+    { "q": "Why didn't the government just save it?", "a": "The $500M offer needed creditor approval. Key creditors rejected the terms, the administration was split, and no airline would buy Spirit.", "tags": ["r3", "stakeholders"] },
+    { "q": "Who gets paid first when a company liquidates?", "a": "Absolute priority: secured lenders first, then other creditors, and shareholders last (usually nothing). Employees' recent wages get priority within creditors.", "tags": ["r3", "stakeholders"] },
+    { "q": "What happened to customers with tickets?", "a": "Card purchases were refunded automatically. Vouchers and points went into the bankruptcy. Other airlines offered rescue fares.", "tags": ["r3", "stakeholders"] },
+    { "q": "Was shutting down really the right answer?", "a": "If the assets are worth more sold than the business is worth running, closing in an orderly way protects more people than burning the last cash. That's the going-concern test.", "tags": ["r3", "goingconcern"] },
+    { "q": "How did you predict our answers?", "a": "Well-documented biases: anchoring, framing, and escalation of commitment, plus what Spirit's own shareholders and board did. We locked the predictions with a hash before class so we couldn't change them.", "tags": ["predictions"] },
+    { "q": "What's the difference between corporate and business strategy here?", "a": "Corporate: merge, sell, or stay independent (where to compete). Business: low cost vs. premium (how to win).", "tags": ["levels"] },
+    { "q": "Where does diversification fit?", "a": "Spirit's loyalty program and credit card were a separate, valuable business. They secured $1.1B of bonds and were sold separately at auction.", "tags": ["ansoff"] },
+    { "q": "What's a hash?", "a": "A fingerprint of a text. Change one letter and it changes completely, so showing it first proves the text wasn't edited later.", "tags": ["predictions"] }
+  ],
+  "sources": [
+    { "label": "Frontier–Spirit terms, AP", "url": "https://www.ksl.com/article/news/business/frontier-offers-250m-break-up-fee-in-spirit-airlines-deal/50416474" },
+    { "label": "JetBlue agrees to buy Spirit, AP", "url": "https://www.wlrn.org/news/2022-07-28/jetblue-agrees-to-buy-spirit-for-3-8-billion" },
+    { "label": "Judge blocks JetBlue–Spirit, TravelPulse", "url": "https://www.travelpulse.com/news/airlines-airports/federal-judge-blocks-jetblue-spirit-airlines-merger-following-doj-lawsuit" },
+    { "label": "Spirit FY2023 results (SEC)", "url": "https://www.sec.gov/Archives/edgar/data/1498710/000149871024000103/earningsrelease4q23.htm" },
+    { "label": "Go bundles launch, TravelPulse", "url": "https://www.travelpulse.com/news/airlines-airports/spirit-airlines-launches-four-new-just-go-travel-options" },
+    { "label": "Spirit 2024 results, One Mile at a Time", "url": "https://onemileatatime.com/news/spirit-airlines-financial-results/" },
+    { "label": "First Chapter 11, ch-aviation", "url": "https://www.ch-aviation.com/news/147150-spirit-files-for-chapter-11-with-bondholders-support" },
+    { "label": "Frontier bid rejected again, AP", "url": "https://www.ksat.com/business/2025/02/12/spirit-airlines-rejects-takeover-bid-from-rival-frontier-again/" },
+    { "label": "Second Chapter 11, NPR / Michigan Public", "url": "https://www.michiganpublic.org/2025-08-30/spirit-airlines-files-for-bankruptcy-for-2nd-time-in-less-than-a-year" },
+    { "label": "Creditor deal, Axios", "url": "https://www.axios.com/2026/02/24/spirit-airlines-bankruptcy-restructuring" },
+    { "label": "Fuel shock, Fortune", "url": "https://www.fortune.com/2026/04/20/spirit-airlines-bankruptcy-exit-jet-fuel-liquidation/" },
+    { "label": "Bailout rejected, Reuters via Malay Mail", "url": "https://www.malaymail.com/news/money/2026/05/02/aviation-industrys-first-iran-war-casualty-usbased-spirit-airlines-collapses-after-creditors-reject-us500m-bailout/218499" },
+    { "label": "Spirit ceases operations, NPR / OPB", "url": "https://www.opb.org/article/2026/05/02/spirit-airlines-says-it-will-cease-operations/" },
+    { "label": "LaGuardia slots auction, AirlineGeeks", "url": "https://airlinegeeks.com/2026/07/21/jetblue-wins-auction-for-spirits-slots-at-laguardia/" },
+    { "label": "HQ campus sale, Local 10", "url": "https://www.local10.com/news/local/2026/08/13/spirit-airlines-dania-beach-campus-sells-for-over-93-million/" }
+  ],
+  "submissionFields": {
+    "option": "required",
+    "pitch": "required, one sentence, max 200 chars",
+    "framework": "required, from frameworks list",
+    "tradeoff": "required, answers the round's tradeoffPrompt, max 200 chars",
+    "confidence": "required, 0-100 slider: how sure are you this is right?",
+    "dissent": "optional: the strongest argument someone on your team made against your choice"
+  },
+  "calibration": {
+    "note": "At final reveal, show each firm's average confidence vs. its total meter change. Typical finding: confidence was high even on choices that went badly (overconfidence). Present it as an insight, not a prediction."
+  }
+}

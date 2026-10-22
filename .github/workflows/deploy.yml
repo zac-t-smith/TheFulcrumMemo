@@ -34,6 +34,9 @@ jobs:
           VITE_AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
           VITE_FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           VITE_EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_OPS_PIN: ${{ secrets.VITE_OPS_PIN }}
 
       # 404.html with SPA redirect script is in public/ and copied by Vite build
 
