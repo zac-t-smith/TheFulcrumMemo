@@ -19,7 +19,14 @@
       "Bash(git branch *)",
       "Bash(git reset *)",
       "Bash(git checkout *)",
-      "Bash(echo \"has: $?\")"
+      "Bash(echo \"has: $?\")",
+      "Bash(gh pr create --title 'Strategy classroom simulation + fix Pages base path' --body ' *)",
+      "Bash(where.exe gh.exe)",
+      "Bash(npm i *)",
+      "Bash(supabase *)",
+      "Bash(nslookup aws-1-us-east-1.pooler.supabase.com)",
+      "Bash(git mv *)",
+      "Bash(PGPASSWORD=\"Yunelescobarrr\" psql \"postgresql://postgres.gndntvgqcvcvfwfmnwxw@aws-1-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require\" -c \"select table_name from information_schema.tables where table_schema='falcon' order by table_name;\")"
     ]
   }
 }
