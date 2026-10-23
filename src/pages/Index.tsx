@@ -32,7 +32,7 @@ const Index = () => {
 
       <div
         className="min-h-screen flex flex-col"
-        style={{ background: '#f7f5f0', color: '#1a1a1a' }}
+        style={{ background: 'var(--paper)', color: 'var(--ink)' }}
       >
         <Navbar />
 
@@ -43,11 +43,11 @@ const Index = () => {
               className="flex items-stretch gap-3.5 pb-3.5 mb-6"
               style={{ borderBottom: '1px solid #1a1a1a' }}
             >
-              <div className="w-2 flex-shrink-0" style={{ background: '#c8102e' }} />
+              <div className="w-2 flex-shrink-0" style={{ background: 'var(--red)' }} />
               <div className="flex flex-col justify-center gap-2">
                 <div
                   className="text-[10px] tracking-[0.22em] uppercase font-semibold text-[#4a4a4a]"
-                  style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                  style={{ fontFamily: 'var(--font-sans)' }}
                 >
                   Independent Research
                   <span className="text-[#c8102e] mx-2" aria-hidden="true">●</span>
@@ -57,7 +57,7 @@ const Index = () => {
                 </div>
                 <h1
                   className="text-[44px] md:text-[60px] leading-[1.05] font-bold tracking-tight m-0"
-                  style={{ fontFamily: 'Georgia, serif' }}
+                  style={{ fontFamily: 'var(--font-serif)' }}
                 >
                   The Fulcrum Memo
                 </h1>
@@ -77,7 +77,7 @@ const Index = () => {
             {/* Lede */}
             <p
               className="text-[19px] md:text-[21px] leading-[1.55] text-[#1a1a1a] max-w-[720px] mb-5"
-              style={{ fontFamily: 'Georgia, serif' }}
+              style={{ fontFamily: 'var(--font-serif)' }}
             >
               A research letter on distressed credit, restructuring situations, and special
               situations. Applying restructuring frameworks to complex credit cycles —
@@ -87,7 +87,7 @@ const Index = () => {
 
             <p
               className="text-[14.5px] leading-relaxed text-[#4a4a4a] italic max-w-[720px] mb-9"
-              style={{ fontFamily: 'Georgia, serif' }}
+              style={{ fontFamily: 'var(--font-serif)' }}
             >
               By Zachary Smith — Army veteran, operator, restructuring analyst candidate.
             </p>
@@ -98,8 +98,8 @@ const Index = () => {
                 to="/memos"
                 className="inline-flex items-center gap-2 px-5 py-2.5 text-[12px] font-bold tracking-[0.16em] uppercase text-white transition-colors"
                 style={{
-                  background: '#c8102e',
-                  fontFamily: 'Helvetica Neue, Arial, sans-serif',
+                  background: 'var(--red)',
+                  fontFamily: 'var(--font-sans)',
                 }}
               >
                 Read the Memos
@@ -111,7 +111,7 @@ const Index = () => {
                 style={{
                   border: '1px solid #1a1a1a',
                   background: 'transparent',
-                  fontFamily: 'Helvetica Neue, Arial, sans-serif',
+                  fontFamily: 'var(--font-sans)',
                 }}
               >
                 The Fulcrum Index
@@ -119,7 +119,7 @@ const Index = () => {
               <Link
                 to="/positions"
                 className="text-[12px] font-bold tracking-[0.16em] uppercase text-[#4a4a4a] hover:text-[#1a1a1a] transition-colors"
-                style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                style={{ fontFamily: 'var(--font-sans)' }}
               >
                 Track Record →
               </Link>
@@ -172,18 +172,18 @@ const Index = () => {
 // =============================================================================
 
 const AboutScrollSection = () => (
-  <section id="about" className="py-16" style={{ background: '#f7f5f0', borderTop: '1px solid #d9d4c7' }}>
+  <section id="about" className="py-16" style={{ background: 'var(--paper)', borderTop: '1px solid #d9d4c7' }}>
     <div className="max-w-[1080px] mx-auto px-7">
       <div className="mb-8">
         <div
           className="text-[10px] tracking-[0.22em] uppercase font-bold text-[#c8102e] mb-2"
-          style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+          style={{ fontFamily: 'var(--font-sans)' }}
         >
           Background
         </div>
         <h2
           className="text-[32px] md:text-[38px] font-bold tracking-tight m-0 mb-3"
-          style={{ fontFamily: 'Georgia, serif' }}
+          style={{ fontFamily: 'var(--font-serif)' }}
         >
           About
         </h2>
@@ -200,7 +200,7 @@ const AboutScrollSection = () => (
         {/* Story */}
         <div
           className="space-y-4 text-[14px] leading-relaxed text-[#1a1a1a]"
-          style={{ fontFamily: 'Georgia, serif' }}
+          style={{ fontFamily: 'var(--font-serif)' }}
         >
           <p>
             After high school, I enlisted in the Army infantry and was selected for security
@@ -234,7 +234,7 @@ const AboutScrollSection = () => (
             style={{
               borderLeft: '3px solid #c8102e',
               background: 'rgba(200, 16, 46, 0.04)',
-              fontFamily: 'Georgia, serif',
+              fontFamily: 'var(--font-serif)',
             }}
           >
             That experience gave me firsthand insight into financial distress — managing liquidity
@@ -265,7 +265,7 @@ const AboutScrollSection = () => (
 
           <div
             className="pt-4 mt-2 italic text-[13px] text-[#4a4a4a]"
-            style={{ borderTop: '1px solid #d9d4c7', fontFamily: 'Georgia, serif' }}
+            style={{ borderTop: '1px solid #d9d4c7', fontFamily: 'var(--font-serif)' }}
           >
             Outside of finance, I'm a distance runner with a 5:52 mile PR. I bring the same focus
             and endurance to every deal.
@@ -273,17 +273,17 @@ const AboutScrollSection = () => (
 
           <div
             className="px-4 py-3 mt-4"
-            style={{ background: '#fbf9f3', border: '1px solid #d9d4c7' }}
+            style={{ background: 'var(--paper-raised)', border: '1px solid #d9d4c7' }}
           >
             <div
               className="text-[9.5px] tracking-[0.2em] uppercase font-bold text-[#c8102e] mb-1.5"
-              style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+              style={{ fontFamily: 'var(--font-sans)' }}
             >
               Current Focus
             </div>
             <p
               className="text-[13.5px] leading-relaxed text-[#1a1a1a] m-0"
-              style={{ fontFamily: 'Georgia, serif' }}
+              style={{ fontFamily: 'var(--font-serif)' }}
             >
               Currently finishing my finance degree at the University of Mobile (3.71 GPA,
               graduating December 2026), seeking full-time 2027 analyst roles in restructuring,
@@ -301,13 +301,13 @@ const Differentiator = ({ title, body }: { title: string; body: string }) => (
   <div>
     <div
       className="text-[14px] font-bold tracking-tight text-[#1a1a1a] mb-1"
-      style={{ fontFamily: 'Georgia, serif' }}
+      style={{ fontFamily: 'var(--font-serif)' }}
     >
       {title}
     </div>
     <p
       className="text-[12.5px] leading-relaxed text-[#4a4a4a] m-0"
-      style={{ fontFamily: 'Georgia, serif' }}
+      style={{ fontFamily: 'var(--font-serif)' }}
     >
       {body}
     </p>
@@ -322,18 +322,18 @@ const ContactScrollSection = () => (
   <section
     id="contact"
     className="py-14"
-    style={{ background: '#fbf9f3', borderTop: '1px solid #d9d4c7' }}
+    style={{ background: 'var(--paper-raised)', borderTop: '1px solid #d9d4c7' }}
   >
     <div className="max-w-[720px] mx-auto px-7 text-center">
       <div
         className="text-[10px] tracking-[0.22em] uppercase font-bold text-[#c8102e] mb-2"
-        style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+        style={{ fontFamily: 'var(--font-sans)' }}
       >
         Get in Touch
       </div>
       <h2
         className="text-[28px] md:text-[32px] font-bold tracking-tight m-0 mb-3"
-        style={{ fontFamily: 'Georgia, serif' }}
+        style={{ fontFamily: 'var(--font-serif)' }}
       >
         Contact
       </h2>
@@ -347,7 +347,7 @@ const ContactScrollSection = () => (
       />
       <p
         className="text-[14.5px] leading-relaxed text-[#1a1a1a] mb-7"
-        style={{ fontFamily: 'Georgia, serif' }}
+        style={{ fontFamily: 'var(--font-serif)' }}
       >
         Seeking full-time 2027 analyst roles in restructuring, credit, and distressed
         investing. I'd welcome the opportunity to connect.
@@ -355,13 +355,13 @@ const ContactScrollSection = () => (
       <a
         href="mailto:zac.ty.smith@gmail.com"
         className="inline-flex items-center gap-2 px-5 py-2.5 text-[12px] font-bold tracking-[0.16em] uppercase text-white transition-colors mb-6"
-        style={{ background: '#c8102e', fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+        style={{ background: 'var(--red)', fontFamily: 'var(--font-sans)' }}
       >
         zac.ty.smith@gmail.com
       </a>
       <div
         className="flex items-center justify-center gap-4 text-[11px] tracking-[0.14em] uppercase font-semibold"
-        style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+        style={{ fontFamily: 'var(--font-sans)' }}
       >
         <a
           href="https://linkedin.com/in/zac-t-smith"
@@ -405,19 +405,19 @@ const FeaturedTile = ({ eyebrow, title, description, href, bordered }: FeaturedT
   >
     <div
       className="text-[9.5px] tracking-[0.18em] uppercase font-bold text-[#c8102e] mb-1.5"
-      style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+      style={{ fontFamily: 'var(--font-sans)' }}
     >
       {eyebrow}
     </div>
     <div
       className="text-[18px] font-bold tracking-tight text-[#1a1a1a] mb-2"
-      style={{ fontFamily: 'Georgia, serif' }}
+      style={{ fontFamily: 'var(--font-serif)' }}
     >
       {title}
     </div>
     <p
       className="text-[13px] leading-relaxed text-[#4a4a4a] m-0"
-      style={{ fontFamily: 'Georgia, serif' }}
+      style={{ fontFamily: 'var(--font-serif)' }}
     >
       {description}
     </p>

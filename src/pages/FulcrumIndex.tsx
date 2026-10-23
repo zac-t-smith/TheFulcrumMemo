@@ -358,7 +358,7 @@ const FulcrumIndexPage = () => {
     }
 
     // ---------- 3. X-AXIS TICKS (every 5 years for the 40-year span) ----------
-    ctx.fillStyle = '#4a4a4a';
+    ctx.fillStyle = 'var(--ink-muted)';
     ctx.font = '11px Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -381,7 +381,7 @@ const FulcrumIndexPage = () => {
     // ---------- 4. LEFT Y-AXIS LABELS (BAA10Y log) ----------
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = 'var(--ink)';
     ctx.font = 'bold 10px Georgia, serif';
     const baaTicks = [100, 150, 200, 300, 500, 700];
     baaTicks.forEach((v) => {
@@ -399,7 +399,7 @@ const FulcrumIndexPage = () => {
     ctx.translate(16, plotY + plotH / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = 'var(--ink)';
     ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
     ctx.fillText('BAA10Y (bps, log)', 0, 0);
     ctx.restore();
@@ -408,7 +408,7 @@ const FulcrumIndexPage = () => {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.font = 'bold 10px Georgia, serif';
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = 'var(--ink)';
     for (let i = 0; i <= 10; i++) {
       const v = i * 10;
       const yy = yRightOf(v);
@@ -425,13 +425,13 @@ const FulcrumIndexPage = () => {
     ctx.translate(w - 16, plotY + plotH / 2);
     ctx.rotate(Math.PI / 2);
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = 'var(--ink)';
     ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
     ctx.fillText('Fulcrum Index (0-100)', 0, 0);
     ctx.restore();
 
     // ---------- 6. PLOT BORDER ----------
-    ctx.strokeStyle = '#1a1a1a';
+    ctx.strokeStyle = 'var(--ink)';
     ctx.lineWidth = 1;
     ctx.strokeRect(plotX, plotY, plotW, plotH);
 
@@ -440,7 +440,7 @@ const FulcrumIndexPage = () => {
     ctx.strokeStyle = 'rgba(26,26,26,0.45)';
     ctx.lineWidth = 1;
     ctx.font = 'italic 10px Georgia, serif';
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = 'var(--ink)';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
 
@@ -475,7 +475,7 @@ const FulcrumIndexPage = () => {
       const ly = plotY + 12 + row * 14;
       ctx.fillStyle = 'rgba(247,245,240,0.92)';
       ctx.fillRect(x1, ly - 10, x2 - x1, 12);
-      ctx.fillStyle = '#1a1a1a';
+      ctx.fillStyle = 'var(--ink)';
       ctx.fillText(ev.label, lx, ly);
     });
     ctx.setLineDash([]);
@@ -493,7 +493,7 @@ const FulcrumIndexPage = () => {
     ctx.stroke();
 
     // ---------- 9. BAA10Y LINE (left axis) — primary, gold ----------
-    ctx.strokeStyle = '#c9a227';
+    ctx.strokeStyle = 'var(--ink-muted)';
     ctx.lineWidth = 2;
     ctx.lineJoin = 'round';
     ctx.beginPath();
@@ -511,19 +511,19 @@ const FulcrumIndexPage = () => {
     const yLastBaa = yLeftOf(last.baa);
     const yLastIdx = yRightOf(last.idx);
 
-    ctx.fillStyle = '#c9a227';
+    ctx.fillStyle = 'var(--ink-muted)';
     ctx.beginPath();
     ctx.arc(xLast, yLastBaa, 4, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#1a1a1a';
+    ctx.strokeStyle = 'var(--ink)';
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    ctx.fillStyle = '#c8102e';
+    ctx.fillStyle = 'var(--red)';
     ctx.beginPath();
     ctx.arc(xLast, yLastIdx, 4, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#1a1a1a';
+    ctx.strokeStyle = 'var(--ink)';
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -544,7 +544,7 @@ const FulcrumIndexPage = () => {
       const by = Math.max(plotY + 2, Math.min(y - bh / 2, plotY + plotH - bh - 2));
       ctx.fillStyle = fill;
       ctx.fillRect(bx, by, bw, bh);
-      ctx.strokeStyle = '#1a1a1a';
+      ctx.strokeStyle = 'var(--ink)';
       ctx.lineWidth = 0.75;
       ctx.strokeRect(bx + 0.5, by + 0.5, bw - 1, bh - 1);
       ctx.fillStyle = textColor;
@@ -553,8 +553,8 @@ const FulcrumIndexPage = () => {
       ctx.fillText(text, bx + padX, by + bh / 2 + 0.5);
     };
 
-    drawBadge(xLast, yLastIdx, `Idx ${last.idx}`, '#c8102e', '#fff');
-    drawBadge(xLast, yLastBaa, `${Math.round(last.baa)} bps`, '#c9a227', '#1a1a1a');
+    drawBadge(xLast, yLastIdx, `Idx ${last.idx}`, 'var(--red)', '#fff');
+    drawBadge(xLast, yLastBaa, `${Math.round(last.baa)} bps`, 'var(--ink-muted)', 'var(--ink)');
 
     // ---------- 11. LEGEND ----------
     const legX = plotX + 10;
@@ -568,11 +568,11 @@ const FulcrumIndexPage = () => {
     ctx.strokeRect(legX + 0.5, legY + 0.5, legW - 1, legH - 1);
 
     ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = 'var(--ink)';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
 
-    ctx.strokeStyle = '#c9a227';
+    ctx.strokeStyle = 'var(--ink-muted)';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(legX + 8, legY + 14);
@@ -609,7 +609,7 @@ const FulcrumIndexPage = () => {
     // side of the 50 line for readability against the green/red bands.
     ALL_REGIMES.forEach(r => {
       const center = (r.bandMin + r.bandMax) / 2;
-      const labelColor = r.bandMin >= 50 ? '#8a1818' : '#1f6b3a';
+      const labelColor = r.bandMin >= 50 ? 'var(--red-deep)' : '#1f6b3a';
       zoneLabel(center, r.regime, labelColor);
     });
   }, [indexData]);
@@ -654,13 +654,13 @@ const FulcrumIndexPage = () => {
     const yLeftOf = (oas: number) =>
       plotY + plotH - ((Math.log(Math.max(HY_LOG_LO, Math.min(HY_LOG_HI, oas))) - HY_LN_LO) / (HY_LN_HI - HY_LN_LO)) * plotH;
 
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = 'var(--ink)';
     ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText('HY OAS (current cycle)', plotX, 8);
     ctx.font = 'italic 9.5px Georgia, serif';
-    ctx.fillStyle = '#4a4a4a';
+    ctx.fillStyle = 'var(--ink-muted)';
     ctx.fillText('ICE BofA US High Yield, 3-year FRED window', plotX, 22);
 
     ctx.strokeStyle = 'rgba(26,26,26,0.06)';
@@ -675,18 +675,18 @@ const FulcrumIndexPage = () => {
 
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = 'var(--ink)';
     ctx.font = 'bold 9px Georgia, serif';
     [300, 400, 500, 600].forEach(v => {
       const yy = yLeftOf(v);
       ctx.fillText(`${v}`, plotX - 6, yy);
     });
 
-    ctx.strokeStyle = '#1a1a1a';
+    ctx.strokeStyle = 'var(--ink)';
     ctx.lineWidth = 1;
     ctx.strokeRect(plotX, plotY, plotW, plotH);
 
-    ctx.fillStyle = '#4a4a4a';
+    ctx.fillStyle = 'var(--ink-muted)';
     ctx.font = '10px Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -699,7 +699,7 @@ const FulcrumIndexPage = () => {
       ctx.fillText(String(year), xt, plotY + plotH + 6);
     }
 
-    ctx.strokeStyle = '#c9a227';
+    ctx.strokeStyle = 'var(--ink-muted)';
     ctx.lineWidth = 1.6;
     ctx.lineJoin = 'round';
     ctx.beginPath();
@@ -712,11 +712,11 @@ const FulcrumIndexPage = () => {
     ctx.stroke();
 
     const last = data[data.length - 1];
-    ctx.fillStyle = '#c9a227';
+    ctx.fillStyle = 'var(--ink-muted)';
     ctx.beginPath();
     ctx.arc(xOf(new Date(last.date).getTime()), yLeftOf(last.value), 3.5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#1a1a1a';
+    ctx.strokeStyle = 'var(--ink)';
     ctx.lineWidth = 1;
     ctx.stroke();
   }, []);
@@ -791,7 +791,7 @@ const FulcrumIndexPage = () => {
     }
 
     // Color bar border
-    ctx.strokeStyle = '#1a1a1a';
+    ctx.strokeStyle = 'var(--ink)';
     ctx.lineWidth = 1;
     ctx.strokeRect(plotX, barY, plotW, barHeight);
 
@@ -807,7 +807,7 @@ const FulcrumIndexPage = () => {
     }
 
     // ---------- 3. PLOT BORDER ----------
-    ctx.strokeStyle = '#1a1a1a';
+    ctx.strokeStyle = 'var(--ink)';
     ctx.lineWidth = 1;
     ctx.strokeRect(plotX, plotY, plotW, plotH);
 
@@ -857,7 +857,7 @@ const FulcrumIndexPage = () => {
     drawPriceLine(
       (i) => etfData[i]?.gld,
       gldMin, gldMax,
-      '#c9a227', 2
+      'var(--ink-muted)', 2
     );
 
     // VIX (purple, dashed)
@@ -870,7 +870,7 @@ const FulcrumIndexPage = () => {
     ctx.setLineDash([]);
 
     // ---------- 5. X-AXIS YEAR LABELS ----------
-    ctx.fillStyle = '#4a4a4a';
+    ctx.fillStyle = 'var(--ink-muted)';
     ctx.font = '11px Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -906,7 +906,7 @@ const FulcrumIndexPage = () => {
     const legendItems = [
       { label: 'HYG (HY bonds)', color: '#2563eb', dashed: false },
       { label: 'USO (crude oil)', color: '#ea580c', dashed: false },
-      { label: 'GLD (gold)', color: '#c9a227', dashed: false },
+      { label: 'GLD (gold)', color: 'var(--ink-muted)', dashed: false },
       { label: 'VIX (volatility)', color: '#7c3aed', dashed: true },
     ];
 
@@ -920,24 +920,24 @@ const FulcrumIndexPage = () => {
       ctx.lineTo(legX + 28, y);
       ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = '#1a1a1a';
+      ctx.fillStyle = 'var(--ink)';
       ctx.fillText(item.label, legX + 34, y);
     });
 
     // ---------- 7. TITLE ----------
     ctx.font = 'bold 12px Helvetica Neue, Arial, sans-serif';
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = 'var(--ink)';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText('REGIME POSITIONING MAP', plotX, plotY - 28);
 
     ctx.font = 'italic 10px Georgia, serif';
-    ctx.fillStyle = '#4a4a4a';
+    ctx.fillStyle = 'var(--ink-muted)';
     ctx.fillText('Asset performance by Fulcrum Index regime (normalized)', plotX, plotY - 14);
 
     // Regime color bar label
     ctx.font = '9px Helvetica Neue, Arial, sans-serif';
-    ctx.fillStyle = '#4a4a4a';
+    ctx.fillStyle = 'var(--ink-muted)';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
     ctx.fillText('Regime →', plotX - 8, barY + barHeight / 2);
@@ -1029,7 +1029,7 @@ const FulcrumIndexPage = () => {
       </Helmet>
 
       {/* Economist-style light theme page */}
-      <div className="min-h-screen flex flex-col" style={{ background: '#f7f5f0', color: '#1a1a1a' }}>
+      <div className="min-h-screen flex flex-col" style={{ background: 'var(--paper)', color: 'var(--ink)' }}>
         <Navbar />
         <div className="pt-[64px]">
           <ArchiveBanner />
@@ -1041,24 +1041,24 @@ const FulcrumIndexPage = () => {
             className="flex items-stretch gap-3.5 pb-3.5 mb-4"
             style={{ borderBottom: '1px solid #1a1a1a' }}
           >
-            <div className="w-2 flex-shrink-0" style={{ background: '#c8102e' }} />
+            <div className="w-2 flex-shrink-0" style={{ background: 'var(--red)' }} />
             <div className="flex flex-col justify-center gap-1">
               <div
                 className="text-[10px] tracking-[0.18em] uppercase text-[#4a4a4a] font-semibold"
-                style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                style={{ fontFamily: 'var(--font-sans)' }}
               >
                 The Fulcrum Memo <span className="text-[#c8102e] mx-2">●</span> Distressed Credit
                 Research <span className="text-[#c8102e] mx-2">●</span> Risk Frameworks
               </div>
               <h1
                 className="text-[28px] leading-tight font-bold tracking-tight m-0"
-                style={{ fontFamily: 'Georgia, serif' }}
+                style={{ fontFamily: 'var(--font-serif)' }}
               >
 The Fulcrum Index
               </h1>
               <p
                 className="text-[15px] text-[#4a4a4a] italic m-0"
-                style={{ fontFamily: 'Georgia, serif' }}
+                style={{ fontFamily: 'var(--font-serif)' }}
               >
                 A composite signal for the next restructuring cycle, calibrated against four decades of investment-grade credit spread history (Moody’s Baa-Treasury, 1986+)
               </p>
@@ -1082,19 +1082,19 @@ The Fulcrum Index
                 >
                   <div
                     className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold"
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-sans)' }}
                   >
                     Fulcrum Index
                   </div>
                   <div
                     className="text-[22px] font-bold text-[#1a1a1a] tracking-tight"
-                    style={{ fontFamily: 'Georgia, serif' }}
+                    style={{ fontFamily: 'var(--font-serif)' }}
                   >
                     {live.composite}
                   </div>
                   <div
                     className={`text-[11px] ${trend.idxChange >= 0 ? 'text-[#8a1818]' : 'text-[#1f6b3a]'}`}
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-sans)' }}
                   >
                     {trend.idxChange >= 0 ? '+' : ''}
                     {trend.idxChange} pts (30d)
@@ -1107,19 +1107,19 @@ The Fulcrum Index
                 >
                   <div
                     className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold"
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-sans)' }}
                   >
                     Credit Spreads
                   </div>
                   <div
                     className="text-[22px] font-bold text-[#1a1a1a] tracking-tight"
-                    style={{ fontFamily: 'Georgia, serif' }}
+                    style={{ fontFamily: 'var(--font-serif)' }}
                   >
                     Baa {Math.round(live.baa.bps)} bps
                   </div>
                   <div
                     className="text-[11px] text-[#4a4a4a]"
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-sans)' }}
                   >
                     {live.hyOas
                       ? `HY OAS ${Math.round(live.hyOas.bps)} bps · pctl ${Math.round(live.baa.pctl * 100)}`
@@ -1133,19 +1133,19 @@ The Fulcrum Index
                 >
                   <div
                     className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold"
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-sans)' }}
                   >
                     Regime
                   </div>
                   <div
                     className={`inline-block px-2 py-0.5 text-white text-[10px] font-bold tracking-[0.08em] uppercase w-fit ${live.regime.pillBg}`}
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-sans)' }}
                   >
                     {live.regime.regime}
                   </div>
                   <div
                     className="text-[11px] text-[#4a4a4a]"
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-sans)' }}
                   >
                     {live.regime.posture}
                   </div>
@@ -1154,19 +1154,19 @@ The Fulcrum Index
                 <div className="py-3 px-3.5 flex flex-col gap-1">
                   <div
                     className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold"
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-sans)' }}
                   >
                     As of
                   </div>
                   <div
                     className="text-[16px] font-bold text-[#1a1a1a] tracking-tight"
-                    style={{ fontFamily: 'Georgia, serif' }}
+                    style={{ fontFamily: 'var(--font-serif)' }}
                   >
                     {live.asOfDate}
                   </div>
                   <div
                     className="text-[11px] text-[#4a4a4a]"
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-sans)' }}
                   >
                     {live.dataPoints} data points
                   </div>
@@ -1181,20 +1181,20 @@ The Fulcrum Index
                 <div
                   className="py-2.5 px-3.5 my-4 flex items-start gap-3"
                   style={{
-                    background: '#8a1818',
-                    color: '#f7f5f0',
+                    background: 'var(--red-deep)',
+                    color: 'var(--paper)',
                     boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                   }}
                 >
                   <div
                     className="text-[9.5px] tracking-[0.18em] uppercase font-bold pt-0.5 flex-shrink-0"
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif', color: '#f7f5f0', opacity: 0.85 }}
+                    style={{ fontFamily: 'var(--font-sans)', color: 'var(--paper)', opacity: 0.85 }}
                   >
                     Canary
                   </div>
                   <p
                     className="text-[13.5px] leading-relaxed m-0"
-                    style={{ fontFamily: 'Georgia, serif' }}
+                    style={{ fontFamily: 'var(--font-serif)' }}
                   >
                     Composite reads {live.regime.regime}, but the CCC-BB ratio at{' '}
                     <strong>{live.cccBbRatio!.toFixed(2)}×</strong> sits at the upper end of an
@@ -1220,7 +1220,7 @@ The Fulcrum Index
               >
                 <div
                   className="text-[9.5px] tracking-[0.18em] uppercase text-[#c8102e] font-bold mb-1"
-                  style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                  style={{ fontFamily: 'var(--font-sans)' }}
                 >
                   MD Read
                 </div>
@@ -1232,7 +1232,7 @@ The Fulcrum Index
                     <>
                       <p
                         className="text-[14px] leading-relaxed text-[#1a1a1a] m-0"
-                        style={{ fontFamily: 'Georgia, serif' }}
+                        style={{ fontFamily: 'var(--font-serif)' }}
                       >
                         {main}
                       </p>
@@ -1240,7 +1240,7 @@ The Fulcrum Index
                         <p
                           className="text-[11.5px] leading-relaxed text-[#4a4a4a] italic mt-2 mb-0 pt-2"
                           style={{
-                            fontFamily: 'Georgia, serif',
+                            fontFamily: 'var(--font-serif)',
                             borderTop: '1px solid rgba(200, 16, 46, 0.12)',
                           }}
                         >
@@ -1256,13 +1256,13 @@ The Fulcrum Index
               <div className="mt-2 mb-3">
                 <div
                   className="text-[10px] tracking-[0.18em] uppercase text-[#4a4a4a] font-semibold"
-                  style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                  style={{ fontFamily: 'var(--font-sans)' }}
                 >
 The Fulcrum Signal — Historical Distribution
                 </div>
                 <div
                   className="text-[12.5px] text-[#4a4a4a] italic mt-1"
-                  style={{ fontFamily: 'Georgia, serif' }}
+                  style={{ fontFamily: 'var(--font-serif)' }}
                 >
                   Forty years of BAA-Treasury spreads, dot size by VIX, color by percentile
                 </div>
@@ -1274,13 +1274,13 @@ The Fulcrum Signal — Historical Distribution
               <div className="mt-6 mb-3">
                 <div
                   className="text-[10px] tracking-[0.18em] uppercase text-[#4a4a4a] font-semibold"
-                  style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                  style={{ fontFamily: 'var(--font-sans)' }}
                 >
 The Fulcrum Index — Composite Path
                 </div>
                 <div
                   className="text-[12.5px] text-[#4a4a4a] italic mt-1"
-                  style={{ fontFamily: 'Georgia, serif' }}
+                  style={{ fontFamily: 'var(--font-serif)' }}
                 >
                   BAA10Y (left, log) overlaid with the 0–100 composite (right) and regime bands
                 </div>
@@ -1291,7 +1291,7 @@ The Fulcrum Index — Composite Path
                 ref={baaContainerRef}
                 className="p-4 mb-4"
                 style={{
-                  background: '#fbf9f3',
+                  background: 'var(--paper-raised)',
                   border: '1px solid #d9d4c7',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
@@ -1306,7 +1306,7 @@ The Fulcrum Index — Composite Path
                 ref={hyContainerRef}
                 className="p-3 mb-4"
                 style={{
-                  background: '#fbf9f3',
+                  background: 'var(--paper-raised)',
                   border: '1px solid #d9d4c7',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
@@ -1330,7 +1330,7 @@ The Fulcrum Index — Composite Path
                 ref={correlationContainerRef}
                 className="p-4 mb-4"
                 style={{
-                  background: '#fbf9f3',
+                  background: 'var(--paper-raised)',
                   border: '1px solid #d9d4c7',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
@@ -1349,7 +1349,7 @@ The Fulcrum Index — Composite Path
                 className="mb-4 overflow-hidden"
                 style={{
                   border: '1px solid #d9d4c7',
-                  background: '#fbf9f3',
+                  background: 'var(--paper-raised)',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
               >
@@ -1357,20 +1357,20 @@ The Fulcrum Index — Composite Path
                 <div
                   className="px-4 py-3 flex items-center justify-between"
                   style={{
-                    background: '#1a1a1a',
+                    background: 'var(--ink)',
                     borderBottom: '1px solid #d9d4c7',
                   }}
                 >
                   <div>
                     <div
                       className="text-[10px] tracking-[0.16em] uppercase text-white/80 font-semibold"
-                      style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                      style={{ fontFamily: 'var(--font-sans)' }}
                     >
                       Position Framework
                     </div>
                     <div
                       className="text-[18px] font-bold text-white tracking-tight"
-                      style={{ fontFamily: 'Georgia, serif' }}
+                      style={{ fontFamily: 'var(--font-serif)' }}
                     >
                       Validated against {BACKTEST_METRICS.window} backtest
                     </div>
@@ -1378,7 +1378,7 @@ The Fulcrum Index — Composite Path
                   <div className="text-white/90 text-right">
                     <div
                       className="text-[11px] italic"
-                      style={{ fontFamily: 'Georgia, serif' }}
+                      style={{ fontFamily: 'var(--font-serif)' }}
                     >
                       Current regime: {live.regime.regime} ({live.composite})
                     </div>
@@ -1393,13 +1393,13 @@ The Fulcrum Index — Composite Path
                   <div>
                     <div
                       className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold mb-1"
-                      style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                      style={{ fontFamily: 'var(--font-sans)' }}
                     >
                       Fulcrum Rotation Portfolio
                     </div>
                     <div
                       className="text-[12.5px] text-[#1a1a1a] leading-relaxed"
-                      style={{ fontFamily: 'Georgia, serif' }}
+                      style={{ fontFamily: 'var(--font-serif)' }}
                     >
                       Sharpe <strong>{BACKTEST_METRICS.portfolio.sharpe.toFixed(2)}</strong>{' '}
                       · Max DD <strong className="text-[#1f6b3a]">{BACKTEST_METRICS.portfolio.maxDD}%</strong>{' '}
@@ -1409,13 +1409,13 @@ The Fulcrum Index — Composite Path
                   <div>
                     <div
                       className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold mb-1"
-                      style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                      style={{ fontFamily: 'var(--font-sans)' }}
                     >
                       SPY Buy-and-Hold
                     </div>
                     <div
                       className="text-[12.5px] text-[#1a1a1a] leading-relaxed"
-                      style={{ fontFamily: 'Georgia, serif' }}
+                      style={{ fontFamily: 'var(--font-serif)' }}
                     >
                       Sharpe <strong>{BACKTEST_METRICS.spy.sharpe.toFixed(2)}</strong>{' '}
                       · Max DD <strong className="text-[#c8102e]">{BACKTEST_METRICS.spy.maxDD}%</strong>{' '}
@@ -1425,13 +1425,13 @@ The Fulcrum Index — Composite Path
                   <div>
                     <div
                       className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold mb-1"
-                      style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                      style={{ fontFamily: 'var(--font-sans)' }}
                     >
                       Edge
                     </div>
                     <div
                       className="text-[12.5px] text-[#1a1a1a] italic leading-relaxed"
-                      style={{ fontFamily: 'Georgia, serif' }}
+                      style={{ fontFamily: 'var(--font-serif)' }}
                     >
                       Regime-aware allocation reduces drawdowns by{' '}
                       <strong>{BACKTEST_METRICS.ddEdgePts} pts</strong>;
@@ -1444,7 +1444,7 @@ The Fulcrum Index — Composite Path
                 <div
                   className="px-4 py-2 text-[12px] text-[#1a1a1a]"
                   style={{
-                    fontFamily: 'Georgia, serif',
+                    fontFamily: 'var(--font-serif)',
                     borderBottom: '1px solid #d9d4c7',
                     background: 'rgba(200, 16, 46, 0.03)',
                   }}
@@ -1481,7 +1481,7 @@ The Fulcrum Index — Composite Path
                 <div
                   className="px-4 py-2 text-[11px] text-[#4a4a4a] italic leading-relaxed"
                   style={{
-                    fontFamily: 'Georgia, serif',
+                    fontFamily: 'var(--font-serif)',
                     borderTop: '1px solid #d9d4c7',
                     background: 'rgba(0,0,0,0.02)',
                   }}
@@ -1499,7 +1499,7 @@ The Fulcrum Index — Composite Path
                 className="mb-4 overflow-hidden"
                 style={{
                   border: '1px solid #d9d4c7',
-                  background: '#fbf9f3',
+                  background: 'var(--paper-raised)',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
               >
@@ -1509,13 +1509,13 @@ The Fulcrum Index — Composite Path
                 >
                   <div
                     className="text-[10px] tracking-[0.16em] uppercase text-[#4a4a4a] font-bold mb-1"
-                    style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-sans)' }}
                   >
                     Historical Regime Performance
                   </div>
                   <div
                     className="text-[13px] text-[#1a1a1a] italic"
-                    style={{ fontFamily: 'Georgia, serif' }}
+                    style={{ fontFamily: 'var(--font-serif)' }}
                   >
                     Average daily returns by asset class during each Fulcrum Index regime ({Math.round(recentIndexData.length / 252)}-year backtest, ETF window 2007+)
                   </div>
@@ -1527,37 +1527,37 @@ The Fulcrum Index — Composite Path
                       <tr style={{ borderBottom: '1px solid #1a1a1a' }}>
                         <th
                           className="px-4 py-2 text-left text-[10px] tracking-[0.14em] uppercase text-[#4a4a4a] font-bold"
-                          style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                          style={{ fontFamily: 'var(--font-sans)' }}
                         >
                           Regime
                         </th>
                         <th
                           className="px-4 py-2 text-center text-[10px] tracking-[0.14em] uppercase font-bold"
-                          style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif', color: '#2563eb' }}
+                          style={{ fontFamily: 'var(--font-sans)', color: '#2563eb' }}
                         >
                           HYG <span className="text-[#4a4a4a] font-normal normal-case tracking-normal">(daily / ann.)</span>
                         </th>
                         <th
                           className="px-4 py-2 text-center text-[10px] tracking-[0.14em] uppercase font-bold"
-                          style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif', color: '#ea580c' }}
+                          style={{ fontFamily: 'var(--font-sans)', color: '#ea580c' }}
                         >
                           USO <span className="text-[#4a4a4a] font-normal normal-case tracking-normal">(daily / ann.)</span>
                         </th>
                         <th
                           className="px-4 py-2 text-center text-[10px] tracking-[0.14em] uppercase font-bold"
-                          style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif', color: '#c9a227' }}
+                          style={{ fontFamily: 'var(--font-sans)', color: 'var(--ink-muted)' }}
                         >
                           GLD <span className="text-[#4a4a4a] font-normal normal-case tracking-normal">(daily / ann.)</span>
                         </th>
                         <th
                           className="px-4 py-2 text-center text-[10px] tracking-[0.14em] uppercase font-bold"
-                          style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif', color: '#7c3aed' }}
+                          style={{ fontFamily: 'var(--font-sans)', color: '#7c3aed' }}
                         >
                           VIX Δ
                         </th>
                         <th
                           className="px-4 py-2 text-right text-[10px] tracking-[0.14em] uppercase text-[#4a4a4a] font-bold"
-                          style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                          style={{ fontFamily: 'var(--font-sans)' }}
                         >
                           Sample
                         </th>
@@ -1589,7 +1589,7 @@ The Fulcrum Index — Composite Path
                                 />
                                 <span
                                   className="text-[11px] font-bold tracking-[0.04em] uppercase"
-                                  style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                                  style={{ fontFamily: 'var(--font-sans)' }}
                                 >
                                   {perf.regimeMin}-{perf.regimeMax}
                                 </span>
@@ -1599,7 +1599,7 @@ The Fulcrum Index — Composite Path
                               className={`px-4 py-2.5 text-center ${
                                 perf.hygReturn > 0 ? 'text-[#1f6b3a]' : perf.hygReturn < 0 ? 'text-[#c8102e]' : 'text-[#4a4a4a]'
                               }`}
-                              style={{ fontFamily: 'Georgia, serif' }}
+                              style={{ fontFamily: 'var(--font-serif)' }}
                             >
                               <div className="text-[13px] font-medium">
                                 {perf.hygReturn > 0 ? '+' : ''}{perf.hygReturn.toFixed(2)}%
@@ -1614,7 +1614,7 @@ The Fulcrum Index — Composite Path
                               className={`px-4 py-2.5 text-center ${
                                 perf.usoReturn > 0 ? 'text-[#1f6b3a]' : perf.usoReturn < 0 ? 'text-[#c8102e]' : 'text-[#4a4a4a]'
                               }`}
-                              style={{ fontFamily: 'Georgia, serif' }}
+                              style={{ fontFamily: 'var(--font-serif)' }}
                             >
                               <div className="text-[13px] font-medium">
                                 {perf.usoReturn > 0 ? '+' : ''}{perf.usoReturn.toFixed(2)}%
@@ -1629,7 +1629,7 @@ The Fulcrum Index — Composite Path
                               className={`px-4 py-2.5 text-center ${
                                 perf.gldReturn > 0 ? 'text-[#1f6b3a]' : perf.gldReturn < 0 ? 'text-[#c8102e]' : 'text-[#4a4a4a]'
                               }`}
-                              style={{ fontFamily: 'Georgia, serif' }}
+                              style={{ fontFamily: 'var(--font-serif)' }}
                             >
                               <div className="text-[13px] font-medium">
                                 {perf.gldReturn > 0 ? '+' : ''}{perf.gldReturn.toFixed(2)}%
@@ -1644,14 +1644,14 @@ The Fulcrum Index — Composite Path
                               className={`px-4 py-2.5 text-center text-[12px] font-medium ${
                                 perf.vixChange > 0 ? 'text-[#c8102e]' : perf.vixChange < 0 ? 'text-[#1f6b3a]' : 'text-[#4a4a4a]'
                               }`}
-                              style={{ fontFamily: 'Georgia, serif' }}
+                              style={{ fontFamily: 'var(--font-serif)' }}
                             >
                               {perf.vixChange > 0 ? '+' : ''}
                               {perf.vixChange.toFixed(1)}
                             </td>
                             <td
                               className="px-4 py-2.5 text-right text-[11px] text-[#4a4a4a]"
-                              style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                              style={{ fontFamily: 'var(--font-sans)' }}
                             >
                               {perf.sampleDays}d
                             </td>
@@ -1665,7 +1665,7 @@ The Fulcrum Index — Composite Path
                 <div
                   className="px-4 py-2 text-[11px] text-[#4a4a4a] italic leading-relaxed"
                   style={{
-                    fontFamily: 'Georgia, serif',
+                    fontFamily: 'var(--font-serif)',
                     borderTop: '1px solid #d9d4c7',
                     background: 'rgba(0,0,0,0.02)',
                   }}
@@ -1682,7 +1682,7 @@ The Fulcrum Index — Composite Path
                 className="mb-4 overflow-x-auto"
                 style={{
                   border: '1px solid #d9d4c7',
-                  background: '#fbf9f3',
+                  background: 'var(--paper-raised)',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
               >
@@ -1690,7 +1690,7 @@ The Fulcrum Index — Composite Path
                   className="grid grid-cols-[60px_1fr_1.4fr_1fr] md:grid-cols-[80px_1fr_1.4fr_1fr] gap-0 py-2.5 px-3.5 text-[10px] tracking-[0.16em] uppercase text-[#4a4a4a] font-bold min-w-[600px]"
                   style={{
                     borderBottom: '1px solid #1a1a1a',
-                    fontFamily: 'Helvetica Neue, Arial, sans-serif',
+                    fontFamily: 'var(--font-sans)',
                   }}
                 >
                   <div>Band</div>
@@ -1717,19 +1717,19 @@ The Fulcrum Index — Composite Path
                     </div>
                     <div
                       className="text-[10px] md:text-[11px] font-bold tracking-[0.06em] uppercase"
-                      style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                      style={{ fontFamily: 'var(--font-sans)' }}
                     >
                       {band.range} {band.regime}
                     </div>
                     <div
                       className="text-[11px] md:text-[12.5px] text-[#4a4a4a] italic"
-                      style={{ fontFamily: 'Georgia, serif' }}
+                      style={{ fontFamily: 'var(--font-serif)' }}
                     >
                       {band.description}
                     </div>
                     <div
                       className="text-[10px] md:text-[11.5px] text-[#1a1a1a]"
-                      style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                      style={{ fontFamily: 'var(--font-sans)' }}
                     >
                       {band.posture}
                     </div>
@@ -1744,13 +1744,13 @@ The Fulcrum Index — Composite Path
               >
                 <div
                   className="text-[10px] text-[#4a4a4a] tracking-[0.04em] max-w-full md:max-w-[75%]"
-                  style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                  style={{ fontFamily: 'var(--font-sans)' }}
                 >
                   <strong>Sources:</strong> {FULCRUM_INDEX_ATTRIBUTION}
                 </div>
                 <div
                   className="text-[12px] text-[#1a1a1a] italic"
-                  style={{ fontFamily: 'Georgia, serif' }}
+                  style={{ fontFamily: 'var(--font-serif)' }}
                 >
                   The Fulcrum Memo
                 </div>
@@ -1786,7 +1786,7 @@ const PositionCategory = ({
   <div className="flex flex-col gap-2">
     <div
       className="text-[10px] tracking-[0.16em] uppercase font-bold flex items-center gap-1.5"
-      style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif', color }}
+      style={{ fontFamily: 'var(--font-sans)', color }}
     >
       <span aria-hidden="true">{badge}</span>
       {label}
@@ -1797,27 +1797,27 @@ const PositionCategory = ({
           <div className="flex items-baseline justify-between gap-2">
             <span
               className="text-[12.5px] font-semibold text-[#1a1a1a]"
-              style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+              style={{ fontFamily: 'var(--font-sans)' }}
             >
               {pos.asset}
             </span>
             <span
               className="text-[11px] text-[#4a4a4a] italic"
-              style={{ fontFamily: 'Georgia, serif' }}
+              style={{ fontFamily: 'var(--font-serif)' }}
             >
               {pos.instrument}
             </span>
           </div>
           <div
             className="text-[11.5px] text-[#4a4a4a] leading-snug"
-            style={{ fontFamily: 'Georgia, serif' }}
+            style={{ fontFamily: 'var(--font-serif)' }}
           >
             {pos.edge}
           </div>
           {showReason && pos.reason && (
             <div
               className="text-[10.5px] italic mt-0.5"
-              style={{ fontFamily: 'Georgia, serif', color }}
+              style={{ fontFamily: 'var(--font-serif)', color }}
             >
               {pos.reason}
             </div>
@@ -1826,7 +1826,7 @@ const PositionCategory = ({
             <Link
               to={pos.thesisLink}
               className="text-[10.5px] text-[#2563eb] hover:underline w-fit"
-              style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+              style={{ fontFamily: 'var(--font-sans)' }}
             >
               {pos.thesis} →
             </Link>
