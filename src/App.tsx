@@ -43,6 +43,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/resume" element={<Resume />} />
             <Route path="/memos" element={<MemosPage />} />
+            {/* Phase 1 aliases — old URLs keep working */}
+            <Route path="/research" element={<MemosPage />} />
+            <Route path="/track-record" element={<PositionsPage />} />
             <Route path="/memos/kirklands" element={<KirklandsMemo />} />
             <Route path="/memos/lycra" element={<LycraMemo />} />
             <Route path="/memos/party-city" element={<PartyCityMemo />} />

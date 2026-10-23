@@ -1,0 +1,155 @@
+/* =====================================================================
+ * The Fulcrum Memo — design tokens
+ * One source of truth. Every color, font, radius, shadow in the redesign
+ * resolves to one of these variables. Phase 1 ships the file; subsequent
+ * phases migrate off hardcoded values.
+ * ===================================================================*/
+
+:root {
+  /* Paper / ink */
+  --paper:         #F7F4EE;
+  --paper-raised:  #FFFDF8;
+  --ink:           #141414;
+  --ink-muted:     #5A5650;
+  --rule:          #DDD6C8;
+
+  /* Brand red — ONE red for the whole system. */
+  --red:           #C8102E;
+  --red-deep:      #9B0D23;
+
+  /* Data semantics. Never green for warning. */
+  --pos:           #2E7D4F; /* realized gain, positive outcome */
+  --neg:           #C8102E; /* stress, loss, negative outcome */
+  --neutral:       #6B6B6B;
+  --warn:          #B7791F; /* caution / amber */
+
+  /* Chart categorical palette (verify each passes AA as text on --paper). */
+  --cat-1:         #1F3A5F;
+  --cat-2:         #C8102E;
+  --cat-3:         #B07D2B;
+  --cat-4:         #4F7F7A;
+  --cat-5:         #7A6C9D;
+
+  /* Shape + motion */
+  --radius:        4px;
+  --rule-weight:   1px;
+  --elev-1:        0 1px 2px rgba(20, 20, 20, 0.06);
+
+  /* Typography scale (pixels) */
+  --fs-caption:    12px;
+  --fs-small:      14px;
+  --fs-ui:         16px;
+  --fs-body:       18px;
+  --fs-h4:         20px;
+  --fs-h3:         24px;
+  --fs-h2:         30px;
+  --fs-h1:         40px;
+  --fs-hero:       56px; /* Home hero only */
+
+  /* Font stacks (prefer the Google Fonts, fall back to Georgia/system). */
+  --font-serif:    'Source Serif 4', 'Georgia', 'Times New Roman', serif;
+  --font-sans:     'IBM Plex Sans', 'Helvetica Neue', 'Arial', sans-serif;
+  --font-mono:     'IBM Plex Mono', 'Menlo', 'Consolas', monospace;
+}
+
+/* Dark theme — same names, Strategy presenter mode (and an optional
+ * sitewide dark mode later). Applied via .theme-dark or .strategy-dark
+ * on an ancestor. Does not change meanings. */
+.theme-dark,
+.strategy-dark {
+  --paper:         #0E1420;
+  --paper-raised:  #161E2D;
+  --ink:           #F2EEE6;
+  --ink-muted:     #A8A39A;
+  --rule:          #2A3344;
+  --red:           #E0263F;
+  --red-deep:      #C8102E;
+  --neg:           #E0263F;
+  --neutral:       #A8A39A;
+  /* --pos / --warn / --cat-* reuse the light values; adjust if contrast fails. */
+}
+
+/* =====================================================================
+ * Base element styles — opt-in via <html data-tfm="v2">.
+ * Phase 1 does NOT globally toggle this; new pages that want the new
+ * styles wrap themselves in `.tfm-v2` or use the system components.
+ * ===================================================================*/
+
+.tfm-v2 {
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--font-serif);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Containers — exactly two. */
+.container-reading {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.container-wide {
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Type scale utilities. Headings use the serif + balance wrap; UI uses sans. */
+.t-caption   { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-muted); }
+.t-small     { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink); }
+.t-ui        { font-family: var(--font-sans); font-size: var(--fs-ui); color: var(--ink); }
+.t-body      { font-family: var(--font-serif); font-size: var(--fs-body); line-height: 1.6; color: var(--ink); }
+.t-h4        { font-family: var(--font-serif); font-weight: 600; font-size: var(--fs-h4); line-height: 1.2; color: var(--ink); text-wrap: balance; }
+.t-h3        { font-family: var(--font-serif); font-weight: 600; font-size: var(--fs-h3); line-height: 1.2; color: var(--ink); text-wrap: balance; }
+.t-h2        { font-family: var(--font-serif); font-weight: 600; font-size: var(--fs-h2); line-height: 1.15; color: var(--ink); text-wrap: balance; }
+.t-h1        { font-family: var(--font-serif); font-weight: 600; font-size: var(--fs-h1); line-height: 1.1; color: var(--ink); text-wrap: balance; letter-spacing: -0.01em; }
+.t-hero      { font-family: var(--font-serif); font-weight: 600; font-size: var(--fs-hero); line-height: 1.05; color: var(--ink); text-wrap: balance; letter-spacing: -0.02em; }
+.t-kicker    {
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+}
+.nums-tabular { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); }
+.serif { font-family: var(--font-serif); }
+.sans { font-family: var(--font-sans); }
+
+/* Hairline rule — the only decorative line in the system. */
+.rule {
+  border: 0;
+  border-top: var(--rule-weight) solid var(--rule);
+  margin: 0;
+}
+.rule-ink {
+  border-top-color: var(--ink);
+}
+.rule-red {
+  border-top-color: var(--red);
+}
+
+/* Visible focus state (keyboard navigation). */
+.tfm-v2 :focus-visible,
+.tfm-focusable:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* Respect user motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  .tfm-v2 *,
+  .tfm-v2 *::before,
+  .tfm-v2 *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

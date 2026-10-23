@@ -4,7 +4,8 @@ import { Menu, X } from 'lucide-react';
 import { RESUME_PDF } from '@/content/bio';
 
 /**
- * Sitewide navigation header — Phase A cream / Economist treatment.
+ * SiteHeader — Phase 1 token-driven version of the sitewide nav.
+ * Keeps the Navbar export name so every page import stays stable.
  */
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,10 +18,7 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Order: research first, credibility second (track record), context third
-  // (fulcrum index), case work, then identity (about, contact).
-  // Resume is a side button (download), not a nav item.
-  // Timeline is NOT in the top nav — it lives inside Field Notes.
+  // Phase A order; Phase 2 may add "Research" alias label without changing /memos.
   const navLinks: Array<{ label: string; href: string }> = [
     { label: 'Memos', href: '/memos' },
     { label: 'Field Notes', href: '/field-notes' },
@@ -37,27 +35,31 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'py-2.5 shadow-[0_1px_0_rgba(0,0,0,0.06)]'
-          : 'py-3.5'
+        isScrolled ? 'py-2.5' : 'py-3.5'
       }`}
       style={{
-        background: isScrolled ? 'rgba(247,245,240,0.96)' : '#f7f5f0',
+        background: isScrolled ? 'rgba(247,244,238,0.96)' : 'var(--paper)',
         backdropFilter: isScrolled ? 'blur(8px)' : undefined,
-        borderBottom: '1px solid #d9d4c7',
+        borderBottom: '1px solid var(--rule)',
       }}
     >
-      <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between gap-6">
-        {/* Brand — logo links to Home top */}
+      <div className="max-w-[1120px] mx-auto px-4 flex items-center justify-between gap-6">
+        {/* Brand */}
         <Link to="/" className="flex items-center gap-2 flex-shrink-0">
           <span
             className="w-2 h-2 rounded-full"
-            style={{ background: '#c8102e' }}
+            style={{ background: 'var(--red)' }}
             aria-hidden="true"
           />
           <span
-            className="text-[12px] font-bold tracking-[0.18em] uppercase text-[#1a1a1a]"
-            style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '12px',
+              fontWeight: 600,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--ink)',
+            }}
           >
             The Fulcrum Memo
           </span>
@@ -69,10 +71,15 @@ const Navbar = () => {
             <Link
               key={link.label}
               to={link.href}
-              className={`text-[10.5px] tracking-[0.18em] uppercase font-semibold transition-colors ${
-                isActive(link.href) ? 'text-[#c8102e]' : 'text-[#4a4a4a] hover:text-[#1a1a1a]'
-              }`}
-              style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '10.5px',
+                fontWeight: 600,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: isActive(link.href) ? 'var(--red)' : 'var(--ink-muted)',
+                transition: 'color 0.15s',
+              }}
             >
               {link.label}
             </Link>
@@ -82,8 +89,17 @@ const Navbar = () => {
             download
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[10.5px] tracking-[0.18em] uppercase font-semibold px-3 py-1.5 border border-[#1a1a1a] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-[#f7f5f0] transition-colors"
-            style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '10.5px',
+              fontWeight: 600,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              padding: '6px 12px',
+              border: '1px solid var(--ink)',
+              color: 'var(--ink)',
+              borderRadius: 'var(--radius)',
+            }}
           >
             Resume
           </a>
@@ -91,7 +107,8 @@ const Navbar = () => {
 
         {/* Mobile toggle */}
         <button
-          className="lg:hidden p-2 text-[#1a1a1a]"
+          className="lg:hidden p-2"
+          style={{ color: 'var(--ink)' }}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -104,20 +121,25 @@ const Navbar = () => {
         <div
           className="lg:hidden absolute top-full left-0 right-0 overflow-hidden"
           style={{
-            background: '#f7f5f0',
-            borderBottom: '1px solid #d9d4c7',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
+            background: 'var(--paper)',
+            borderBottom: '1px solid var(--rule)',
+            boxShadow: 'var(--elev-1)',
           }}
         >
-          <div className="max-w-[1280px] mx-auto px-6 py-4 flex flex-col gap-1">
+          <div className="max-w-[1120px] mx-auto px-4 py-4 flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 to={link.href}
-                className={`text-[11px] tracking-[0.18em] uppercase font-semibold py-2 ${
-                  isActive(link.href) ? 'text-[#c8102e]' : 'text-[#4a4a4a] hover:text-[#1a1a1a]'
-                }`}
-                style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  padding: '8px 0',
+                  color: isActive(link.href) ? 'var(--red)' : 'var(--ink-muted)',
+                }}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.label}
@@ -128,8 +150,15 @@ const Navbar = () => {
               download
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[11px] tracking-[0.18em] uppercase font-semibold py-2 text-[#c8102e]"
-              style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                padding: '8px 0',
+                color: 'var(--red)',
+              }}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Resume (PDF)
