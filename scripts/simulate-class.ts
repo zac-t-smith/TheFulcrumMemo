@@ -113,7 +113,7 @@ async function main() {
   const channel = sb.channel(`sim:${session.id}`);
   channel.on(
     "postgres_changes" as any,
-    { event: "UPDATE", schema: "public", table: "game_sessions", filter: `id=eq.${session.id}` },
+    { event: "*", schema: "falcon", table: "game_sessions", filter: `id=eq.${session.id}` },
     async (payload: any) => {
       const phase: string = payload.new.phase;
       const round: number = payload.new.round;
