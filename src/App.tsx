@@ -21,6 +21,10 @@ import FieldNoteDay from "./pages/field-notes/FieldNoteDay";
 import TimelinePage from "./pages/TimelinePage";
 import PositionsPage from "./pages/Positions";
 import FulcrumIndexPage from "./pages/FulcrumIndex";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Casework from "./pages/Casework";
+import RestorationCaseStudy from "./pages/casework/RestorationCaseStudy";
 import BoardRoom from "./strategy/pages/BoardRoom";
 import PlayerView from "./strategy/pages/PlayerView";
 import OpsView from "./strategy/pages/OpsView";
@@ -51,6 +55,10 @@ const App = () => (
             <Route path="/positions" element={<PositionsPage />} />
             <Route path="/timeline" element={<TimelinePage />} />
             <Route path="/fulcrum-index" element={<FulcrumIndexPage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/casework" element={<Casework />} />
+            <Route path="/casework/restoration" element={<RestorationCaseStudy />} />
             <Route path="/strategy" element={<BoardRoom />} />
             <Route path="/strategy/play" element={<PlayerView />} />
             <Route path="/strategy/ops" element={<OpsView />} />

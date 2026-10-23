@@ -19,6 +19,7 @@ import {
   Map,
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import ArchiveBanner from '@/components/ArchiveBanner';
 import { cn } from '@/lib/utils';
 import { getFieldNote, getAvailableFieldNoteDays, type ThesisScorecard, EIA_SOURCE_ATTRIBUTION } from '@/data/iranConflictData';
 import { ConflictMap } from '@/components/maps/ConflictMap';
@@ -139,8 +140,11 @@ const FieldNoteDay = () => {
       </Helmet>
 
       <Navbar />
+      <div className="pt-[64px]">
+        <ArchiveBanner />
+      </div>
 
-      <main className="min-h-screen bg-background pt-24 pb-16">
+      <main className="min-h-screen bg-background pt-6 pb-16">
         <div className="container mx-auto px-6 max-w-4xl">
           {/* Back Link */}
           <Link

@@ -26,13 +26,7 @@ const KirklandsMemo = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Link
-              to="/memos"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-xs uppercase tracking-wider mb-8"
-            >
-              <ArrowLeft size={14} />
-              All Memos
-            </Link>
+            {/* Phase A: back link removed; global nav handles it */}
           </motion.div>
 
           {/* Header */}
@@ -156,29 +150,7 @@ const KirklandsMemo = () => {
             </ul>
           </motion.div>
 
-          {/* Download CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="surface-elevated border-l-2 border-primary p-6 mb-8"
-          >
-            <h3 className="text-primary text-[10px] uppercase tracking-wider mb-4">
-              Full Analysis
-            </h3>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-              Download the complete PDF analysis for detailed operating metrics, scenario modeling,
-              and the full timeline of Beyond's acquisition strategy.
-            </p>
-            <a
-              href="/memos/Kirklands_Credit_Analysis.pdf"
-              download
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground text-sm uppercase tracking-wider glow-subtle hover:bg-gold-glow transition-all duration-300"
-            >
-              <Download size={18} />
-              Download Full Analysis (PDF)
-            </a>
-          </motion.div>
+          {/* Phase A: entire Download CTA block hidden until Phase 5 pipeline */}
 
           {/* Pull Quote */}
           <motion.blockquote
@@ -202,7 +174,7 @@ const KirklandsMemo = () => {
           >
             <div className="text-muted-foreground text-sm mb-4">
               <p className="font-semibold text-foreground mb-2">Contact</p>
-              <p>Zachary Smith | zac.t.smith@outlook.com</p>
+              <p>Zachary Smith | zac.ty.smith@gmail.com</p>
             </div>
             <p className="text-muted-foreground text-xs leading-relaxed">
               <strong>Disclaimer:</strong> This analysis is for educational purposes only and does

@@ -1,5 +1,4 @@
-import { ArrowLeft, Printer, Download, Mail, Phone, MapPin, Linkedin, ExternalLink } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Printer, Download, Mail, MapPin, Linkedin, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
@@ -29,15 +28,8 @@ const Resume = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex items-center justify-between mb-8 print:hidden"
+            className="flex items-center justify-end mb-8 print:hidden"
           >
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-xs uppercase tracking-wider"
-            >
-              <ArrowLeft size={14} />
-              Back to Home
-            </Link>
             <div className="flex items-center gap-3">
               <a
                 href="/resume/Zachary_Smith_Resume.pdf"
@@ -79,7 +71,7 @@ const Resume = () => {
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <Mail size={12} />
-                  zac.smith@financier.com
+                  zac.ty.smith@gmail.com
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <Linkedin size={12} />
@@ -95,12 +87,13 @@ const Resume = () => {
               </h2>
               <div className="gold-line-left w-16 mb-4 print:hidden" />
               <p className="text-muted-foreground text-sm leading-[1.8] print:text-gray-700">
-                Army veteran and finance professional with firsthand distressed operations experience.
-                Built and scaled property restoration company to $1.2M annual revenue before navigating
-                orderly liquidation with negotiated creditor settlements. Combines military discipline,
-                operator perspective, and analytical foundation from Goldman Sachs and private equity
-                internships. Seeking restructuring analyst position to leverage unique background in
-                helping companies navigate financial distress.
+                Finance student at the University of Mobile (Dec 2026), U.S. Army veteran, and
+                former founder of a restoration company he took through a restructuring. Scaled
+                Best Option Restoration from $0 to $100K in monthly revenue within 5 months
+                before 90–120 day insurance collection cycles produced an 18-month creditor
+                workout and orderly wind-down. Internships and programs with Pivoton Capital,
+                Goldman Sachs, Citi, Morgan Stanley, and BlockCrowd. Seeking full-time 2027
+                analyst roles in restructuring, credit, and distressed investing.
               </p>
             </section>
 

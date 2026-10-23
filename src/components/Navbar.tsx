@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { RESUME_PDF } from '@/content/bio';
 
 /**
- * Sitewide navigation header — Phase 4E-3 cream / Economist treatment.
- *
- * Eyebrow text in small caps with red dot separators, Georgia serif for
- * the brand name, letter-spaced uppercase nav links with the active
- * page in red. Replaces the prior dark/gold/monospace bar.
+ * Sitewide navigation header — Phase A cream / Economist treatment.
  */
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -20,23 +17,22 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks: Array<{ label: string; href: string; external?: boolean }> = [
+  // Order: research first, credibility second (track record), context third
+  // (fulcrum index), case work, then identity (about, contact).
+  // Resume is a side button (download), not a nav item.
+  // Timeline is NOT in the top nav — it lives inside Field Notes.
+  const navLinks: Array<{ label: string; href: string }> = [
     { label: 'Memos', href: '/memos' },
     { label: 'Field Notes', href: '/field-notes' },
-    { label: 'Positions', href: '/positions' },
+    { label: 'Casework', href: '/casework' },
     { label: 'Fulcrum Index', href: '/fulcrum-index' },
-    { label: 'Timeline', href: '/timeline' },
-    { label: 'Resume', href: '/resume' },
-    { label: 'About', href: '/#about' },
-    { label: 'Contact', href: '/#contact' },
+    { label: 'Track Record', href: '/positions' },
+    { label: 'About', href: '/about' },
+    { label: 'Contact', href: '/contact' },
   ];
 
-  const isActive = (href: string) => {
-    if (href.startsWith('/#')) {
-      return location.pathname === '/' && location.hash === href.slice(1);
-    }
-    return location.pathname === href || location.pathname.startsWith(href + '/');
-  };
+  const isActive = (href: string) =>
+    location.pathname === href || location.pathname.startsWith(href + '/');
 
   return (
     <nav
@@ -52,7 +48,7 @@ const Navbar = () => {
       }}
     >
       <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between gap-6">
-        {/* Brand — red dot, Georgia serif */}
+        {/* Brand — logo links to Home top */}
         <Link to="/" className="flex items-center gap-2 flex-shrink-0">
           <span
             className="w-2 h-2 rounded-full"
@@ -67,34 +63,33 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Desktop nav links */}
+        {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-5">
-          {navLinks.map((link) =>
-            link.external ? (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-[10.5px] tracking-[0.18em] uppercase font-semibold transition-colors text-[#4a4a4a] hover:text-[#c8102e]"
-                style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
-              >
-                {link.label}
-              </a>
-            ) : (
-              <Link
-                key={link.label}
-                to={link.href}
-                className={`text-[10.5px] tracking-[0.18em] uppercase font-semibold transition-colors ${
-                  isActive(link.href) ? 'text-[#c8102e]' : 'text-[#4a4a4a] hover:text-[#1a1a1a]'
-                }`}
-                style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
-              >
-                {link.label}
-              </Link>
-            )
-          )}
+          {navLinks.map((link) => (
+            <Link
+              key={link.label}
+              to={link.href}
+              className={`text-[10.5px] tracking-[0.18em] uppercase font-semibold transition-colors ${
+                isActive(link.href) ? 'text-[#c8102e]' : 'text-[#4a4a4a] hover:text-[#1a1a1a]'
+              }`}
+              style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <a
+            href={RESUME_PDF}
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10.5px] tracking-[0.18em] uppercase font-semibold px-3 py-1.5 border border-[#1a1a1a] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-[#f7f5f0] transition-colors"
+            style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+          >
+            Resume
+          </a>
         </div>
 
-        {/* Mobile menu toggle */}
+        {/* Mobile toggle */}
         <button
           className="lg:hidden p-2 text-[#1a1a1a]"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -115,31 +110,30 @@ const Navbar = () => {
           }}
         >
           <div className="max-w-[1280px] mx-auto px-6 py-4 flex flex-col gap-1">
-            {navLinks.map((link) =>
-              link.external ? (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="text-[11px] tracking-[0.18em] uppercase font-semibold py-2 text-[#4a4a4a] hover:text-[#c8102e]"
-                  style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </a>
-              ) : (
-                <Link
-                  key={link.label}
-                  to={link.href}
-                  className={`text-[11px] tracking-[0.18em] uppercase font-semibold py-2 ${
-                    isActive(link.href) ? 'text-[#c8102e]' : 'text-[#4a4a4a] hover:text-[#1a1a1a]'
-                  }`}
-                  style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              )
-            )}
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                to={link.href}
+                className={`text-[11px] tracking-[0.18em] uppercase font-semibold py-2 ${
+                  isActive(link.href) ? 'text-[#c8102e]' : 'text-[#4a4a4a] hover:text-[#1a1a1a]'
+                }`}
+                style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <a
+              href={RESUME_PDF}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] tracking-[0.18em] uppercase font-semibold py-2 text-[#c8102e]"
+              style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Resume (PDF)
+            </a>
           </div>
         </div>
       )}

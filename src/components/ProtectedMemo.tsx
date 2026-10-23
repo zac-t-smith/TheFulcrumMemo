@@ -114,8 +114,8 @@ const ProtectedMemo = ({ children, memoTitle }: ProtectedMemoProps) => {
           {/* Hint */}
           <p className="text-muted-foreground/60 text-xs mt-6">
             Contact{' '}
-            <a href="mailto:zac.smith@financier.com" className="text-primary hover:text-gold-glow transition-colors">
-              zac.smith@financier.com
+            <a href="mailto:zac.ty.smith@gmail.com" className="text-primary hover:text-gold-glow transition-colors">
+              zac.ty.smith@gmail.com
             </a>
             {' '}to request access.
           </p>

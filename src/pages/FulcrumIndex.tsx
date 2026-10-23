@@ -14,7 +14,9 @@
 import { useEffect, useRef, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import ArchiveBanner from '@/components/ArchiveBanner';
 import { baaSpreadHistory } from '@/data/baaSpreadHistory';
 import { hyOasHistory } from '@/data/hyOasHistory';
 import { vixHistory } from '@/data/vixHistory';
@@ -442,6 +444,10 @@ const FulcrumIndexPage = () => {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
 
+    // Track placed labels so adjacent markers (e.g. CPI shock + Hormuz closure)
+    // don't overlap: if the new label's x-box collides with a previous one at
+    // the same y row, bump this label down to the next row.
+    const placedBoxes: Array<{ x1: number; x2: number; row: number }> = [];
     BAA_EVENT_MARKERS.forEach((ev) => {
       const t = new Date(ev.date).getTime();
       if (t < tMin || t > tMax) return;
@@ -453,9 +459,22 @@ const FulcrumIndexPage = () => {
       const padX = 4;
       const tw = ctx.measureText(ev.label).width;
       const lx = x;
-      const ly = plotY + 12;
+      const x1 = lx - tw / 2 - padX;
+      const x2 = lx + tw / 2 + padX;
+      // Find lowest row (starting 0) with no horizontal overlap.
+      let row = 0;
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const collides = placedBoxes.some(
+          (b) => b.row === row && !(x2 < b.x1 || x1 > b.x2)
+        );
+        if (!collides) break;
+        row += 1;
+      }
+      placedBoxes.push({ x1, x2, row });
+      const ly = plotY + 12 + row * 14;
       ctx.fillStyle = 'rgba(247,245,240,0.92)';
-      ctx.fillRect(lx - tw / 2 - padX, ly - 10, tw + padX * 2, 12);
+      ctx.fillRect(x1, ly - 10, x2 - x1, 12);
       ctx.fillStyle = '#1a1a1a';
       ctx.fillText(ev.label, lx, ly);
     });
@@ -1010,20 +1029,13 @@ const FulcrumIndexPage = () => {
       </Helmet>
 
       {/* Economist-style light theme page */}
-      <div className="min-h-screen" style={{ background: '#f7f5f0', color: '#1a1a1a' }}>
-        {/* Back link */}
-        <div className="max-w-[1080px] mx-auto px-7 pt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-sm text-[#4a4a4a] hover:text-[#1a1a1a] transition-colors"
-            style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
-          >
-            <ArrowLeft size={14} />
-            Back to The Fulcrum Memo
-          </Link>
+      <div className="min-h-screen flex flex-col" style={{ background: '#f7f5f0', color: '#1a1a1a' }}>
+        <Navbar />
+        <div className="pt-[64px]">
+          <ArchiveBanner />
         </div>
 
-        <div className="max-w-[1080px] mx-auto px-7 pb-12 pt-4">
+        <div className="max-w-[1080px] mx-auto px-7 pb-12 pt-6 w-full">
           {/* Header */}
           <div
             className="flex items-stretch gap-3.5 pb-3.5 mb-4"
@@ -1746,6 +1758,7 @@ The Fulcrum Index — Composite Path
             </>
           )}
         </div>
+        <Footer />
       </div>
     </>
   );

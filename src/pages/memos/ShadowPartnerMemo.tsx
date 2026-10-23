@@ -62,13 +62,7 @@ const ShadowPartnerMemo = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Link
-                to="/memos"
-                className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-xs uppercase tracking-wider mb-8"
-              >
-                <ArrowLeft size={14} />
-                All Memos
-              </Link>
+              {/* Phase A: back link removed; global nav handles it */}
             </motion.div>
 
             {/* Series Banner */}

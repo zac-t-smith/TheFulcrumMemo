@@ -26,7 +26,21 @@
       "Bash(supabase *)",
       "Bash(nslookup aws-1-us-east-1.pooler.supabase.com)",
       "Bash(git mv *)",
-      "Bash(PGPASSWORD=\"Yunelescobarrr\" psql \"postgresql://postgres.gndntvgqcvcvfwfmnwxw@aws-1-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require\" -c \"select table_name from information_schema.tables where table_schema='falcon' order by table_name;\")"
+      "Bash(PGPASSWORD=\"Yunelescobarrr\" psql \"postgresql://postgres.gndntvgqcvcvfwfmnwxw@aws-1-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require\" -c \"select table_name from information_schema.tables where table_schema='falcon' order by table_name;\")",
+      "Bash(curl -sS \"https://api.github.com/repos/zac-t-smith/TheFulcrumMemo/actions/runs?per_page=3&event=push\")",
+      "Bash(python -c ' *)",
+      "Skill(claude-in-chrome)",
+      "Bash(curl -sS https://zac-t-smith.github.io/TheFulcrumMemo/)",
+      "Bash(grep -oE 'worldview-fm[^\"]{0,20}')",
+      "Bash(grep -oE 'AIS Debug[^\"]{0,30}')",
+      "Read(//tmp/**)",
+      "Bash(perl -0777 -i -pe 's|<Link\\\\s+to=\"/memos\"[^>]*>\\\\s*<ArrowLeft[^>]*/>\\\\s*All Memos\\\\s*</Link>|{/* Phase A: back link removed; global nav handles it */}|gs' src/pages/memos/*.tsx src/pages/field-notes/*.tsx)",
+      "Bash(perl -0777 -i -pe 's|<Link\\\\s+to=\"/\"\\\\s+[^>]*>\\\\s*<ArrowLeft[^>]*/>\\\\s*Back to Home\\\\s*</Link>|{/* back link removed; global nav */}|gs' src/pages/Memos.tsx)",
+      "Bash(perl -0777 -i -pe 's|<Link\\\\s+to=\"/\"\\\\s+[^>]*>\\\\s*<ArrowLeft[^>]*/>\\\\s*Back to The Fulcrum Memo\\\\s*</Link>|{/* back link removed; global nav */}|gs' src/pages/FulcrumIndex.tsx)",
+      "Bash(perl -0777 -i -pe 's|<a\\\\s+href=\"/memos/[^\"]+\\\\.pdf\"[^>]*>[\\\\s\\\\S]*?</a>|{/* Phase A: PDF button hidden until Phase 5 pipeline */}|gs' src/pages/memos/*.tsx)",
+      "Bash(perl -0777 -i -pe 's|<button\\\\s+onClick=\\\\{handleDownloadPdf\\\\}[\\\\s\\\\S]*?</button>|{/* Phase A: PDF button hidden until Phase 5 pipeline */}|gs' src/pages/memos/*.tsx)",
+      "Bash(perl -0777 -i -pe 's|\\\\{memo\\\\.pdfPath && \\\\\\([\\\\s\\\\S]*?\\\\\\)\\\\}|{/* Phase A: memo PDF buttons hidden until Phase 5 pipeline */}|gs' src/pages/Memos.tsx)",
+      "Bash(perl -0777 -i -pe 's|\\\\{/\\\\* Download CTA \\\\*/\\\\}\\\\s*<motion\\\\.div[\\\\s\\\\S]*?</motion\\\\.div>|{/* Phase A: entire Download CTA block hidden until Phase 5 pipeline */}|gs' src/pages/memos/*.tsx)"
     ]
   }
 }

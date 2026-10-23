@@ -96,13 +96,7 @@ const IranMemoPartIFull = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Link
-              to="/memos"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-xs uppercase tracking-wider mb-8"
-            >
-              <ArrowLeft size={14} />
-              All Memos
-            </Link>
+            {/* Phase A: back link removed; global nav handles it */}
           </motion.div>
 
           {/* Series Banner */}
@@ -820,38 +814,7 @@ const IranMemoPartIFull = () => {
             </motion.p>
           </section>
 
-          {/* Download CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="memo-cta surface-elevated border-l-2 border-primary"
-          >
-            <h3 className="memo-label text-primary mb-4">
-              Download Full Analysis
-            </h3>
-            <p className="memo-body text-zinc-400 text-sm mb-4">
-              Get the complete PDF analysis with additional tables, data appendices, and source
-              citations.
-            </p>
-            <button
-              onClick={handleDownloadPdf}
-              disabled={isGeneratingPdf}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground text-sm uppercase tracking-wider glow-subtle hover:bg-gold-glow transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isGeneratingPdf ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  Generating PDF...
-                </>
-              ) : (
-                <>
-                  <Download size={18} />
-                  Download PDF
-                </>
-              )}
-            </button>
-          </motion.div>
+          {/* Phase A: entire Download CTA block hidden until Phase 5 pipeline */}
 
           {/* Series Navigation */}
           <motion.div
@@ -923,7 +886,7 @@ const IranMemoPartIFull = () => {
                 analyst positions at firms like Evercore, Alvarez & Marsal, and Lazard.
               </p>
               <p className="font-semibold text-foreground mb-2">Contact</p>
-              <p>Zachary Smith | zac.t.smith@outlook.com</p>
+              <p>Zachary Smith | zac.ty.smith@gmail.com</p>
             </div>
             <p className="text-muted-foreground text-xs leading-relaxed">
               <strong>Disclaimer:</strong> This analysis is for educational purposes only and does

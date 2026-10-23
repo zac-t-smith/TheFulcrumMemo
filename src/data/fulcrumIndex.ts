@@ -360,8 +360,10 @@ export function getRiskRegime(idx: number): RiskRegimeInfo {
       posture: 'Build dry powder. Identify weak credits.',
       bandMin: 0,
       bandMax: 25,
-      color: '#1f6b3a',
-      swatchColor: '#1f6b3a',
+      // Amber, not green: complacency is a WARNING state (reach-for-yield + unpriced
+      // covenant erosion). Prior green reading misled readers into thinking it was benign.
+      color: '#B7791F',
+      swatchColor: '#B7791F',
       pillBg: 'bg-[#2f8a4d]',
     };
   }

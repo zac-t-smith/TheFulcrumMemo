@@ -248,6 +248,9 @@ export const BaaHistoricalScatter = () => {
     ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
+    // Collision-dodging label placement so CPI shock + Hormuz closure
+    // (and any other closely-spaced marker pair) don't overlap.
+    const placedBoxes: Array<{ x1: number; x2: number; row: number }> = [];
     BAA_EVENT_MARKERS.forEach(ev => {
       const t = Date.parse(ev.date);
       if (t < tMin || t > tMax) return;
@@ -259,9 +262,21 @@ export const BaaHistoricalScatter = () => {
       const padX = 4;
       const tw = ctx.measureText(ev.label).width;
       const lx = x;
-      const ly = plotY + 14;
+      const x1 = lx - tw / 2 - padX;
+      const x2 = lx + tw / 2 + padX;
+      let row = 0;
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const collides = placedBoxes.some(
+          (b) => b.row === row && !(x2 < b.x1 || x1 > b.x2)
+        );
+        if (!collides) break;
+        row += 1;
+      }
+      placedBoxes.push({ x1, x2, row });
+      const ly = plotY + 14 + row * 15;
       ctx.fillStyle = 'rgba(247,245,240,0.92)';
-      ctx.fillRect(lx - tw / 2 - padX, ly - 11, tw + padX * 2, 13);
+      ctx.fillRect(x1, ly - 11, x2 - x1, 13);
       ctx.fillStyle = '#1a1a1a';
       ctx.fillText(ev.label, lx, ly);
     });

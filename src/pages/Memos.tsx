@@ -142,13 +142,7 @@ const MemosPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Link
-                to="/"
-                className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-xs uppercase tracking-wider mb-6"
-              >
-                <ArrowLeft size={14} />
-                Back to Home
-              </Link>
+              {/* back link removed; global nav */}
 
               <p className="text-primary text-[10px] tracking-[0.3em] uppercase mb-3">
                 Publications
@@ -280,16 +274,7 @@ const MemosPage = () => {
                               className="transition-transform group-hover/btn:translate-x-0.5"
                             />
                           </Link>
-                          {memo.pdfPath && (
-                            <a
-                              href={memo.pdfPath}
-                              download
-                              className="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted-foreground hover:border-primary/50 hover:text-foreground text-[10px] uppercase tracking-wider transition-all duration-300"
-                            >
-                              <Download size={12} />
-                              PDF
-                            </a>
-                          )}
+                          {/* Phase A: memo PDF buttons hidden until Phase 5 pipeline */}
                         </div>
                       </div>
                     </motion.div>
@@ -367,16 +352,7 @@ const MemosPage = () => {
                               className="transition-transform group-hover/btn:translate-x-0.5"
                             />
                           </Link>
-                          {memo.pdfPath && (
-                            <a
-                              href={memo.pdfPath}
-                              download
-                              className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-border text-muted-foreground hover:border-primary/50 hover:text-foreground text-[10px] uppercase tracking-wider transition-all duration-300"
-                            >
-                              <Download size={12} />
-                              PDF
-                            </a>
-                          )}
+                          {/* Phase A: memo PDF buttons hidden until Phase 5 pipeline */}
                         </div>
                       </div>
                     </motion.div>

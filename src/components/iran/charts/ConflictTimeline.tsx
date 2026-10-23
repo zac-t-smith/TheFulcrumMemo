@@ -578,14 +578,14 @@ const OilPriceOverlay = ({ height = 120, className }: { height?: number; classNa
         <LineChart data={chartData} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
           <XAxis
             dataKey="dateShort"
-            stroke="#52525b"
+            stroke="#2a2a2a"
             fontSize={9}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
-            stroke="#52525b"
+            stroke="#2a2a2a"
             fontSize={9}
             tickFormatter={(v) => `$${v}`}
             domain={[60, 130]}
@@ -596,9 +596,9 @@ const OilPriceOverlay = ({ height = 120, className }: { height?: number; classNa
           <Tooltip content={<CustomTooltip />} />
           <ReferenceLine
             y={73}
-            stroke="#52525b"
+            stroke="#2a2a2a"
             strokeDasharray="3 3"
-            label={{ value: 'Pre-war $73', fill: '#52525b', fontSize: 8, position: 'insideTopLeft' }}
+            label={{ value: 'Pre-war $73', fill: '#2a2a2a', fontSize: 8, position: 'insideTopLeft' }}
           />
           <ReferenceLine
             y={100}

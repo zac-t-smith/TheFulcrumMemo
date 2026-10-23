@@ -90,13 +90,7 @@ const IranMemoPartIIIFull = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Link
-              to="/memos"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-xs uppercase tracking-wider mb-8"
-            >
-              <ArrowLeft size={14} />
-              All Memos
-            </Link>
+            {/* Phase A: back link removed; global nav handles it */}
           </motion.div>
 
           {/* Series Banner */}
@@ -1086,23 +1080,7 @@ const IranMemoPartIIIFull = () => {
             viewport={{ once: true }}
             className="my-12 flex justify-center"
           >
-            <button
-              onClick={handleDownloadPdf}
-              disabled={isGeneratingPdf}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground text-sm uppercase tracking-wider hover:bg-primary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isGeneratingPdf ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  Generating PDF...
-                </>
-              ) : (
-                <>
-                  <Download size={18} />
-                  Download PDF
-                </>
-              )}
-            </button>
+            {/* Phase A: PDF button hidden until Phase 5 pipeline */}
           </motion.div>
 
           {/* Series Navigation */}
@@ -1217,7 +1195,7 @@ const IranMemoPartIIIFull = () => {
                 analyst positions at firms like Evercore, Alvarez & Marsal, and Lazard.
               </p>
               <p className="font-semibold text-foreground mb-2">Contact</p>
-              <p>Zachary Smith | zac.t.smith@outlook.com</p>
+              <p>Zachary Smith | zac.ty.smith@gmail.com</p>
             </div>
             <p className="text-muted-foreground text-xs leading-relaxed">
               <strong>Disclaimer:</strong> This analysis is for educational purposes only and does

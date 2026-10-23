@@ -121,7 +121,7 @@ const Index = () => {
                 className="text-[12px] font-bold tracking-[0.16em] uppercase text-[#4a4a4a] hover:text-[#1a1a1a] transition-colors"
                 style={{ fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
               >
-                Positions →
+                Track Record →
               </Link>
             </div>
 
@@ -221,9 +221,9 @@ const AboutScrollSection = () => (
           </p>
           <p>
             I spent four years in tech sales as a business advisor, then launched my own
-            restoration company in April 2024. I raised $300K in capital and grew from zero to
-            $100K monthly revenue in five months. We faced 90–120 day collection cycles with
-            insurance carriers, creating severe cash flow constraints despite the growth.
+            restoration company in April 2024. I raised $300K in capital and scaled from $0 to
+            $100K in monthly revenue within 5 months. We faced 90–120 day collection cycles
+            with insurance carriers, creating severe cash flow constraints despite the growth.
           </p>
           <p>
             After 18 months of managing creditor negotiations, vendor payment terms, and seeking
@@ -252,11 +252,11 @@ const AboutScrollSection = () => (
           />
           <Differentiator
             title="Operator Experience"
-            body="Built and scaled a business from zero to $100K monthly revenue. Managed P&L, led teams, raised $300K, and navigated financial distress firsthand — from creditor negotiations to orderly liquidation."
+            body="Scaled Best Option Restoration from $0 to $100K in monthly revenue within 5 months. Raised $300K. Managed P&L, led teams, and navigated financial distress firsthand — creditor negotiations, vendor payment terms, orderly wind-down."
           />
           <Differentiator
             title="Analytical Foundation"
-            body="Goldman Sachs, private equity, and investment banking experience provide rigorous training in financial modeling, valuation, and capital structure analysis."
+            body="Internships and programs with Pivoton Capital, Goldman Sachs (S&T summer insight), Citi (IB early ID), Morgan Stanley (WM winter analyst and IB military early insight), and BlockCrowd Financial Group (IB winter analyst). COVID froze the 2020 analyst pipeline before full-time; I rebuilt the stack as an operator and from this research letter."
           />
           <Differentiator
             title="Family-First Resilience"
@@ -286,8 +286,9 @@ const AboutScrollSection = () => (
               style={{ fontFamily: 'Georgia, serif' }}
             >
               Currently finishing my finance degree at the University of Mobile (3.71 GPA,
-              graduating December 2026), targeting restructuring analyst positions at firms like
-              Evercore, Alvarez & Marsal, and Lazard.
+              graduating December 2026), seeking full-time 2027 analyst roles in restructuring,
+              credit, and distressed investing — Evercore, PJT, Houlihan Lokey, Lazard on the
+              banking side; A&M, AlixPartners, FTI on the consulting side.
             </p>
           </div>
         </div>
@@ -348,15 +349,15 @@ const ContactScrollSection = () => (
         className="text-[14.5px] leading-relaxed text-[#1a1a1a] mb-7"
         style={{ fontFamily: 'Georgia, serif' }}
       >
-        Actively recruiting for investment banking and consulting roles in restructuring.
-        I'd welcome the opportunity to connect.
+        Seeking full-time 2027 analyst roles in restructuring, credit, and distressed
+        investing. I'd welcome the opportunity to connect.
       </p>
       <a
-        href="mailto:zac.t.smith@outlook.com"
+        href="mailto:zac.ty.smith@gmail.com"
         className="inline-flex items-center gap-2 px-5 py-2.5 text-[12px] font-bold tracking-[0.16em] uppercase text-white transition-colors mb-6"
         style={{ background: '#c8102e', fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
       >
-        zac.t.smith@outlook.com
+        zac.ty.smith@gmail.com
       </a>
       <div
         className="flex items-center justify-center gap-4 text-[11px] tracking-[0.14em] uppercase font-semibold"

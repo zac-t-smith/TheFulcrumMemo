@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ArchiveBanner from '@/components/ArchiveBanner';
 import { ConflictTimeline } from '@/components/iran/charts';
 import { EIA_SOURCE_ATTRIBUTION } from '@/data/oilPriceData';
 
@@ -22,8 +23,11 @@ const TimelinePage = () => {
 
       <div className="min-h-screen bg-background">
         <Navbar />
+        <div className="pt-[64px]">
+          <ArchiveBanner />
+        </div>
 
-        <main className="pt-20 pb-16">
+        <main className="pt-6 pb-16">
           {/* Header */}
           <div className="container mx-auto px-4 md:px-6 mb-8">
             <motion.div
@@ -42,9 +46,7 @@ const TimelinePage = () => {
                 Interactive timeline: strategic positioning → shock → attrition → negotiation
               </p>
               <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-xs">
-                <span>January – April 2026</span>
-                <span className="text-primary">|</span>
-                <span>Day 38+ of Conflict</span>
+                <span>Series archived · data as of Apr 26, 2026</span>
               </div>
             </motion.div>
           </div>
@@ -120,7 +122,7 @@ const TimelinePage = () => {
                   {EIA_SOURCE_ATTRIBUTION}. Event data compiled from The Fulcrum Memo field notes.
                 </p>
                 <p className="text-[10px] text-muted-foreground mt-1">
-                  This timeline is updated as new field notes are published.
+                  Series archived. Data frozen at Apr 26, 2026.
                 </p>
               </div>
             </motion.div>

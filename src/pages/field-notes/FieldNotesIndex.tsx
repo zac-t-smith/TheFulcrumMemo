@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { Calendar, TrendingUp, AlertTriangle, ChevronRight, ArrowLeft, Map, Radio, RefreshCw } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import ArchiveBanner from '@/components/ArchiveBanner';
 import { fieldNotes, getLatestScenario, getAvailableFieldNoteDays, conflictMetadata, EIA_SOURCE_ATTRIBUTION } from '@/data/iranConflictData';
 import { ConflictMap } from '@/components/maps/ConflictMap';
 import { useLiveMarketData } from '@/hooks/useLiveMarketData';
@@ -28,16 +29,13 @@ const FieldNotesIndex = () => {
 
       <Navbar />
 
-      <main className="min-h-screen bg-background pt-24 pb-16">
+      <div className="pt-[64px]">
+        <ArchiveBanner />
+      </div>
+
+      <main className="min-h-screen bg-background pt-6 pb-16">
         <div className="container mx-auto px-6 max-w-4xl">
-          {/* Back Link */}
-          <Link
-            to="/memos"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-xs mb-8"
-          >
-            <ArrowLeft size={14} />
-            All Memos
-          </Link>
+          {/* Phase A: back link removed; global nav handles it */}
 
           {/* Header */}
           <motion.div
@@ -47,17 +45,24 @@ const FieldNotesIndex = () => {
             className="mb-12"
           >
             <div className="flex items-center gap-3 mb-4">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-red-500" />
               <span className="text-[10px] uppercase tracking-wider text-red-400">
-                Live Analysis
+                Archived · Iran Series
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Field Notes
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl">
-              Real-time updates tracking the U.S.-Iran conflict as it develops. Each entry
-              includes thesis validation, scenario probability revisions, and trading implications.
+              Day-by-day entries that tracked the 2025–26 U.S.–Iran conflict as it developed.
+              Each entry includes thesis validation, scenario probability revisions, and trading
+              implications. The data snapshot is Apr 26, 2026; this series is no longer updated.
+            </p>
+            <p className="text-muted-foreground text-sm max-w-2xl mt-3">
+              Also:{' '}
+              <Link to="/timeline" className="text-primary hover:underline">
+                full conflict timeline →
+              </Link>
             </p>
           </motion.div>
 

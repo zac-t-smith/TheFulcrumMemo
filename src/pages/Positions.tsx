@@ -38,7 +38,15 @@ interface Position {
   precedingAnalysis: { date: string; description: string; link: string }[];
   links: string[];
   dateOpened: string;
-  status: 'OPEN' | 'WON' | 'LOST';
+  status: 'OPEN' | 'RESOLVED';
+  // v2 (Track Record): populate these when a position resolves.
+  // Leave as null until you have exit data; the aggregate stats will
+  // skip the position until outcome is set.
+  outcome?: 'WON' | 'LOST' | null;
+  exitDate?: string | null;
+  exitValue?: number | null;        // dollars realized at resolution
+  realizedReturnPct?: number | null;
+  resolutionNote?: string | null;   // short explanation of what happened
 }
 
 // Hardcoded positions data
@@ -75,7 +83,12 @@ A nuclear deal before June would require: (1) revival of a frozen diplomatic cha
     ],
     links: ['/field-notes/day-43', '/field-notes/day-44', '/memos/iran-part-iii'],
     dateOpened: '2026-04-19',
-    status: 'OPEN',
+    status: 'OPEN', // TODO(zac): the Iran series is archived at Apr 26, 2026. If this contract settled before cutoff, set status='RESOLVED' and fill outcome / exitDate / exitValue / realizedReturnPct / resolutionNote below.
+    outcome: null,
+    exitDate: null,
+    exitValue: null,
+    realizedReturnPct: null,
+    resolutionNote: null,
   },
   {
     id: 'iran-nuclear-july',
@@ -104,7 +117,12 @@ Even if diplomatic channels reopen in May, the complexity of nuclear negotiation
     ],
     links: ['/field-notes/day-44'],
     dateOpened: '2026-04-19',
-    status: 'OPEN',
+    status: 'OPEN', // TODO(zac): the Iran series is archived at Apr 26, 2026. If this contract settled before cutoff, set status='RESOLVED' and fill outcome / exitDate / exitValue / realizedReturnPct / resolutionNote below.
+    outcome: null,
+    exitDate: null,
+    exitValue: null,
+    realizedReturnPct: null,
+    resolutionNote: null,
   },
   {
     id: 'russia-crude-april',
@@ -149,9 +167,23 @@ India remains at ~2.0 mbpd imports from Russia; China at ~1.8 mbpd. Neither buye
     ],
     links: ['/memos/shadow-partner'],
     dateOpened: '2026-04-20',
-    status: 'OPEN',
+    status: 'OPEN', // TODO(zac): the Iran series is archived at Apr 26, 2026. If the IEA April OMR has published, set status='RESOLVED' and fill outcome / exitDate / exitValue / realizedReturnPct / resolutionNote below.
+    outcome: null,
+    exitDate: null,
+    exitValue: null,
+    realizedReturnPct: null,
+    resolutionNote: null,
   },
 ];
+
+// Track Record aggregate helpers.
+const resolvedPositions = positions.filter((p) => p.status === 'RESOLVED' && p.outcome);
+const openPositions = positions.filter((p) => p.status === 'OPEN');
+const wins = resolvedPositions.filter((p) => p.outcome === 'WON').length;
+const hitRate = resolvedPositions.length ? (wins / resolvedPositions.length) * 100 : null;
+const avgRealized = resolvedPositions.length
+  ? resolvedPositions.reduce((s, p) => s + (p.realizedReturnPct ?? 0), 0) / resolvedPositions.length
+  : null;
 
 // Portfolio calculations
 const totalDeployed = positions.reduce((sum, p) => sum + p.cost, 0);
@@ -185,11 +217,19 @@ const PositionCard = ({ position }: { position: Position }) => {
               </span>
               <span className={cn(
                 'px-2 py-0.5 rounded text-[10px] uppercase tracking-wider',
-                position.status === 'OPEN' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30' :
-                position.status === 'WON' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
-                'bg-red-500/10 text-red-400 border border-red-500/30'
+                position.status === 'OPEN'
+                  ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+                  : position.outcome === 'WON'
+                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                  : position.outcome === 'LOST'
+                  ? 'bg-red-500/10 text-red-400 border border-red-500/30'
+                  : 'bg-slate-500/10 text-slate-400 border border-slate-500/30'
               )}>
-                {position.status}
+                {position.status === 'OPEN'
+                  ? 'OPEN'
+                  : position.outcome
+                  ? `RESOLVED — ${position.outcome}`
+                  : 'RESOLVED — outcome: TODO'}
               </span>
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-1">
@@ -347,10 +387,10 @@ const PositionsPage = () => {
   return (
     <>
       <Helmet>
-        <title>Analytical Positions | The Fulcrum Memo</title>
+        <title>Track Record | The Fulcrum Memo</title>
         <meta
           name="description"
-          content="Converting published analysis into measurable outcomes on a CFTC-regulated prediction market. Every position is preceded by timestamped published analysis."
+          content="Each position preceded by timestamped published analysis on Kalshi, a CFTC-regulated prediction market. Open positions are marked open; resolved positions show the outcome. No fabricated results."
         />
       </Helmet>
 
@@ -366,15 +406,20 @@ const PositionsPage = () => {
             className="mb-12"
           >
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded text-emerald-400 text-[10px] uppercase tracking-wider">
+              <span className="px-3 py-1 bg-slate-500/10 border border-slate-500/30 rounded text-slate-400 text-[10px] uppercase tracking-wider">
                 Kalshi — CFTC Regulated
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Analytical Positions
+              Track Record
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl">
-              Converting published analysis into measurable outcomes on a CFTC-regulated prediction market.
+              Published analysis translated into positions on Kalshi, a CFTC-regulated prediction market. Each
+              position is preceded by a timestamped memo or field note that argued the mispricing. Open positions
+              are marked open. Resolved positions show the outcome. Positions still pending final data are
+              labeled{' '}
+              <span className="font-mono text-foreground">RESOLVED — outcome: TODO</span>; results will not be
+              posted until the resolution source is public.
             </p>
           </motion.div>
 
@@ -388,22 +433,26 @@ const PositionsPage = () => {
             <div className="p-4 surface-card border border-border rounded-lg text-center">
               <BarChart3 size={16} className="text-primary mx-auto mb-2" />
               <p className="text-2xl font-bold text-foreground">{positions.length}</p>
-              <p className="text-[10px] text-muted-foreground uppercase">Active Positions</p>
-            </div>
-            <div className="p-4 surface-card border border-border rounded-lg text-center">
-              <Percent size={16} className="text-amber-400 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-amber-400">{maxReturn.toFixed(0)}%</p>
-              <p className="text-[10px] text-muted-foreground uppercase">Max Return</p>
-            </div>
-            <div className="p-4 surface-card border border-border rounded-lg text-center">
-              <Target size={16} className="text-emerald-400 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-emerald-400">{avgEdge.toFixed(0)}¢</p>
-              <p className="text-[10px] text-muted-foreground uppercase">Avg Edge</p>
+              <p className="text-[10px] text-muted-foreground uppercase">Total Positions</p>
             </div>
             <div className="p-4 surface-card border border-border rounded-lg text-center">
               <TrendingUp size={16} className="text-blue-400 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-blue-400">{avgPotentialReturn.toFixed(0)}%</p>
-              <p className="text-[10px] text-muted-foreground uppercase">Avg Potential</p>
+              <p className="text-2xl font-bold text-blue-400">{openPositions.length}</p>
+              <p className="text-[10px] text-muted-foreground uppercase">Open</p>
+            </div>
+            <div className="p-4 surface-card border border-border rounded-lg text-center">
+              <Target size={16} className="text-emerald-400 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-emerald-400">
+                {hitRate != null ? `${hitRate.toFixed(0)}%` : '—'}
+              </p>
+              <p className="text-[10px] text-muted-foreground uppercase">Hit Rate (resolved)</p>
+            </div>
+            <div className="p-4 surface-card border border-border rounded-lg text-center">
+              <Percent size={16} className="text-amber-400 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-amber-400">
+                {avgRealized != null ? `${avgRealized.toFixed(0)}%` : '—'}
+              </p>
+              <p className="text-[10px] text-muted-foreground uppercase">Avg Realized Return</p>
             </div>
           </motion.div>
 
@@ -435,7 +484,7 @@ const PositionsPage = () => {
             className="mb-12"
           >
             <h2 className="text-2xl font-semibold text-foreground mb-6">
-              Active Positions
+              Positions
             </h2>
             <div className="space-y-6">
               {positions.map((position) => (
@@ -463,8 +512,8 @@ const PositionsPage = () => {
               </div>
               <div className="p-4 bg-emerald-500/10 rounded border border-emerald-500/20 text-center">
                 <p className="text-3xl font-bold text-emerald-400">{avgPotentialReturn.toFixed(0)}%</p>
-                <p className="text-xs text-muted-foreground mt-1">Average Potential Return</p>
-                <p className="text-[10px] text-emerald-400/70 mt-2">if positions resolve favorably</p>
+                <p className="text-xs text-muted-foreground mt-1">Potential Return at Entry</p>
+                <p className="text-[10px] text-emerald-400/70 mt-2">pre-resolution, each contract</p>
               </div>
               <div className="p-4 bg-blue-500/10 rounded border border-blue-500/20 text-center">
                 <p className="text-3xl font-bold text-blue-400">100%</p>
