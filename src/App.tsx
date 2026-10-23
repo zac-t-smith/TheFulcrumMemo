@@ -21,6 +21,9 @@ import FieldNoteDay from "./pages/field-notes/FieldNoteDay";
 import TimelinePage from "./pages/TimelinePage";
 import PositionsPage from "./pages/Positions";
 import FulcrumIndexPage from "./pages/FulcrumIndex";
+import BoardRoom from "./strategy/pages/BoardRoom";
+import PlayerView from "./strategy/pages/PlayerView";
+import OpsView from "./strategy/pages/OpsView";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +51,9 @@ const App = () => (
             <Route path="/positions" element={<PositionsPage />} />
             <Route path="/timeline" element={<TimelinePage />} />
             <Route path="/fulcrum-index" element={<FulcrumIndexPage />} />
+            <Route path="/strategy" element={<BoardRoom />} />
+            <Route path="/strategy/play" element={<PlayerView />} />
+            <Route path="/strategy/ops" element={<OpsView />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
