@@ -27,7 +27,7 @@ const Index = () => {
           name="keywords"
           content="restructuring, distressed debt, credit research, special situations, fulcrum security, investment banking"
         />
-        <link rel="canonical" href="https://zac-t-smith.github.io/FulcrumMemo" />
+        <link rel="canonical" href="https://zac-t-smith.github.io/TheFulcrumMemo" />
       </Helmet>
 
       <div

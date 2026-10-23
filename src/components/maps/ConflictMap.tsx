@@ -754,9 +754,6 @@ export const ConflictMap = ({
   showLiveFeed = true,
   aisApiKey = import.meta.env.VITE_AISSTREAM_API_KEY,
 }: ConflictMapProps) => {
-  // DEBUG: Remove after verifying env var works
-  console.log('[AIS Debug] API key present:', !!aisApiKey, 'Length:', aisApiKey?.length || 0);
-
   const [selectedDay, setSelectedDay] = useState(throughDay);
   const [selectedEvent, setSelectedEvent] = useState<ConflictEvent | null>(null);
   const [liveFeedOpen, setLiveFeedOpen] = useState(false);

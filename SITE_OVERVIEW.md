@@ -1,6 +1,6 @@
 # The Fulcrum Memo — Site Overview
 
-A personal credit analysis / distressed investing portfolio site for **Zachary T. Smith**, deployed as a static single-page app on **GitHub Pages** at the repo path `/FulcrumMemo/`.
+A personal credit analysis / distressed investing portfolio site for **Zachary T. Smith**, deployed as a static single-page app on **GitHub Pages** at the repo path `/TheFulcrumMemo/`.
 
 Branding tagline: *"Credit Analysis & Restructuring Insights"*
 Positioning line: *"From managing financial distress firsthand to analyzing it from the capital provider side."*
@@ -14,7 +14,7 @@ Positioning line: *"From managing financial distress firsthand to analyzing it f
 | Build tool | **Vite 5** (`@vitejs/plugin-react-swc`) |
 | Language | **TypeScript 5.8** |
 | Framework | **React 18.3** |
-| Routing | **react-router-dom v6** (with `basename="/FulcrumMemo"`) |
+| Routing | **react-router-dom v6** (with `basename="/TheFulcrumMemo"`) |
 | Styling | **Tailwind CSS 3.4** + `tailwindcss-animate` + `@tailwindcss/typography` |
 | UI primitives | **shadcn/ui** on top of **Radix UI** (full suite: accordion, dialog, dropdown, tabs, toast, tooltip, etc.) |
 | Icons | **lucide-react** |
@@ -34,7 +34,7 @@ Dev commands: `npm run dev` (port 8080), `npm run build`, `npm run lint`, `npm r
 
 ## 2. Routes & Page Structure
 
-Router is wrapped in `BrowserRouter basename="/FulcrumMemo"`.
+Router is wrapped in `BrowserRouter basename="/TheFulcrumMemo"`.
 
 | Path | Component | Purpose |
 |---|---|---|
@@ -142,7 +142,7 @@ Overall aesthetic: an editorial / Wall-Street-Journal-style palette — crimson 
 ```
 .
 ├── index.html                 # Vite entry; Calendly script tag; OG + Twitter meta
-├── vite.config.ts             # base: "/FulcrumMemo/", @ alias → ./src
+├── vite.config.ts             # base: "/TheFulcrumMemo/", @ alias → ./src
 ├── tailwind.config.ts         # shadcn token mapping, container settings
 ├── components.json            # shadcn config
 ├── public/
@@ -178,7 +178,7 @@ Overall aesthetic: an editorial / Wall-Street-Journal-style palette — crimson 
 
 ## 7. Deployment Notes
 
-- Hosted on **GitHub Pages** under repo `FulcrumMemo` (basename `/FulcrumMemo/` must stay in sync between `vite.config.ts` `base` and `BrowserRouter basename`).
+- Hosted on **GitHub Pages** under repo `TheFulcrumMemo` (basename `/TheFulcrumMemo/` must stay in sync between `vite.config.ts` `base` and `BrowserRouter basename`).
 - `.nojekyll` present to disable Jekyll processing.
 - Build copies `dist/index.html` → `dist/404.html` so deep links (e.g. `/my-business`) resolve on refresh.
 - Favicon currently points to `/src/assets/profile.jpg` (works in dev; may want to move to `/public` for cleaner prod paths).

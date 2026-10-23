@@ -4,13 +4,34 @@
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <script>
-      // With HashRouter, we simply redirect to the root
-      // The hash portion of any bookmarked URLs will be preserved
-      // For old BrowserRouter URLs, redirect to home
-      window.location.replace('/FulcrumMemo/');
+      // HashRouter deep-link recovery.
+      // Pages serves 404.html for any path that isn't a built file.
+      // Rewrite /TheFulcrumMemo/<path> -> /TheFulcrumMemo/#/<path> so
+      // old BrowserRouter-style URLs (e.g. /TheFulcrumMemo/my-business)
+      // and typos still land on the correct route.
+      (function () {
+        var base = '/TheFulcrumMemo/';
+        var l = window.location;
+        // Strip the base, if present.
+        var pathAfterBase = l.pathname.indexOf(base) === 0
+          ? l.pathname.slice(base.length)
+          : l.pathname.replace(/^\//, '');
+        // If someone hit the root (shouldn't 404, but just in case), go home.
+        if (!pathAfterBase) {
+          l.replace(base);
+          return;
+        }
+        // Preserve query + any existing hash the browser kept.
+        var hash = l.hash && l.hash !== '#' ? l.hash.replace(/^#\/?/, '') : '';
+        var target = base + '#/' + pathAfterBase.replace(/^\/+/, '') +
+          (l.search || '') +
+          (hash ? (l.search ? '&' : '') : '');
+        l.replace(target);
+      })();
     </script>
   </head>
   <body>
-    Redirecting to <a href="/FulcrumMemo/">The Fulcrum Memo</a>...
+    If you aren't redirected automatically,
+    <a href="/TheFulcrumMemo/">return to The Fulcrum Memo</a>.
   </body>
 </html>

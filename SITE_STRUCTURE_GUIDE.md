@@ -11,7 +11,7 @@
 |----------|--------|
 | **Framework** | **Vite + React + TypeScript** with shadcn-ui and Tailwind CSS |
 | **Deployment** | **GitHub Pages** via GitHub Actions (`.github/workflows/deploy.yml`) |
-| **Root URL** | `https://zac-t-smith.github.io/FulcrumMemo/` |
+| **Root URL** | `https://zac-t-smith.github.io/TheFulcrumMemo/` |
 | **Main Branch** | `main` (deploys automatically on push) |
 
 ---
@@ -87,7 +87,7 @@ export interface ScenarioUpdate {
 
 | Item | Status |
 |------|--------|
-| **Remote** | `origin → https://github.com/zac-t-smith/FulcrumMemo.git` |
+| **Remote** | `origin → https://github.com/zac-t-smith/TheFulcrumMemo.git` |
 | **Branch** | `main` |
 | **Deploys On** | Push to `main` triggers GitHub Actions |
 | **GitHub Actions** | `deploy.yml` — builds main site + worldview-fm, deploys to GitHub Pages |

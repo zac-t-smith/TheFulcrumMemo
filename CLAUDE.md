@@ -12,7 +12,7 @@
 - Interactive conflict map and data visualizations
 - Market snapshot tracking (Brent, VIX, gas, HY spreads, VLCC rates)
 
-**Site URL:** https://zac-t-smith.github.io/FulcrumMemo/
+**Site URL:** https://zac-t-smith.github.io/TheFulcrumMemo/
 
 ---
 
@@ -403,7 +403,7 @@ npx tsc --noEmit
 
 # Preview locally
 npm run dev
-# Visit http://localhost:8080/FulcrumMemo/field-notes/day-XX
+# Visit http://localhost:8080/TheFulcrumMemo/field-notes/day-XX
 
 # Commit and push
 git add src/data/iranConflictData.ts

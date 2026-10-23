@@ -26,7 +26,6 @@ const Navbar = () => {
     { label: 'Positions', href: '/positions' },
     { label: 'Fulcrum Index', href: '/fulcrum-index' },
     { label: 'Timeline', href: '/timeline' },
-    { label: 'WorldView', href: '/FulcrumMemo/worldview-fm/', external: true },
     { label: 'Resume', href: '/resume' },
     { label: 'About', href: '/#about' },
     { label: 'Contact', href: '/#contact' },

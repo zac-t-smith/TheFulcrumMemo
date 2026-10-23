@@ -24,11 +24,10 @@ jobs:
         with:
           node-version: '20'
 
-      # Build main Fulcrum Memo site first
-      - name: Install main site dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: Build main site
+      - name: Build
         run: npm run build
         env:
           VITE_AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
@@ -38,82 +37,13 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_OPS_PIN: ${{ secrets.VITE_OPS_PIN }}
 
-      # 404.html with SPA redirect script is in public/ and copied by Vite build
-
-      # Update events snapshot from agent data if available
-      - name: Update events snapshot
-        run: |
-          if [ -f worldview-fm-agents/src/data/events.json ]; then
-            cp worldview-fm-agents/src/data/events.json worldview-fm/public/events-static.json
-            echo "Snapshot updated from agent data: $(wc -l < worldview-fm/public/events-static.json) lines"
-          elif [ -f worldview-fm/public/events-static.json ]; then
-            echo "Using existing snapshot: $(wc -l < worldview-fm/public/events-static.json) lines"
-          else
-            echo "WARNING: events-static.json not found - creating empty file"
-            mkdir -p worldview-fm/public
-            echo "[]" > worldview-fm/public/events-static.json
-          fi
-
-      # Build WorldView-FM
-      - name: Install WorldView dependencies
-        run: cd worldview-fm && npm install
-
-      - name: Verify secrets
-        run: |
-          if [ -z "$VITE_CESIUM_ION_TOKEN" ]; then
-            echo "WARNING: VITE_CESIUM_ION_TOKEN secret is NOT set - Cesium 3D globe will not load"
-            echo "Set this secret in GitHub repo settings to enable the 3D globe"
-          else
-            echo "VITE_CESIUM_ION_TOKEN secret is set"
-          fi
-          if [ -z "$VITE_AISSTREAM_API_KEY" ]; then
-            echo "WARNING: VITE_AISSTREAM_API_KEY secret is NOT set - Live AIS data will not work"
-          else
-            echo "VITE_AISSTREAM_API_KEY secret is set"
-          fi
-          if [ -z "$VITE_FRED_API_KEY" ]; then
-            echo "WARNING: VITE_FRED_API_KEY secret is NOT set - HY spread API will use fallback"
-          else
-            echo "VITE_FRED_API_KEY secret is set"
-          fi
-          if [ -z "$VITE_EIA_API_KEY" ]; then
-            echo "WARNING: VITE_EIA_API_KEY secret is NOT set - Oil price API will use fallback"
-          else
-            echo "VITE_EIA_API_KEY secret is set"
-          fi
-          echo "VITE_AGENT_URL: https://fulcrummemo-production.up.railway.app (hardcoded)"
-        env:
-          VITE_CESIUM_ION_TOKEN: ${{ secrets.VITE_CESIUM_ION_TOKEN }}
-          VITE_AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
-          VITE_FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-          VITE_EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
-
-      - name: Build WorldView
-        run: cd worldview-fm && npm run build
-        env:
-          VITE_CESIUM_ION_TOKEN: ${{ secrets.VITE_CESIUM_ION_TOKEN }}
-          VITE_AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
-          VITE_AGENT_URL: https://fulcrummemo-production.up.railway.app
-
-      # Cesium assets are now copied by vite-plugin-static-copy during build
-
-      # Combine both builds into one dist folder
-      - name: Combine builds
-        run: |
-          mkdir -p combined-dist
-          # Copy main site to root
-          cp -r dist/. combined-dist/
-          # Copy WorldView into subdirectory
-          mkdir -p combined-dist/worldview-fm
-          cp -r worldview-fm/dist/. combined-dist/worldview-fm/
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: combined-dist
+          path: dist
 
   deploy:
     environment:

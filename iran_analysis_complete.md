@@ -3,7 +3,7 @@
 **Comprehensive Compilation of All Analytical Content**
 **Last Updated:** April 2, 2026 (Day 34)
 **Author:** Zac T. Smith
-**Site:** https://zac-t-smith.github.io/FulcrumMemo/
+**Site:** https://zac-t-smith.github.io/TheFulcrumMemo/
 
 ---
 
@@ -832,4 +832,4 @@ Markets delivered their verdict: oil surged as traders processed that Trump's ad
 
 *Compiled April 2, 2026*
 *The Fulcrum Memo*
-*https://zac-t-smith.github.io/FulcrumMemo/*
+*https://zac-t-smith.github.io/TheFulcrumMemo/*
