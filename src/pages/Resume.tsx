@@ -1,8 +1,8 @@
-import { Printer, Download, Mail, MapPin, Linkedin, ExternalLink } from 'lucide-react';
+import { Printer, Download, Mail, MapPin, Linkedin } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import PageLayout from '@/components/PageLayout';
+import { Button } from '@/components/system';
+import { EMAIL, LINKEDIN_URL, RESUME_PDF } from '@/content/bio';
 
 const Resume = () => {
   const handlePrint = () => {
@@ -10,20 +10,14 @@ const Resume = () => {
   };
 
   return (
-    <>
-      <Helmet>
-        <title>Resume | Zachary Smith | The Fulcrum Memo</title>
-        <meta
-          name="description"
-          content="Resume of Zachary Smith - Army veteran, operator, and restructuring analyst candidate with experience in financial modeling, distressed situations, and capital structure analysis."
-        />
-      </Helmet>
-
-      <div className="min-h-screen bg-background print:bg-white print:min-h-0">
-        <Navbar />
-
-        <main className="container mx-auto px-6 pt-24 pb-12 max-w-4xl print:pt-0 print:px-0 print:max-w-none">
-          {/* Back Link & Print Button - Hide on print */}
+    <PageLayout
+      title="Resume | Zachary Smith"
+      description="Resume of Zachary T. Smith — Army veteran, operator, and restructuring analyst candidate."
+      bare
+    >
+      <div className="print:bg-white print:min-h-0">
+        <main className="max-w-[896px] mx-auto px-4 pt-10 pb-12 print:pt-0 print:px-0 print:max-w-none">
+          {/* Print / Download controls — hidden on print */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -31,52 +25,73 @@ const Resume = () => {
             className="flex items-center justify-end mb-8 print:hidden"
           >
             <div className="flex items-center gap-3">
-              <a
-                href="/resume/Zachary_Smith_Resume.pdf"
+              <Button
+                as="a"
+                href={RESUME_PDF}
                 download
-                className="inline-flex items-center gap-2 px-4 py-2 border border-border text-muted-foreground hover:border-primary/50 hover:text-foreground text-xs uppercase tracking-wider transition-all duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="secondary"
               >
                 <Download size={14} />
                 Download PDF
-              </a>
-              <button
-                onClick={handlePrint}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-xs uppercase tracking-wider glow-subtle hover:bg-gold-glow transition-all duration-300"
-              >
+              </Button>
+              <Button onClick={handlePrint}>
                 <Printer size={14} />
                 Print Resume
-              </button>
+              </Button>
             </div>
           </motion.div>
 
-          {/* Resume Content */}
+          {/* Resume content card — hairline rule, no fill */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="surface-elevated border border-border p-8 md:p-12 print:border-0 print:shadow-none print:p-0"
+            className="p-8 md:p-12 print:border-0 print:shadow-none print:p-0"
+            style={{
+              background: 'var(--paper-raised)',
+              border: '1px solid var(--rule)',
+            }}
           >
-            {/* Header */}
-            <header className="text-center mb-8 pb-6 border-b border-border print:border-black/20">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 print:text-black">
-                Zachary Smith
+            <header
+              className="text-center mb-8 pb-6"
+              style={{ borderBottom: '1px solid var(--rule)' }}
+            >
+              <h1
+                className="t-h1 m-0"
+                style={{ fontSize: 'clamp(28px, 4vw, 40px)' }}
+              >
+                Zachary T. Smith
               </h1>
-              <p className="text-primary text-sm mb-4 print:text-gray-700">
+              <p
+                className="t-small sans mt-2 mb-4"
+                style={{ color: 'var(--red)', letterSpacing: '0.1em', textTransform: 'uppercase' }}
+              >
                 Restructuring Analyst Candidate
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-4 text-muted-foreground text-xs print:text-gray-600">
+              <div
+                className="flex flex-wrap items-center justify-center gap-4 t-caption sans"
+                style={{ color: 'var(--ink-muted)' }}
+              >
                 <span className="inline-flex items-center gap-1">
                   <MapPin size={12} />
                   Mobile, AL
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <Mail size={12} />
-                  zac.ty.smith@gmail.com
+                  {EMAIL}
                 </span>
-                <span className="inline-flex items-center gap-1">
+                <a
+                  href={LINKEDIN_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 hover:underline"
+                  style={{ color: 'var(--ink-muted)' }}
+                >
                   <Linkedin size={12} />
-                  linkedin.com/in/zachary-smith
-                </span>
+                  linkedin.com/in/zac-t-smith
+                </a>
               </div>
             </header>
 
@@ -85,7 +100,7 @@ const Resume = () => {
               <h2 className="text-lg font-semibold text-foreground mb-3 uppercase tracking-wider print:text-black">
                 Professional Summary
               </h2>
-              <div className="gold-line-left w-16 mb-4 print:hidden" />
+              <div className="w-16 mb-4 print:hidden" style={{ borderTop: "1px solid var(--rule)" }} />
               <p className="text-muted-foreground text-sm leading-[1.8] print:text-gray-700">
                 Finance student at the University of Mobile (Dec 2026), U.S. Army veteran, and
                 former founder of a restoration company he took through a restructuring. Scaled
@@ -102,7 +117,7 @@ const Resume = () => {
               <h2 className="text-lg font-semibold text-foreground mb-3 uppercase tracking-wider print:text-black">
                 Experience
               </h2>
-              <div className="gold-line-left w-16 mb-4 print:hidden" />
+              <div className="w-16 mb-4 print:hidden" style={{ borderTop: "1px solid var(--rule)" }} />
               <div className="space-y-6">
                 {/* Gulf Coast Restoration */}
                 <div>
@@ -232,7 +247,7 @@ const Resume = () => {
               <h2 className="text-lg font-semibold text-foreground mb-3 uppercase tracking-wider print:text-black">
                 Early Insight Programs
               </h2>
-              <div className="gold-line-left w-16 mb-4 print:hidden" />
+              <div className="w-16 mb-4 print:hidden" style={{ borderTop: "1px solid var(--rule)" }} />
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-sm font-semibold text-foreground print:text-black">
@@ -266,7 +281,7 @@ const Resume = () => {
               <h2 className="text-lg font-semibold text-foreground mb-3 uppercase tracking-wider print:text-black">
                 Education
               </h2>
-              <div className="gold-line-left w-16 mb-4 print:hidden" />
+              <div className="w-16 mb-4 print:hidden" style={{ borderTop: "1px solid var(--rule)" }} />
               <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
                 <h3 className="text-base font-semibold text-foreground print:text-black">
                   University of Mobile
@@ -288,7 +303,7 @@ const Resume = () => {
               <h2 className="text-lg font-semibold text-foreground mb-3 uppercase tracking-wider print:text-black">
                 Skills & Certifications
               </h2>
-              <div className="gold-line-left w-16 mb-4 print:hidden" />
+              <div className="w-16 mb-4 print:hidden" style={{ borderTop: "1px solid var(--rule)" }} />
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-sm font-semibold text-foreground mb-2 print:text-black">
@@ -317,7 +332,7 @@ const Resume = () => {
               <h2 className="text-lg font-semibold text-foreground mb-3 uppercase tracking-wider print:text-black">
                 Additional
               </h2>
-              <div className="gold-line-left w-16 mb-4 print:hidden" />
+              <div className="w-16 mb-4 print:hidden" style={{ borderTop: "1px solid var(--rule)" }} />
               <p className="text-muted-foreground text-xs leading-relaxed print:text-gray-700">
                 <strong className="text-foreground print:text-black">Interests:</strong> Distance running (5:52 mile PR), restructuring case studies, financial history
               </p>
@@ -327,32 +342,22 @@ const Resume = () => {
             </section>
           </motion.div>
         </main>
-
-        <div className="print:hidden">
-          <Footer />
-        </div>
       </div>
 
-      {/* Print Styles */}
+      {/* Print Styles — strip chrome and tokens for a clean paper render */}
       <style>{`
         @media print {
           body {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            background: white !important;
           }
           nav, footer, .print\\:hidden {
             display: none !important;
           }
-          .surface-elevated {
-            background: white !important;
-            border: none !important;
-          }
-          .gold-line-left {
-            display: none !important;
-          }
         }
       `}</style>
-    </>
+    </PageLayout>
   );
 };
 
