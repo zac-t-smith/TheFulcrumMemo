@@ -116,7 +116,14 @@ async function main() {
   }
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+main().then(
+  () => {
+    // Vite preview child + playwright can leave timers / sockets open; force exit
+    // so the npm script actually returns to the shell on CI.
+    process.exit(0);
+  },
+  (e) => {
+    console.error(e);
+    process.exit(1);
+  }
+);

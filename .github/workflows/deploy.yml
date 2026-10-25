@@ -44,6 +44,12 @@ jobs:
       - name: Render memo PDFs
         run: npm run render:pdfs
 
+      - name: Confirm PDFs were written
+        run: |
+          echo "--- public/pdfs/ ---"
+          ls -lh public/pdfs/
+          test -s public/pdfs/Fulcrum-Memo_Kirklands.pdf
+
       # Rebuild so the just-rendered public/pdfs/*.pdf land inside dist/.
       - name: Rebuild with PDFs bundled
         run: npm run build
@@ -54,6 +60,12 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_OPS_PIN: ${{ secrets.VITE_OPS_PIN }}
+
+      - name: Confirm PDFs made it into dist/
+        run: |
+          echo "--- dist/pdfs/ ---"
+          ls -lh dist/pdfs/ || echo "dist/pdfs/ does not exist!"
+          test -s dist/pdfs/Fulcrum-Memo_Kirklands.pdf
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

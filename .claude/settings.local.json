@@ -46,7 +46,9 @@
       "Bash(grep -rnE \"Brent [a-z]+ \\\\\\\\\\\\$1[0-9][0-9]\" src/pages/memos)",
       "Bash(sed -i \"s|\\\\['#22c55e', '#eab308', '#ef4444'\\\\]|['#2E7D4F', '#B7791F', '#C8102E']|g\" src/pages/field-notes/FieldNoteDay.tsx src/pages/field-notes/FieldNotesIndex.tsx)",
       "Bash(sed -i ' *)",
-      "Bash(grep -rE \"'#\\(ef4444|22c55e|eab308|3b82f6|10b981|f59e0b|2563eb|f97316|ea580c|7c3aed|a855f7|8b5cf6|ec4899|06b6d4|dc2626|E24B4A|84cc16|1D9E75|BA7517|378ADD\\)'|\\\\\"#\\(ef4444|22c55e|eab308|3b82f6|10b981|f59e0b|2563eb|f97316|ea580c|7c3aed|a855f7|8b5cf6|ec4899|06b6d4|dc2626|E24B4A|84cc16|1D9E75|BA7517|378ADD\\)\\\\\"|\\\\\\\\[#\\(ef4444|22c55e|eab308|3b82f6|10b981|f59e0b|2563eb|f97316|ea580c|7c3aed|a855f7|8b5cf6|ec4899|06b6d4|dc2626|E24B4A|84cc16|1D9E75|BA7517|378ADD\\)\\\\\\\\]\" src)"
+      "Bash(grep -rE \"'#\\(ef4444|22c55e|eab308|3b82f6|10b981|f59e0b|2563eb|f97316|ea580c|7c3aed|a855f7|8b5cf6|ec4899|06b6d4|dc2626|E24B4A|84cc16|1D9E75|BA7517|378ADD\\)'|\\\\\"#\\(ef4444|22c55e|eab308|3b82f6|10b981|f59e0b|2563eb|f97316|ea580c|7c3aed|a855f7|8b5cf6|ec4899|06b6d4|dc2626|E24B4A|84cc16|1D9E75|BA7517|378ADD\\)\\\\\"|\\\\\\\\[#\\(ef4444|22c55e|eab308|3b82f6|10b981|f59e0b|2563eb|f97316|ea580c|7c3aed|a855f7|8b5cf6|ec4899|06b6d4|dc2626|E24B4A|84cc16|1D9E75|BA7517|378ADD\\)\\\\\\\\]\" src)",
+      "Bash(curl -sS \"https://api.github.com/repos/zac-t-smith/TheFulcrumMemo/actions/runs?per_page=1&event=push\")",
+      "Bash(npx playwright *)"
     ]
   }
 }
