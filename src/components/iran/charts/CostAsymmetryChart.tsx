@@ -150,11 +150,11 @@ export const CostAsymmetryChart = ({ className }: { className?: string }) => {
                   <span className="text-xs text-zinc-300">{value}</span>
                 )}
               />
-              <Bar dataKey="iranCost" name="Iran Cost" fill="#f59e0b" radius={[0, 4, 4, 0]}>
-                <LabelList dataKey="iranLabel" position="right" fill="#f59e0b" fontSize={11} fontFamily="monospace" />
+              <Bar dataKey="iranCost" name="Iran Cost" fill="#B7791F" radius={[0, 4, 4, 0]}>
+                <LabelList dataKey="iranLabel" position="right" fill="#B7791F" fontSize={11} fontFamily="monospace" />
               </Bar>
-              <Bar dataKey="interceptorCost" name="U.S. Interceptor" fill="#3b82f6" radius={[0, 4, 4, 0]}>
-                <LabelList dataKey="interceptorLabel" position="right" fill="#3b82f6" fontSize={11} fontFamily="monospace" />
+              <Bar dataKey="interceptorCost" name="U.S. Interceptor" fill="#1F3A5F" radius={[0, 4, 4, 0]}>
+                <LabelList dataKey="interceptorLabel" position="right" fill="#1F3A5F" fontSize={11} fontFamily="monospace" />
               </Bar>
             </BarChart>
           ) : (
@@ -179,7 +179,7 @@ export const CostAsymmetryChart = ({ className }: { className?: string }) => {
                 <LabelList
                   dataKey="ratio"
                   position="right"
-                  fill="#ef4444"
+                  fill="#C8102E"
                   fontSize={12}
                   fontFamily="monospace"
                   formatter={(value: number) => `${value}:1`}

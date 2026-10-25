@@ -199,7 +199,7 @@ export const OilPriceEventChart = ({ className }: { className?: string }) => {
             {/* $100 threshold */}
             <ReferenceLine
               y={100}
-              stroke="#f59e0b"
+              stroke="#B7791F"
               strokeDasharray="5 5"
               label={{
                 value: '$100 threshold',
@@ -230,7 +230,7 @@ export const OilPriceEventChart = ({ className }: { className?: string }) => {
               <ReferenceArea
                 x1="Feb 2"
                 x2="Feb 27"
-                fill="#10b981"
+                fill="#2E7D4F"
                 fillOpacity={0.05}
                 label={{
                   value: 'Pre-positioning Phase',
@@ -244,7 +244,7 @@ export const OilPriceEventChart = ({ className }: { className?: string }) => {
             <Line
               type="monotone"
               dataKey="brent"
-              stroke="#f59e0b"
+              stroke="#B7791F"
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 5, fill: '#B7791F', stroke: '#000' }}
@@ -252,7 +252,7 @@ export const OilPriceEventChart = ({ className }: { className?: string }) => {
             <Line
               type="monotone"
               dataKey="wti"
-              stroke="#3b82f6"
+              stroke="#1F3A5F"
               strokeWidth={1.5}
               dot={false}
               activeDot={{ r: 4, fill: '#1F3A5F', stroke: '#000' }}

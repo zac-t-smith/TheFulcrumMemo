@@ -189,7 +189,7 @@ export const SequenceTimeline = ({ className }: { className?: string }) => {
               <EventDot
                 key={event.date + event.label}
                 event={event}
-                color="#10b981"
+                color="#2E7D4F"
                 onHover={setHoveredEvent}
               />
             ))}
@@ -213,7 +213,7 @@ export const SequenceTimeline = ({ className }: { className?: string }) => {
               <EventDot
                 key={event.date + event.label + idx}
                 event={event}
-                color="#f59e0b"
+                color="#B7791F"
                 onHover={setHoveredEvent}
                 isHighlighted={event.label.includes('Korea')}
               />
@@ -241,7 +241,7 @@ export const SequenceTimeline = ({ className }: { className?: string }) => {
               <EventDot
                 key={event.date + event.label}
                 event={event}
-                color="#ef4444"
+                color="#C8102E"
                 onHover={setHoveredEvent}
               />
             ))}
@@ -287,21 +287,21 @@ export const SequenceTimeline = ({ className }: { className?: string }) => {
               />
               <ReferenceLine
                 y={100}
-                stroke="#f59e0b"
+                stroke="#B7791F"
                 strokeDasharray="3 3"
                 label={{ value: '$100 threshold', fill: '#B7791F', fontSize: 9, position: 'left' }}
               />
               {/* Feb 28 marker */}
               <ReferenceLine
                 x="Feb 28"
-                stroke="#ef4444"
+                stroke="#C8102E"
                 strokeWidth={2}
                 label={{ value: 'Epic Fury', fill: '#C8102E', fontSize: 9, position: 'top' }}
               />
               <Line
                 type="monotone"
                 dataKey="brent"
-                stroke="#f59e0b"
+                stroke="#B7791F"
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ r: 4, fill: '#B7791F' }}

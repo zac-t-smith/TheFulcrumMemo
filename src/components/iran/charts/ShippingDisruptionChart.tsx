@@ -114,7 +114,7 @@ export const ShippingDisruptionChart = ({ className }: { className?: string }) =
             />
             <YAxis
               yAxisId="left"
-              stroke="#3b82f6"
+              stroke="#1F3A5F"
               fontSize={10}
               tickLine={false}
               domain={[0, 120]}
@@ -128,7 +128,7 @@ export const ShippingDisruptionChart = ({ className }: { className?: string }) =
             <YAxis
               yAxisId="right"
               orientation="right"
-              stroke="#eab308"
+              stroke="#B7791F"
               fontSize={10}
               tickLine={false}
               tickFormatter={formatCurrency}
@@ -145,8 +145,8 @@ export const ShippingDisruptionChart = ({ className }: { className?: string }) =
               yAxisId="left"
               type="monotone"
               dataKey="count"
-              stroke="#3b82f6"
-              fill="#3b82f6"
+              stroke="#1F3A5F"
+              fill="#1F3A5F"
               fillOpacity={0.2}
               strokeWidth={2}
               name="Tanker Transits"
@@ -155,7 +155,7 @@ export const ShippingDisruptionChart = ({ className }: { className?: string }) =
               yAxisId="right"
               type="monotone"
               dataKey="vlccRate"
-              stroke="#eab308"
+              stroke="#B7791F"
               strokeWidth={3}
               dot={{ fill: '#B7791F', strokeWidth: 2 }}
               name="VLCC Rate"
@@ -164,7 +164,7 @@ export const ShippingDisruptionChart = ({ className }: { className?: string }) =
             <ReferenceLine
               yAxisId="left"
               y={lastTransitCount}
-              stroke="#ef4444"
+              stroke="#C8102E"
               strokeDasharray="5 5"
               label={{
                 value: `${transitCollapsePercent}% collapse`,

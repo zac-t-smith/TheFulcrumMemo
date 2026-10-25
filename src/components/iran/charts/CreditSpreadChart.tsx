@@ -95,7 +95,7 @@ export const CreditSpreadChart = ({ className }: { className?: string }) => {
             {/* 30-year average line */}
             <ReferenceLine
               y={creditMarketData.hySpread.thirtyYearAverage}
-              stroke="#eab308"
+              stroke="#B7791F"
               strokeDasharray="5 5"
               label={{
                 value: `30-yr avg: ${creditMarketData.hySpread.thirtyYearAverage} bps`,
@@ -107,7 +107,7 @@ export const CreditSpreadChart = ({ className }: { className?: string }) => {
             {/* Current level line */}
             <ReferenceLine
               y={currentSpread}
-              stroke="#22c55e"
+              stroke="#2E7D4F"
               strokeDasharray="3 3"
               label={{
                 value: `Current: ${currentSpread} bps${isLive ? ' (LIVE)' : ''}`,

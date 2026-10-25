@@ -602,20 +602,20 @@ const OilPriceOverlay = ({ height = 120, className }: { height?: number; classNa
           />
           <ReferenceLine
             y={100}
-            stroke="#BA7517"
+            stroke="#B07D2B"
             strokeDasharray="3 3"
             label={{ value: '$100', fill: '#B07D2B', fontSize: 8, position: 'insideTopLeft' }}
           />
           <ReferenceLine
             x="Feb 28"
-            stroke="#E24B4A"
+            stroke="#C8102E"
             strokeDasharray="5 5"
             strokeWidth={1.5}
           />
           <Line
             type="monotone"
             dataKey="brent"
-            stroke="#BA7517"
+            stroke="#B07D2B"
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 4, fill: '#B07D2B' }}
