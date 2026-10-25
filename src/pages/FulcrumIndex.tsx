@@ -843,14 +843,14 @@ const FulcrumIndexPage = () => {
     drawPriceLine(
       (i) => etfData[i]?.hyg,
       hygMin, hygMax,
-      '#2563eb', 2
+      '#1F3A5F', 2
     );
 
     // USO (orange)
     drawPriceLine(
       (i) => etfData[i]?.uso,
       usoMin, usoMax,
-      '#ea580c', 2
+      '#B07D2B', 2
     );
 
     // GLD (gold)
@@ -865,7 +865,7 @@ const FulcrumIndexPage = () => {
     drawPriceLine(
       (i) => data[i]?.vix,
       vixMin, vixMax,
-      '#7c3aed', 1.5
+      '#7A6C9D', 1.5
     );
     ctx.setLineDash([]);
 
@@ -904,10 +904,10 @@ const FulcrumIndexPage = () => {
     ctx.textBaseline = 'middle';
 
     const legendItems = [
-      { label: 'HYG (HY bonds)', color: '#2563eb', dashed: false },
-      { label: 'USO (crude oil)', color: '#ea580c', dashed: false },
+      { label: 'HYG (HY bonds)', color: '#1F3A5F', dashed: false },
+      { label: 'USO (crude oil)', color: '#B07D2B', dashed: false },
       { label: 'GLD (gold)', color: '#4a4a4a', dashed: false },
-      { label: 'VIX (volatility)', color: '#7c3aed', dashed: true },
+      { label: 'VIX (volatility)', color: '#7A6C9D', dashed: true },
     ];
 
     legendItems.forEach((item, i) => {
@@ -1533,13 +1533,13 @@ The Fulcrum Index — Composite Path
                         </th>
                         <th
                           className="px-4 py-2 text-center text-[10px] tracking-[0.14em] uppercase font-bold"
-                          style={{ fontFamily: 'var(--font-sans)', color: '#2563eb' }}
+                          style={{ fontFamily: 'var(--font-sans)', color: '#1F3A5F' }}
                         >
                           HYG <span className="text-[#4a4a4a] font-normal normal-case tracking-normal">(daily / ann.)</span>
                         </th>
                         <th
                           className="px-4 py-2 text-center text-[10px] tracking-[0.14em] uppercase font-bold"
-                          style={{ fontFamily: 'var(--font-sans)', color: '#ea580c' }}
+                          style={{ fontFamily: 'var(--font-sans)', color: '#B07D2B' }}
                         >
                           USO <span className="text-[#4a4a4a] font-normal normal-case tracking-normal">(daily / ann.)</span>
                         </th>
@@ -1551,7 +1551,7 @@ The Fulcrum Index — Composite Path
                         </th>
                         <th
                           className="px-4 py-2 text-center text-[10px] tracking-[0.14em] uppercase font-bold"
-                          style={{ fontFamily: 'var(--font-sans)', color: '#7c3aed' }}
+                          style={{ fontFamily: 'var(--font-sans)', color: '#7A6C9D' }}
                         >
                           VIX Δ
                         </th>

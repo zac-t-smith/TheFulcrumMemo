@@ -187,7 +187,7 @@ const FieldNotesIndex = () => {
             {/* Probability Bar */}
             <div className="flex h-8 rounded-lg overflow-hidden mb-4">
               {latestScenario.probabilities.map((p, index) => {
-                const colors = ['#22c55e', '#eab308', '#ef4444'];
+                const colors = ['#2E7D4F', '#B7791F', '#C8102E'];
                 return (
                   <div
                     key={p.scenario}

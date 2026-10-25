@@ -15,49 +15,49 @@ const loopSteps: LoopStep[] = [
     id: 1,
     title: 'Iran closes Hormuz',
     description: 'IRGC blocks Western shipping through the strait',
-    color: '#ef4444',
+    color: '#C8102E',
   },
   {
     id: 2,
     title: 'Iran revenue → ZERO',
     description: '1.6M bpd of Iranian exports offline, cash flow severed',
-    color: '#f97316',
+    color: '#B07D2B',
   },
   {
     id: 3,
     title: 'Oil prices SPIKE',
     description: 'Brent from $71 to $120+, global energy crisis',
-    color: '#eab308',
+    color: '#B7791F',
   },
   {
     id: 4,
     title: 'U.S. alternatives gain value',
     description: 'Venezuela, domestic production, Western Hemisphere supply',
-    color: '#22c55e',
+    color: '#2E7D4F',
   },
   {
     id: 5,
     title: 'Allied desperation increases',
     description: 'Japan, Korea, India face energy catastrophe',
-    color: '#f59e0b',
+    color: '#B7791F',
   },
   {
     id: 6,
     title: 'U.S. leverage compounds',
     description: 'Control over relief valve + tariff negotiations',
-    color: '#10b981',
+    color: '#2E7D4F',
   },
   {
     id: 7,
     title: 'Iran position weakens',
     description: 'No revenue, no leverage, no path to restructuring',
-    color: '#ef4444',
+    color: '#C8102E',
   },
   {
     id: 8,
     title: 'Iran escalates further',
     description: 'To demonstrate relevance — which restarts the loop',
-    color: '#dc2626',
+    color: '#C8102E',
   },
 ];
 
@@ -259,7 +259,7 @@ export const InversionFeedbackLoop = ({ className }: { className?: string }) => 
               index === activeStep ? 'w-6' : ''
             )}
             style={{
-              backgroundColor: index === activeStep ? step.color : '#3f3f46',
+              backgroundColor: index === activeStep ? step.color : '#1a1a1a',
             }}
           />
         ))}

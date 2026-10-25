@@ -283,20 +283,20 @@ export const SequenceTimeline = ({ className }: { className?: string }) => {
                 y={73}
                 stroke="#71717a"
                 strokeDasharray="3 3"
-                label={{ value: 'Pre-war $73', fill: '#71717a', fontSize: 9, position: 'left' }}
+                label={{ value: 'Pre-war $73', fill: '#4a4a4a', fontSize: 9, position: 'left' }}
               />
               <ReferenceLine
                 y={100}
                 stroke="#f59e0b"
                 strokeDasharray="3 3"
-                label={{ value: '$100 threshold', fill: '#f59e0b', fontSize: 9, position: 'left' }}
+                label={{ value: '$100 threshold', fill: '#B7791F', fontSize: 9, position: 'left' }}
               />
               {/* Feb 28 marker */}
               <ReferenceLine
                 x="Feb 28"
                 stroke="#ef4444"
                 strokeWidth={2}
-                label={{ value: 'Epic Fury', fill: '#ef4444', fontSize: 9, position: 'top' }}
+                label={{ value: 'Epic Fury', fill: '#C8102E', fontSize: 9, position: 'top' }}
               />
               <Line
                 type="monotone"
@@ -304,7 +304,7 @@ export const SequenceTimeline = ({ className }: { className?: string }) => {
                 stroke="#f59e0b"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: '#f59e0b' }}
+                activeDot={{ r: 4, fill: '#B7791F' }}
               />
             </LineChart>
           </ResponsiveContainer>

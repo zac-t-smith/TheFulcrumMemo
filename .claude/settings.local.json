@@ -40,7 +40,12 @@
       "Bash(perl -0777 -i -pe 's|<a\\\\s+href=\"/memos/[^\"]+\\\\.pdf\"[^>]*>[\\\\s\\\\S]*?</a>|{/* Phase A: PDF button hidden until Phase 5 pipeline */}|gs' src/pages/memos/*.tsx)",
       "Bash(perl -0777 -i -pe 's|<button\\\\s+onClick=\\\\{handleDownloadPdf\\\\}[\\\\s\\\\S]*?</button>|{/* Phase A: PDF button hidden until Phase 5 pipeline */}|gs' src/pages/memos/*.tsx)",
       "Bash(perl -0777 -i -pe 's|\\\\{memo\\\\.pdfPath && \\\\\\([\\\\s\\\\S]*?\\\\\\)\\\\}|{/* Phase A: memo PDF buttons hidden until Phase 5 pipeline */}|gs' src/pages/Memos.tsx)",
-      "Bash(perl -0777 -i -pe 's|\\\\{/\\\\* Download CTA \\\\*/\\\\}\\\\s*<motion\\\\.div[\\\\s\\\\S]*?</motion\\\\.div>|{/* Phase A: entire Download CTA block hidden until Phase 5 pipeline */}|gs' src/pages/memos/*.tsx)"
+      "Bash(perl -0777 -i -pe 's|\\\\{/\\\\* Download CTA \\\\*/\\\\}\\\\s*<motion\\\\.div[\\\\s\\\\S]*?</motion\\\\.div>|{/* Phase A: entire Download CTA block hidden until Phase 5 pipeline */}|gs' src/pages/memos/*.tsx)",
+      "Bash(grep -rnE \"71\\\\.32|preWarBrent|brent.*=.*7[0-5]|Brent.*\\\\\\\\\\\\$[0-9]+\" src/)",
+      "Bash(grep -rnE \"Brent.*\\(up|surge|hit|at\\).*\\\\\\\\\\\\$[0-9]|\\\\\\\\\\\\$1[0-2][0-9]|\\\\\\\\\\\\$14[0-5]\" src/pages/memos)",
+      "Bash(grep -rnE \"Brent [a-z]+ \\\\\\\\\\\\$1[0-9][0-9]\" src/pages/memos)",
+      "Bash(sed -i \"s|\\\\['#22c55e', '#eab308', '#ef4444'\\\\]|['#2E7D4F', '#B7791F', '#C8102E']|g\" src/pages/field-notes/FieldNoteDay.tsx src/pages/field-notes/FieldNotesIndex.tsx)",
+      "Bash(sed -i ' *)"
     ]
   }
 }

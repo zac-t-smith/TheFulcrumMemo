@@ -22,15 +22,15 @@ interface EventMarker {
 }
 
 const eventMarkers: EventMarker[] = [
-  { date: '2026-01-03', label: 'Venezuela secured', color: '#10b981', category: 'venezuela' },
-  { date: '2026-01-26', label: 'SK tariffs escalated', color: '#f59e0b', category: 'tariff' },
-  { date: '2026-02-28', label: 'Operation Epic Fury', color: '#ef4444', category: 'iran' },
-  { date: '2026-03-04', label: 'Hormuz closed', color: '#ef4444', category: 'iran' },
-  { date: '2026-03-12', label: 'Brent > $100', color: '#ef4444', category: 'iran' },
-  { date: '2026-03-19', label: '$119 spike', color: '#ef4444', category: 'iran' },
-  { date: '2026-03-22', label: '48hr ultimatum', color: '#ef4444', category: 'iran' },
-  { date: '2026-03-23', label: '"Productive talks"', color: '#22c55e', category: 'iran' },
-  { date: '2026-04-01', label: 'Primetime address', color: '#ef4444', category: 'iran' },
+  { date: '2026-01-03', label: 'Venezuela secured', color: '#2E7D4F', category: 'venezuela' },
+  { date: '2026-01-26', label: 'SK tariffs escalated', color: '#B7791F', category: 'tariff' },
+  { date: '2026-02-28', label: 'Operation Epic Fury', color: '#C8102E', category: 'iran' },
+  { date: '2026-03-04', label: 'Hormuz closed', color: '#C8102E', category: 'iran' },
+  { date: '2026-03-12', label: 'Brent > $100', color: '#C8102E', category: 'iran' },
+  { date: '2026-03-19', label: '$119 spike', color: '#C8102E', category: 'iran' },
+  { date: '2026-03-22', label: '48hr ultimatum', color: '#C8102E', category: 'iran' },
+  { date: '2026-03-23', label: '"Productive talks"', color: '#2E7D4F', category: 'iran' },
+  { date: '2026-04-01', label: 'Primetime address', color: '#C8102E', category: 'iran' },
 ];
 
 const formatDateShort = (dateStr: string) => {
@@ -190,7 +190,7 @@ export const OilPriceEventChart = ({ className }: { className?: string }) => {
               strokeDasharray="5 5"
               label={{
                 value: 'Pre-war $73',
-                fill: '#71717a',
+                fill: '#4a4a4a',
                 fontSize: 10,
                 position: 'insideTopLeft',
               }}
@@ -203,7 +203,7 @@ export const OilPriceEventChart = ({ className }: { className?: string }) => {
               strokeDasharray="5 5"
               label={{
                 value: '$100 threshold',
-                fill: '#f59e0b',
+                fill: '#B7791F',
                 fontSize: 10,
                 position: 'insideTopLeft',
               }}
@@ -234,7 +234,7 @@ export const OilPriceEventChart = ({ className }: { className?: string }) => {
                 fillOpacity={0.05}
                 label={{
                   value: 'Pre-positioning Phase',
-                  fill: '#10b981',
+                  fill: '#2E7D4F',
                   fontSize: 9,
                   position: 'insideTop',
                 }}
@@ -247,7 +247,7 @@ export const OilPriceEventChart = ({ className }: { className?: string }) => {
               stroke="#f59e0b"
               strokeWidth={2}
               dot={false}
-              activeDot={{ r: 5, fill: '#f59e0b', stroke: '#000' }}
+              activeDot={{ r: 5, fill: '#B7791F', stroke: '#000' }}
             />
             <Line
               type="monotone"
@@ -255,7 +255,7 @@ export const OilPriceEventChart = ({ className }: { className?: string }) => {
               stroke="#3b82f6"
               strokeWidth={1.5}
               dot={false}
-              activeDot={{ r: 4, fill: '#3b82f6', stroke: '#000' }}
+              activeDot={{ r: 4, fill: '#1F3A5F', stroke: '#000' }}
               opacity={0.7}
             />
           </LineChart>

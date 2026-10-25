@@ -86,30 +86,30 @@ interface LayerState {
 
 // Event type colors and icons
 const eventTypeConfig: Record<string, { color: string; label: string; emoji: string }> = {
-  strike_us: { color: '#3b82f6', label: 'US/Coalition Strike', emoji: '💥' },
-  strike_israel: { color: '#6366f1', label: 'Israeli Strike', emoji: '💥' },
-  strike_iran: { color: '#ef4444', label: 'Iranian Strike', emoji: '🔥' },
-  shipping: { color: '#06b6d4', label: 'Shipping Event', emoji: '🚢' },
-  infrastructure_energy: { color: '#f97316', label: 'Energy Infrastructure', emoji: '🛢️' },
-  infrastructure_water: { color: '#14b8a6', label: 'Water Infrastructure', emoji: '💧' },
-  naval: { color: '#1e3a8a', label: 'Naval Engagement', emoji: '⚓' },
-  ground_offensive: { color: '#22c55e', label: 'Ground Offensive', emoji: '🎖️' },
-  interception: { color: '#a855f7', label: 'Interception', emoji: '🛡️' },
-  military: { color: '#4b5563', label: 'Military Movement', emoji: '🪖' },
-  political: { color: '#8b5cf6', label: 'Political Event', emoji: '🏛️' },
-  diplomatic: { color: '#10b981', label: 'Diplomatic Event', emoji: '🤝' },
+  strike_us: { color: '#1F3A5F', label: 'US/Coalition Strike', emoji: '💥' },
+  strike_israel: { color: '#1F3A5F', label: 'Israeli Strike', emoji: '💥' },
+  strike_iran: { color: '#C8102E', label: 'Iranian Strike', emoji: '🔥' },
+  shipping: { color: '#4F7F7A', label: 'Shipping Event', emoji: '🚢' },
+  infrastructure_energy: { color: '#B07D2B', label: 'Energy Infrastructure', emoji: '🛢️' },
+  infrastructure_water: { color: '#4F7F7A', label: 'Water Infrastructure', emoji: '💧' },
+  naval: { color: '#1F3A5F', label: 'Naval Engagement', emoji: '⚓' },
+  ground_offensive: { color: '#2E7D4F', label: 'Ground Offensive', emoji: '🎖️' },
+  interception: { color: '#7A6C9D', label: 'Interception', emoji: '🛡️' },
+  military: { color: '#4a4a4a', label: 'Military Movement', emoji: '🪖' },
+  political: { color: '#7A6C9D', label: 'Political Event', emoji: '🏛️' },
+  diplomatic: { color: '#2E7D4F', label: 'Diplomatic Event', emoji: '🤝' },
 };
 
 // Fallback for unknown event types
-const defaultEventConfig = { color: '#9ca3af', label: 'Event', emoji: '📍' };
+const defaultEventConfig = { color: '#4a4a4a', label: 'Event', emoji: '📍' };
 const getEventConfig = (type: string) => eventTypeConfig[type] || defaultEventConfig;
 
 // Live event type colors
 const liveEventColors: Record<LiveFeedEvent['type'], string> = {
-  attack: '#ef4444',
-  shipping: '#06b6d4',
-  infrastructure: '#f97316',
-  interception: '#eab308',
+  attack: '#C8102E',
+  shipping: '#4F7F7A',
+  infrastructure: '#B07D2B',
+  interception: '#B7791F',
   diplomatic: '#ffffff',
 };
 
@@ -189,10 +189,10 @@ const createGDELTIcon = (eventType: LiveFeedEvent['type'], isNew: boolean) => {
 // Create vessel icon with heading rotation
 const createVesselIcon = (type: AISVessel['type'], heading: number) => {
   const colors = {
-    tanker: '#06b6d4',
-    cargo: '#6b7280',
-    military: '#ef4444',
-    other: '#a855f7',
+    tanker: '#4F7F7A',
+    cargo: '#4a4a4a',
+    military: '#C8102E',
+    other: '#7A6C9D',
   };
   const color = colors[type];
 
@@ -900,8 +900,8 @@ export const ConflictMap = ({
             <Polygon
               positions={insuranceExclusionZone.coordinates}
               pathOptions={{
-                color: '#ef4444',
-                fillColor: '#ef4444',
+                color: '#C8102E',
+                fillColor: '#C8102E',
                 fillOpacity: 0.15,
                 weight: 2,
                 dashArray: '5, 10',
@@ -914,7 +914,7 @@ export const ConflictMap = ({
             <Polyline
               positions={hormuzShippingLane}
               pathOptions={{
-                color: '#06b6d4',
+                color: '#4F7F7A',
                 weight: 3,
                 dashArray: '10, 10',
                 opacity: 0.7,

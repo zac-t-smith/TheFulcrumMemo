@@ -1710,7 +1710,7 @@ export const sectorVulnerability: SectorVulnerabilityItem[] = [
     consumerDependence: 95,
     currentSpread: 75,
     notes: 'Already distressed subsectors face accelerating consumer pullback',
-    color: '#ef4444',
+    color: '#C8102E',
   },
   {
     sector: 'Commercial RE',
@@ -1720,7 +1720,7 @@ export const sectorVulnerability: SectorVulnerabilityItem[] = [
     consumerDependence: 60,
     currentSpread: 85,
     notes: 'Office, mall, and hotel REITs face distressed refinancings',
-    color: '#f97316',
+    color: '#B07D2B',
   },
   {
     sector: 'Airlines',
@@ -1730,7 +1730,7 @@ export const sectorVulnerability: SectorVulnerabilityItem[] = [
     consumerDependence: 85,
     currentSpread: 70,
     notes: 'Double hit: fuel costs spike while Middle East routes shut',
-    color: '#eab308',
+    color: '#B7791F',
   },
   {
     sector: 'Cruise Lines',
@@ -1740,7 +1740,7 @@ export const sectorVulnerability: SectorVulnerabilityItem[] = [
     consumerDependence: 100,
     currentSpread: 90,
     notes: 'Most leveraged consumer discretionary subsector',
-    color: '#22c55e',
+    color: '#2E7D4F',
   },
   {
     sector: 'Speculative Tech',
@@ -1750,7 +1750,7 @@ export const sectorVulnerability: SectorVulnerabilityItem[] = [
     consumerDependence: 40,
     currentSpread: 65,
     notes: 'Pre-revenue companies burning cash faster than they can raise it',
-    color: '#06b6d4',
+    color: '#4F7F7A',
   },
   {
     sector: 'Energy E&P',
@@ -1760,7 +1760,7 @@ export const sectorVulnerability: SectorVulnerabilityItem[] = [
     consumerDependence: 15,
     currentSpread: 40,
     notes: 'Short-term windfall, long-term policy headwind',
-    color: '#8b5cf6',
+    color: '#7A6C9D',
   },
   {
     sector: 'Healthcare',
@@ -1770,7 +1770,7 @@ export const sectorVulnerability: SectorVulnerabilityItem[] = [
     consumerDependence: 50,
     currentSpread: 30,
     notes: 'Economic stress + Democratic trifecta = expanded coverage',
-    color: '#ec4899',
+    color: '#7A6C9D',
   },
 ];
 
@@ -7031,7 +7031,7 @@ export const scenarioData = scenarioUpdates[4].probabilities.map((p, index) => {
     'Iran sustains asymmetric campaign for 4-12 weeks. Strait of Hormuz remains contested. GCC infrastructure damage compounds. Oil exceeds $100/bbl.',
     'Air campaign fails to achieve regime change. Trump commits ground troops. Multi-year occupation in mountainous terrain against 90M-person nation.',
   ];
-  const colors = ['#22c55e', '#eab308', '#ef4444'];
+  const colors = ['#2E7D4F', '#B7791F', '#C8102E'];
   const oilRanges = ['$70-80/bbl', '$90-120/bbl', '$100-150/bbl'];
   const gccDamage = ['$10-50B', '$50-200B', '$200B+'];
   const iranLeverage = ['Moderate (proven capability)', 'Strong (negotiated concessions)', 'Strong (insurgency leverage)'];
@@ -7249,42 +7249,42 @@ export const macroTransmissionChain = [
     label: 'Energy Shock',
     description: 'Strait of Hormuz closure, 20% global oil disrupted',
     metrics: [`Brent +${((getLatest(marketTimeline).brentCrude - 77.52) / 77.52 * 100).toFixed(1)}% to $${getLatest(marketTimeline).brentCrude}`, `VLCC rates $${(getLatest(hormuzTimeline).vlccRate / 1000).toFixed(0)}K/day`, '100% transit collapse - zero transits 4 days'],
-    color: '#ef4444',
+    color: '#C8102E',
   },
   {
     id: 'inflation',
     label: 'Inflation',
     description: 'Energy costs propagate through economy',
     metrics: ['ISM Prices Paid: 70.5 (+11.5 pts)', 'Gas: biggest jump since Ukraine', '$14B annualized per $10/bbl'],
-    color: '#f97316',
+    color: '#B07D2B',
   },
   {
     id: 'fed-constraint',
     label: 'Fed Constraint',
     description: 'Rate cuts blocked by inflation spike',
     metrics: ['10Y yield: 4.13% (+16bps from pre-war)', 'Fed cuts pushed to summer', 'Stagflation risk rising'],
-    color: '#eab308',
+    color: '#B7791F',
   },
   {
     id: 'spread-widening',
     label: 'Spread Widening',
     description: 'Credit markets reprice risk',
     metrics: [`HY OAS: ${getLatest(marketTimeline).hySpread} bps`, '30-yr avg: 525 bps', 'Max widening potential'],
-    color: '#84cc16',
+    color: '#2E7D4F',
   },
   {
     id: 'defaults',
     label: 'Defaults',
     description: 'Zombie companies hit refinancing wall',
     metrics: ['Leveraged loan default: 7.9%', '2026-27 maturity wall', 'Zombie company population'],
-    color: '#06b6d4',
+    color: '#4F7F7A',
   },
   {
     id: 'restructuring',
     label: 'Restructuring Cycle',
     description: 'Largest since 2008-2009',
     metrics: ['Retail, CRE, Airlines', 'Cruise, Speculative Tech', 'Advisory mandates surge'],
-    color: '#8b5cf6',
+    color: '#7A6C9D',
   },
 ];
 

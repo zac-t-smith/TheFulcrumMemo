@@ -100,7 +100,7 @@ export const CreditSpreadChart = ({ className }: { className?: string }) => {
               label={{
                 value: `30-yr avg: ${creditMarketData.hySpread.thirtyYearAverage} bps`,
                 position: 'right',
-                style: { fontSize: 10, fill: '#eab308' },
+                style: { fontSize: 10, fill: '#B7791F' },
               }}
             />
 
@@ -112,7 +112,7 @@ export const CreditSpreadChart = ({ className }: { className?: string }) => {
               label={{
                 value: `Current: ${currentSpread} bps${isLive ? ' (LIVE)' : ''}`,
                 position: 'right',
-                style: { fontSize: 10, fill: '#22c55e' },
+                style: { fontSize: 10, fill: '#2E7D4F' },
               }}
             />
 

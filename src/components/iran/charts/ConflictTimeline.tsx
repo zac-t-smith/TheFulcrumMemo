@@ -38,16 +38,16 @@ interface ConflictTimelineProps {
 // =============================================================================
 
 const COLORS = {
-  strategic: '#1D9E75',
-  military: '#E24B4A',
-  energy: '#BA7517',
-  diplomacy: '#378ADD',
+  strategic: '#2E7D4F',
+  military: '#C8102E',
+  energy: '#B07D2B',
+  diplomacy: '#1F3A5F',
   phases: {
-    prepositioning: '#1D9E75',
-    shock: '#E24B4A',
-    attrition: '#BA7517',
-    negotiation: '#378ADD',
-    resolution: '#71717a',
+    prepositioning: '#2E7D4F',
+    shock: '#C8102E',
+    attrition: '#B07D2B',
+    negotiation: '#1F3A5F',
+    resolution: '#4a4a4a',
   },
 };
 
@@ -604,7 +604,7 @@ const OilPriceOverlay = ({ height = 120, className }: { height?: number; classNa
             y={100}
             stroke="#BA7517"
             strokeDasharray="3 3"
-            label={{ value: '$100', fill: '#BA7517', fontSize: 8, position: 'insideTopLeft' }}
+            label={{ value: '$100', fill: '#B07D2B', fontSize: 8, position: 'insideTopLeft' }}
           />
           <ReferenceLine
             x="Feb 28"
@@ -618,7 +618,7 @@ const OilPriceOverlay = ({ height = 120, className }: { height?: number; classNa
             stroke="#BA7517"
             strokeWidth={2}
             dot={false}
-            activeDot={{ r: 4, fill: '#BA7517' }}
+            activeDot={{ r: 4, fill: '#B07D2B' }}
           />
         </LineChart>
       </ResponsiveContainer>

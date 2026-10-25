@@ -118,7 +118,7 @@ export const scenarioData = [
     gccDamage: '$10-50B',
     iranLeverage: 'Moderate (proven capability)',
     description: 'Trump redefines objectives: "We eliminated Khamenei, destroyed the nuclear program, degraded the military. Mission accomplished." U.S. withdraws within 2-4 weeks.',
-    color: '#22c55e',
+    color: '#2E7D4F',
   },
   {
     name: 'Protracted Attrition',
@@ -127,7 +127,7 @@ export const scenarioData = [
     gccDamage: '$50-200B',
     iranLeverage: 'Strong (negotiated concessions)',
     description: 'Iran sustains asymmetric campaign for 4-12 weeks. Strait of Hormuz remains contested. GCC infrastructure damage compounds. Oil exceeds $100/bbl.',
-    color: '#eab308',
+    color: '#B7791F',
     isBaseCase: true,
   },
   {
@@ -137,7 +137,7 @@ export const scenarioData = [
     gccDamage: '$200B+',
     iranLeverage: 'Strong (insurgency leverage)',
     description: 'Air campaign fails to achieve regime change. Trump commits ground troops. Multi-year occupation in mountainous terrain against 90M-person nation.',
-    color: '#ef4444',
+    color: '#C8102E',
   },
 ];
 
@@ -213,42 +213,42 @@ export const macroTransmissionChain = [
     label: 'Energy Shock',
     description: 'Strait of Hormuz closure, 20% global oil disrupted',
     metrics: ['Brent +7.5% to $83.58', 'VLCC rates $445K/day', '81% transit collapse'],
-    color: '#ef4444',
+    color: '#C8102E',
   },
   {
     id: 'inflation',
     label: 'Inflation',
     description: 'Energy costs propagate through economy',
     metrics: ['ISM Prices Paid: 70.5 (+11.5 pts)', 'Gas: biggest jump since Ukraine', '$14B annualized per $10/bbl'],
-    color: '#f97316',
+    color: '#B07D2B',
   },
   {
     id: 'fed-constraint',
     label: 'Fed Constraint',
     description: 'Rate cuts blocked by inflation spike',
     metrics: ['10Y yield: 4.117%', 'Cutting cycle disrupted', 'Stagflation risk'],
-    color: '#eab308',
+    color: '#B7791F',
   },
   {
     id: 'spread-widening',
     label: 'Spread Widening',
     description: 'Credit markets reprice risk',
     metrics: ['HY OAS: 281 bps (historic low)', '30-yr avg: 525 bps', 'Max widening potential'],
-    color: '#84cc16',
+    color: '#2E7D4F',
   },
   {
     id: 'defaults',
     label: 'Defaults',
     description: 'Zombie companies hit refinancing wall',
     metrics: ['Leveraged loan default: 7.9%', '2026-27 maturity wall', 'Zombie company population'],
-    color: '#06b6d4',
+    color: '#4F7F7A',
   },
   {
     id: 'restructuring',
     label: 'Restructuring Cycle',
     description: 'Largest since 2008-2009',
     metrics: ['Retail, CRE, Airlines', 'Cruise, Speculative Tech', 'Advisory mandates surge'],
-    color: '#8b5cf6',
+    color: '#7A6C9D',
   },
 ];
 

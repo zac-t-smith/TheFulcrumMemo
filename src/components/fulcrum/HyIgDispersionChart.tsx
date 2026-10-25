@@ -179,7 +179,7 @@ export const HyIgDispersionChart = () => {
     ctx.stroke();
 
     // BBB line (gray).
-    ctx.strokeStyle = '#6b7280';
+    ctx.strokeStyle = '#4a4a4a';
     ctx.lineWidth = 1.6;
     ctx.beginPath();
     data.forEach((p, i) => {
@@ -222,7 +222,7 @@ export const HyIgDispersionChart = () => {
         ctx.fillText(text, bx + padX, by + bh / 2 + 0.5);
       };
       drawBadge(latest.hy, '#1f4a6b', 'HY');
-      drawBadge(latest.bbb, '#6b7280', 'BBB');
+      drawBadge(latest.bbb, '#4a4a4a', 'BBB');
     }
   }, [data, latest]);
 

@@ -122,7 +122,7 @@ export const ShippingDisruptionChart = ({ className }: { className?: string }) =
                 value: 'Tanker Transits',
                 angle: -90,
                 position: 'insideLeft',
-                style: { fontSize: 10, fill: '#3b82f6' },
+                style: { fontSize: 10, fill: '#1F3A5F' },
               }}
             />
             <YAxis
@@ -137,7 +137,7 @@ export const ShippingDisruptionChart = ({ className }: { className?: string }) =
                 value: 'VLCC Rate/Day',
                 angle: 90,
                 position: 'insideRight',
-                style: { fontSize: 10, fill: '#eab308' },
+                style: { fontSize: 10, fill: '#B7791F' },
               }}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -157,7 +157,7 @@ export const ShippingDisruptionChart = ({ className }: { className?: string }) =
               dataKey="vlccRate"
               stroke="#eab308"
               strokeWidth={3}
-              dot={{ fill: '#eab308', strokeWidth: 2 }}
+              dot={{ fill: '#B7791F', strokeWidth: 2 }}
               name="VLCC Rate"
             />
             {/* Reference line for transit collapse */}
@@ -169,7 +169,7 @@ export const ShippingDisruptionChart = ({ className }: { className?: string }) =
               label={{
                 value: `${transitCollapsePercent}% collapse`,
                 position: 'right',
-                style: { fontSize: 10, fill: '#ef4444' },
+                style: { fontSize: 10, fill: '#C8102E' },
               }}
             />
           </ComposedChart>

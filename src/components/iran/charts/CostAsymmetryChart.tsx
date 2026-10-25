@@ -187,7 +187,7 @@ export const CostAsymmetryChart = ({ className }: { className?: string }) => {
                 {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={entry.category === 'drone' ? '#10b981' : '#f59e0b'}
+                    fill={entry.category === 'drone' ? '#2E7D4F' : '#B7791F'}
                   />
                 ))}
               </Bar>

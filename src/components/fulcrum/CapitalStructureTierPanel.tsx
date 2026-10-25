@@ -28,7 +28,7 @@ type Tier = {
 };
 
 const TIERS: Tier[] = [
-  { key: 'bbb', label: 'BBB', color: '#6b7280', series: bbbOasHistory },
+  { key: 'bbb', label: 'BBB', color: '#4a4a4a', series: bbbOasHistory },
   { key: 'bb',  label: 'BB',  color: '#c9a227', series: bbOasHistory },
   { key: 'hy',  label: 'HY',  color: '#1f4a6b', series: hyOasHistory },
   { key: 'ccc', label: 'CCC', color: '#8a1818', series: cccOasHistory },
