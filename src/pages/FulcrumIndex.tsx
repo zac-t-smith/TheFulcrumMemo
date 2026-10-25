@@ -358,7 +358,7 @@ const FulcrumIndexPage = () => {
     }
 
     // ---------- 3. X-AXIS TICKS (every 5 years for the 40-year span) ----------
-    ctx.fillStyle = 'var(--ink-muted)';
+    ctx.fillStyle = '#4a4a4a';
     ctx.font = '11px Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -381,7 +381,7 @@ const FulcrumIndexPage = () => {
     // ---------- 4. LEFT Y-AXIS LABELS (BAA10Y log) ----------
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'var(--ink)';
+    ctx.fillStyle = '#1a1a1a';
     ctx.font = 'bold 10px Georgia, serif';
     const baaTicks = [100, 150, 200, 300, 500, 700];
     baaTicks.forEach((v) => {
@@ -399,7 +399,7 @@ const FulcrumIndexPage = () => {
     ctx.translate(16, plotY + plotH / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'var(--ink)';
+    ctx.fillStyle = '#1a1a1a';
     ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
     ctx.fillText('BAA10Y (bps, log)', 0, 0);
     ctx.restore();
@@ -408,7 +408,7 @@ const FulcrumIndexPage = () => {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.font = 'bold 10px Georgia, serif';
-    ctx.fillStyle = 'var(--ink)';
+    ctx.fillStyle = '#1a1a1a';
     for (let i = 0; i <= 10; i++) {
       const v = i * 10;
       const yy = yRightOf(v);
@@ -425,13 +425,13 @@ const FulcrumIndexPage = () => {
     ctx.translate(w - 16, plotY + plotH / 2);
     ctx.rotate(Math.PI / 2);
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'var(--ink)';
+    ctx.fillStyle = '#1a1a1a';
     ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
     ctx.fillText('Fulcrum Index (0-100)', 0, 0);
     ctx.restore();
 
     // ---------- 6. PLOT BORDER ----------
-    ctx.strokeStyle = 'var(--ink)';
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
     ctx.strokeRect(plotX, plotY, plotW, plotH);
 
@@ -440,7 +440,7 @@ const FulcrumIndexPage = () => {
     ctx.strokeStyle = 'rgba(26,26,26,0.45)';
     ctx.lineWidth = 1;
     ctx.font = 'italic 10px Georgia, serif';
-    ctx.fillStyle = 'var(--ink)';
+    ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
 
@@ -475,7 +475,7 @@ const FulcrumIndexPage = () => {
       const ly = plotY + 12 + row * 14;
       ctx.fillStyle = 'rgba(247,245,240,0.92)';
       ctx.fillRect(x1, ly - 10, x2 - x1, 12);
-      ctx.fillStyle = 'var(--ink)';
+      ctx.fillStyle = '#1a1a1a';
       ctx.fillText(ev.label, lx, ly);
     });
     ctx.setLineDash([]);
@@ -492,8 +492,8 @@ const FulcrumIndexPage = () => {
     });
     ctx.stroke();
 
-    // ---------- 9. BAA10Y LINE (left axis) — primary, gold ----------
-    ctx.strokeStyle = 'var(--ink-muted)';
+    // ---------- 9. BAA10Y LINE (left axis) — primary. Phase 2.75: ink (was gold). ----------
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 2;
     ctx.lineJoin = 'round';
     ctx.beginPath();
@@ -511,19 +511,19 @@ const FulcrumIndexPage = () => {
     const yLastBaa = yLeftOf(last.baa);
     const yLastIdx = yRightOf(last.idx);
 
-    ctx.fillStyle = 'var(--ink-muted)';
+    ctx.fillStyle = '#4a4a4a';
     ctx.beginPath();
     ctx.arc(xLast, yLastBaa, 4, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = 'var(--ink)';
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    ctx.fillStyle = 'var(--red)';
+    ctx.fillStyle = '#c8102e';
     ctx.beginPath();
     ctx.arc(xLast, yLastIdx, 4, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = 'var(--ink)';
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -544,7 +544,7 @@ const FulcrumIndexPage = () => {
       const by = Math.max(plotY + 2, Math.min(y - bh / 2, plotY + plotH - bh - 2));
       ctx.fillStyle = fill;
       ctx.fillRect(bx, by, bw, bh);
-      ctx.strokeStyle = 'var(--ink)';
+      ctx.strokeStyle = '#1a1a1a';
       ctx.lineWidth = 0.75;
       ctx.strokeRect(bx + 0.5, by + 0.5, bw - 1, bh - 1);
       ctx.fillStyle = textColor;
@@ -553,8 +553,8 @@ const FulcrumIndexPage = () => {
       ctx.fillText(text, bx + padX, by + bh / 2 + 0.5);
     };
 
-    drawBadge(xLast, yLastIdx, `Idx ${last.idx}`, 'var(--red)', '#fff');
-    drawBadge(xLast, yLastBaa, `${Math.round(last.baa)} bps`, 'var(--ink-muted)', 'var(--ink)');
+    drawBadge(xLast, yLastIdx, `Idx ${last.idx}`, '#c8102e', '#fff');
+    drawBadge(xLast, yLastBaa, `${Math.round(last.baa)} bps`, '#4a4a4a', '#1a1a1a');
 
     // ---------- 11. LEGEND ----------
     const legX = plotX + 10;
@@ -568,11 +568,11 @@ const FulcrumIndexPage = () => {
     ctx.strokeRect(legX + 0.5, legY + 0.5, legW - 1, legH - 1);
 
     ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
-    ctx.fillStyle = 'var(--ink)';
+    ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
 
-    ctx.strokeStyle = 'var(--ink-muted)';
+    ctx.strokeStyle = '#4a4a4a';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(legX + 8, legY + 14);
@@ -609,7 +609,7 @@ const FulcrumIndexPage = () => {
     // side of the 50 line for readability against the green/red bands.
     ALL_REGIMES.forEach(r => {
       const center = (r.bandMin + r.bandMax) / 2;
-      const labelColor = r.bandMin >= 50 ? 'var(--red-deep)' : '#1f6b3a';
+      const labelColor = r.bandMin >= 50 ? '#8a1818' : '#1f6b3a';
       zoneLabel(center, r.regime, labelColor);
     });
   }, [indexData]);
@@ -654,13 +654,13 @@ const FulcrumIndexPage = () => {
     const yLeftOf = (oas: number) =>
       plotY + plotH - ((Math.log(Math.max(HY_LOG_LO, Math.min(HY_LOG_HI, oas))) - HY_LN_LO) / (HY_LN_HI - HY_LN_LO)) * plotH;
 
-    ctx.fillStyle = 'var(--ink)';
+    ctx.fillStyle = '#1a1a1a';
     ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText('HY OAS (current cycle)', plotX, 8);
     ctx.font = 'italic 9.5px Georgia, serif';
-    ctx.fillStyle = 'var(--ink-muted)';
+    ctx.fillStyle = '#4a4a4a';
     ctx.fillText('ICE BofA US High Yield, 3-year FRED window', plotX, 22);
 
     ctx.strokeStyle = 'rgba(26,26,26,0.06)';
@@ -675,18 +675,18 @@ const FulcrumIndexPage = () => {
 
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'var(--ink)';
+    ctx.fillStyle = '#1a1a1a';
     ctx.font = 'bold 9px Georgia, serif';
     [300, 400, 500, 600].forEach(v => {
       const yy = yLeftOf(v);
       ctx.fillText(`${v}`, plotX - 6, yy);
     });
 
-    ctx.strokeStyle = 'var(--ink)';
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
     ctx.strokeRect(plotX, plotY, plotW, plotH);
 
-    ctx.fillStyle = 'var(--ink-muted)';
+    ctx.fillStyle = '#4a4a4a';
     ctx.font = '10px Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -699,7 +699,7 @@ const FulcrumIndexPage = () => {
       ctx.fillText(String(year), xt, plotY + plotH + 6);
     }
 
-    ctx.strokeStyle = 'var(--ink-muted)';
+    ctx.strokeStyle = '#4a4a4a';
     ctx.lineWidth = 1.6;
     ctx.lineJoin = 'round';
     ctx.beginPath();
@@ -712,11 +712,11 @@ const FulcrumIndexPage = () => {
     ctx.stroke();
 
     const last = data[data.length - 1];
-    ctx.fillStyle = 'var(--ink-muted)';
+    ctx.fillStyle = '#4a4a4a';
     ctx.beginPath();
     ctx.arc(xOf(new Date(last.date).getTime()), yLeftOf(last.value), 3.5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = 'var(--ink)';
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
     ctx.stroke();
   }, []);
@@ -791,7 +791,7 @@ const FulcrumIndexPage = () => {
     }
 
     // Color bar border
-    ctx.strokeStyle = 'var(--ink)';
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
     ctx.strokeRect(plotX, barY, plotW, barHeight);
 
@@ -807,7 +807,7 @@ const FulcrumIndexPage = () => {
     }
 
     // ---------- 3. PLOT BORDER ----------
-    ctx.strokeStyle = 'var(--ink)';
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
     ctx.strokeRect(plotX, plotY, plotW, plotH);
 
@@ -857,7 +857,7 @@ const FulcrumIndexPage = () => {
     drawPriceLine(
       (i) => etfData[i]?.gld,
       gldMin, gldMax,
-      'var(--ink-muted)', 2
+      '#4a4a4a', 2
     );
 
     // VIX (purple, dashed)
@@ -870,7 +870,7 @@ const FulcrumIndexPage = () => {
     ctx.setLineDash([]);
 
     // ---------- 5. X-AXIS YEAR LABELS ----------
-    ctx.fillStyle = 'var(--ink-muted)';
+    ctx.fillStyle = '#4a4a4a';
     ctx.font = '11px Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -906,7 +906,7 @@ const FulcrumIndexPage = () => {
     const legendItems = [
       { label: 'HYG (HY bonds)', color: '#2563eb', dashed: false },
       { label: 'USO (crude oil)', color: '#ea580c', dashed: false },
-      { label: 'GLD (gold)', color: 'var(--ink-muted)', dashed: false },
+      { label: 'GLD (gold)', color: '#4a4a4a', dashed: false },
       { label: 'VIX (volatility)', color: '#7c3aed', dashed: true },
     ];
 
@@ -920,24 +920,24 @@ const FulcrumIndexPage = () => {
       ctx.lineTo(legX + 28, y);
       ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = 'var(--ink)';
+      ctx.fillStyle = '#1a1a1a';
       ctx.fillText(item.label, legX + 34, y);
     });
 
     // ---------- 7. TITLE ----------
     ctx.font = 'bold 12px Helvetica Neue, Arial, sans-serif';
-    ctx.fillStyle = 'var(--ink)';
+    ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText('REGIME POSITIONING MAP', plotX, plotY - 28);
 
     ctx.font = 'italic 10px Georgia, serif';
-    ctx.fillStyle = 'var(--ink-muted)';
+    ctx.fillStyle = '#4a4a4a';
     ctx.fillText('Asset performance by Fulcrum Index regime (normalized)', plotX, plotY - 14);
 
     // Regime color bar label
     ctx.font = '9px Helvetica Neue, Arial, sans-serif';
-    ctx.fillStyle = 'var(--ink-muted)';
+    ctx.fillStyle = '#4a4a4a';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
     ctx.fillText('Regime →', plotX - 8, barY + barHeight / 2);
@@ -1465,7 +1465,7 @@ The Fulcrum Index — Composite Path
                   <PositionCategory
                     label="Conditional"
                     badge="⚠"
-                    color="#c9a227"
+                    color="#B7791F"
                     positions={CONDITIONAL_POSITIONS}
                   />
                   <PositionCategory
