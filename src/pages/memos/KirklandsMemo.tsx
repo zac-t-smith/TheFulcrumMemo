@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
-import { PageHeader, TagChip } from '@/components/system';
+import { PageHeader, TagChip, Callout } from '@/components/system';
 
 const KirklandsMemo = () => {
   return (
@@ -45,76 +45,58 @@ const KirklandsMemo = () => {
             </p>
           </motion.div>
 
-          {/* Personal Note */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="surface-elevated border-l-2 border-blue-500 p-6 mb-8"
-          >
-            <h3 className="text-blue-400 text-[10px] uppercase tracking-wider mb-3">
-              Why This Analysis Matters
-            </h3>
-            <p className="text-muted-foreground text-sm italic leading-relaxed mb-3">
-              I've navigated a business through restructuring—not as an advisor or investor, but as
-              the operator making the decisions. When you're burning cash and need capital, you
+          <Callout variant="insight" label="Why this analysis matters">
+            <p className="italic mb-3">
+              I've navigated a business through restructuring — not as an advisor or investor, but
+              as the operator making the decisions. When you're burning cash and need capital, you
               don't have the luxury of perfect options.
             </p>
-            <p className="text-muted-foreground text-sm italic leading-relaxed">
-              This memo applies those lessons to KIRK—not to criticize management's decisions, but
+            <p className="italic">
+              This memo applies those lessons to KIRK — not to criticize management's decisions, but
               to understand the mechanics of how creditor control operates in modern distressed
               situations.
             </p>
-          </motion.div>
+          </Callout>
 
-          {/* Executive Summary */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="surface-elevated border-l-2 border-primary p-6 mb-8"
-          >
-            <h3 className="text-primary text-[10px] uppercase tracking-wider mb-4">
-              Executive Summary
-            </h3>
-            <ul className="space-y-3 text-muted-foreground text-sm">
+          <Callout variant="stress" label="Executive summary">
+            <ul className="space-y-3">
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
-                  <strong className="text-foreground">Revenue collapse accelerating:</strong> Sales
-                  down 11.7% year-to-date, with Q2 showing 12.2% decline
+                  <strong style={{ color: 'var(--ink)' }}>Revenue collapse accelerating:</strong>{' '}
+                  Sales down 11.7% year-to-date, with Q2 showing 12.2% decline.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
-                  <strong className="text-foreground">Gross margin compression terminal:</strong>{' '}
-                  16.3% in Q2 (down 410 basis points) indicates heavy promotional discounting
+                  <strong style={{ color: 'var(--ink)' }}>Gross margin compression terminal:</strong>{' '}
+                  16.3% in Q2 (down 410 basis points) indicates heavy promotional discounting.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
-                  <strong className="text-foreground">Liquidity precarious:</strong> 7-12 month
-                  runway after $10M brand sale and $20M delayed draw commitment
+                  <strong style={{ color: 'var(--ink)' }}>Liquidity precarious:</strong> 7–12 month
+                  runway after the $10M brand sale and $20M delayed-draw commitment.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
-                  <strong className="text-foreground">Beyond has de facto control:</strong> 40%
-                  equity ownership, 2 of 6 board seats, conversion rights expandable to 65%
+                  <strong style={{ color: 'var(--ink)' }}>Beyond has de facto control:</strong> 40%
+                  equity ownership, 2 of 6 board seats, conversion rights expandable to 65%.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
-                  <strong className="text-foreground">Expected equity value:</strong>{' '}
-                  <span className="text-red-400">67-93% downside</span> from current ~$1.50
+                  <strong style={{ color: 'var(--ink)' }}>Expected equity value:</strong>{' '}
+                  <span style={{ color: 'var(--red)' }}>67–93% downside</span> from current ~$1.50.
                 </span>
               </li>
             </ul>
-          </motion.div>
+          </Callout>
 
           {/* Phase A: entire Download CTA block hidden until Phase 5 pipeline */}
 

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
-import { PageHeader, TagChip } from '@/components/system';
+import { PageHeader, TagChip, Callout } from '@/components/system';
 
 const LycraMemo = () => {
   return (
@@ -44,79 +44,61 @@ const LycraMemo = () => {
             </p>
           </motion.div>
 
-          {/* Personal Note */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="surface-elevated border-l-2 border-blue-500 p-6 mb-8"
-          >
-            <h3 className="text-blue-400 text-[10px] uppercase tracking-wider mb-3">
-              Why This Analysis Matters
-            </h3>
-            <p className="text-muted-foreground text-sm italic leading-relaxed mb-3">
-              LYCRA illustrates the dangerous kind of distress. Its journey from 2019 LBO to 2022
-              restructuring to 2025's second recapitalization proves that when secular headwinds and
-              eroding competitive advantages overwhelm the core business model, debt reduction alone
-              merely delays the inevitable.
+          <Callout variant="insight" label="Why this analysis matters">
+            <p className="italic mb-3">
+              LYCRA illustrates the dangerous kind of distress. Its journey from the 2019 LBO to the
+              2022 restructuring to a 2025 second recapitalization proves that when secular
+              headwinds and eroding competitive advantages overwhelm the core business model, debt
+              reduction alone merely delays the inevitable.
             </p>
-            <p className="text-muted-foreground text-sm italic leading-relaxed">
-              This memo is about understanding the mechanics of serial restructurings, why creditors
-              who "won" in 2022 are facing dilution in 2025, and what happens when structural
-              problems overwhelm even dramatically reduced debt loads.
+            <p className="italic">
+              This memo is about the mechanics of serial restructurings — why creditors who "won"
+              in 2022 are facing dilution in 2025, and what happens when structural problems
+              overwhelm even a dramatically reduced debt load.
             </p>
-          </motion.div>
+          </Callout>
 
-          {/* Executive Summary */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="surface-elevated border-l-2 border-primary p-6 mb-8"
-          >
-            <h3 className="text-primary text-[10px] uppercase tracking-wider mb-4">
-              Executive Summary
-            </h3>
-            <ul className="space-y-3 text-muted-foreground text-sm">
+          <Callout variant="stress" label="Executive summary">
+            <ul className="space-y-3">
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
-                  <strong className="text-foreground">Serial restructuring pattern:</strong> 2022
+                  <strong style={{ color: 'var(--ink)' }}>Serial restructuring pattern:</strong> 2022
                   debt-for-equity swap eliminated original owners, yet only 3 years later company
-                  negotiating second recapitalization
+                  negotiating a second recapitalization.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
-                  <strong className="text-foreground">Revenue decline accelerating:</strong> ~$800M
-                  LTM (down from $885M in 2020), indicating structural market deterioration
+                  <strong style={{ color: 'var(--ink)' }}>Revenue decline accelerating:</strong>{' '}
+                  ~$800M LTM (down from $885M in 2020), indicating structural market deterioration.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
-                  <strong className="text-foreground">PIK interest death spiral:</strong>{' '}
-                  $138M/year in cash interest converted to PIK—company cannot service any debt
+                  <strong style={{ color: 'var(--ink)' }}>PIK interest death spiral:</strong>{' '}
+                  $138M/year of cash interest converted to PIK — company cannot service any debt.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
-                  <strong className="text-foreground">Complex priority structure:</strong> $120M of
-                  Refinancing Notes elevated to "super senior" status in 2023
+                  <strong style={{ color: 'var(--ink)' }}>Complex priority structure:</strong> $120M
+                  of Refinancing Notes elevated to "super senior" status in 2023.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
-                  <strong className="text-foreground">Expected recoveries:</strong> SSTL 100%,
-                  Super Senior Refi Notes 70-90%, remaining tranches{' '}
-                  <span className="text-red-400">10-30%</span>
+                  <strong style={{ color: 'var(--ink)' }}>Expected recoveries:</strong> SSTL 100%,
+                  Super Senior Refi Notes 70–90%, remaining tranches{' '}
+                  <span style={{ color: 'var(--red)' }}>10–30%</span>.
                 </span>
               </li>
             </ul>
-          </motion.div>
+          </Callout>
 
           {/* Phase A: entire Download CTA block hidden until Phase 5 pipeline */}
 
@@ -133,37 +115,28 @@ const LycraMemo = () => {
             </p>
           </motion.blockquote>
 
-          {/* Warning Box */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="surface-elevated border-l-2 border-yellow-500 p-6 mb-8"
-          >
-            <h4 className="text-yellow-500 text-[10px] uppercase tracking-wider mb-3">
-              Why LYCRA Can't Stabilize
-            </h4>
-            <ul className="space-y-2 text-muted-foreground text-sm">
+          <Callout variant="warning" label="Why LYCRA can't stabilize">
+            <ul className="space-y-2">
               <li className="flex items-start gap-3">
-                <span className="text-yellow-500">▸</span>
+                <span style={{ color: 'var(--warn)' }}>▸</span>
                 <span>
-                  Commodity spandex market: Chinese manufacturers produce at 30-40% lower cost
+                  Commodity spandex market: Chinese manufacturers produce at 30–40% lower cost.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-yellow-500">▸</span>
-                <span>Tariff uncertainty creates unpredictable cost structures</span>
+                <span style={{ color: 'var(--warn)' }}>▸</span>
+                <span>Tariff uncertainty creates unpredictable cost structures.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-yellow-500">▸</span>
-                <span>Traditional apparel/textile end markets shrinking</span>
+                <span style={{ color: 'var(--warn)' }}>▸</span>
+                <span>Traditional apparel/textile end markets shrinking.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-yellow-500">▸</span>
-                <span>8 global manufacturing facilities require substantial ongoing capex</span>
+                <span style={{ color: 'var(--warn)' }}>▸</span>
+                <span>Eight global manufacturing facilities require substantial ongoing capex.</span>
               </li>
             </ul>
-          </motion.div>
+          </Callout>
 
           {/* Footer */}
           <motion.footer

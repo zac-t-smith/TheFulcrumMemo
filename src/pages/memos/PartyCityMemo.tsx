@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
-import { PageHeader, TagChip, Badge } from '@/components/system';
+import { PageHeader, TagChip, Badge, Callout } from '@/components/system';
 
 const PartyCityMemo = () => {
   return (
@@ -51,64 +51,46 @@ const PartyCityMemo = () => {
             </p>
           </motion.div>
 
-          {/* Key Timeline */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="surface-elevated border-l-2 border-primary p-6 mb-8"
-          >
-            <h3 className="text-primary text-[10px] uppercase tracking-wider mb-4">
-              Key Timeline
-            </h3>
-            <ul className="space-y-2 text-muted-foreground text-sm">
+          <Callout variant="stress" label="Key timeline">
+            <ul className="space-y-2">
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
-                <span>October 12, 2023: Emerged from Chapter 11 bankruptcy</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
+                <span>October 12, 2023 — Emerged from Chapter 11 bankruptcy.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
-                <span>Debt reduced from ~$1.5B to $232M in Second Lien Notes</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
+                <span>Debt reduced from ~$1.5B to $232M in Second Lien Notes.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
-                <span>December 21, 2024: Filed for liquidation (14 months later)</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
+                <span>December 21, 2024 — Filed for liquidation (14 months later).</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
-                <span>February 2025: All 700+ stores closed, 12,000 jobs eliminated</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
+                <span>February 2025 — All 700+ stores closed, 12,000 jobs eliminated.</span>
               </li>
             </ul>
-          </motion.div>
+          </Callout>
 
-          {/* Estimated Recoveries */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="surface-elevated border-l-2 border-primary p-6 mb-8"
-          >
-            <h3 className="text-primary text-[10px] uppercase tracking-wider mb-4">
-              Estimated Recoveries
-            </h3>
-            <ul className="space-y-2 text-muted-foreground text-sm">
+          <Callout variant="stress" label="Estimated recoveries">
+            <ul className="space-y-2">
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
-                <span>ABL Facility lenders: 30-40 cents on the dollar</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
+                <span>ABL Facility lenders: 30–40 cents on the dollar.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
                 <span>
                   Second Lien Note holders (12% PIK toggle):{' '}
-                  <span className="text-red-400">0-10 cents</span>
+                  <span style={{ color: 'var(--red)' }}>0–10 cents</span>.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-primary font-bold">▸</span>
-                <span>Equity holders: Zero</span>
+                <span style={{ color: 'var(--red)' }} className="font-bold">▸</span>
+                <span>Equity holders: zero.</span>
               </li>
             </ul>
-          </motion.div>
+          </Callout>
 
           {/* Pull Quote */}
           <motion.blockquote
@@ -125,18 +107,12 @@ const PartyCityMemo = () => {
 
           {/* Phase A: entire Download CTA block hidden until Phase 5 pipeline */}
 
-          {/* Final Warning */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="bg-red-900/20 border-2 border-red-600 p-6 rounded mb-8"
-          >
-            <p className="text-red-300 text-sm font-semibold text-center">
+          <Callout variant="stress" label="Final warning">
+            <p className="font-semibold text-center" style={{ color: 'var(--red)' }}>
               When equity is nearly worthless and EV/Revenue is sub-0.2x, even "secured" debt is
               highly speculative.
             </p>
-          </motion.div>
+          </Callout>
 
           {/* Footer */}
           <motion.footer
