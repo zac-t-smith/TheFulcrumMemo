@@ -1825,7 +1825,7 @@ const PositionCategory = ({
           {!showReason && pos.thesisLink && (
             <Link
               to={pos.thesisLink}
-              className="text-[10.5px] text-[#2563eb] hover:underline w-fit"
+              className="text-[10.5px] text-[#1F3A5F] hover:underline w-fit"
               style={{ fontFamily: 'var(--font-sans)' }}
             >
               {pos.thesis} →

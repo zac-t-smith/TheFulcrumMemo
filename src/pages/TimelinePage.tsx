@@ -112,27 +112,27 @@ const TimelinePage = () => {
                   </h3>
                   <ul className="space-y-3 text-sm text-muted-foreground">
                     <li className="flex items-start gap-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#1D9E75] mt-1.5 shrink-0" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#2E7D4F] mt-1.5 shrink-0" />
                       <span>
-                        <strong className="text-[#1D9E75]">Strategic positioning</strong> (green) — Venezuela seizure, OFAC licenses, tariff escalations
+                        <strong className="text-[#2E7D4F]">Strategic positioning</strong> (green) — Venezuela seizure, OFAC licenses, tariff escalations
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#E24B4A] mt-1.5 shrink-0" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#C8102E] mt-1.5 shrink-0" />
                       <span>
-                        <strong className="text-[#E24B4A]">Military operations</strong> (red) — Strikes, casualties, infrastructure destruction
+                        <strong className="text-[#C8102E]">Military operations</strong> (red) — Strikes, casualties, infrastructure destruction
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#BA7517] mt-1.5 shrink-0" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#B07D2B] mt-1.5 shrink-0" />
                       <span>
-                        <strong className="text-[#BA7517]">Energy & markets</strong> (amber) — Oil prices, Hormuz closure, infrastructure hits
+                        <strong className="text-[#B07D2B]">Energy & markets</strong> (amber) — Oil prices, Hormuz closure, infrastructure hits
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#378ADD] mt-1.5 shrink-0" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#1F3A5F] mt-1.5 shrink-0" />
                       <span>
-                        <strong className="text-[#378ADD]">Diplomacy</strong> (blue) — Negotiations, ultimatums, mediation attempts
+                        <strong className="text-[#1F3A5F]">Diplomacy</strong> (blue) — Negotiations, ultimatums, mediation attempts
                       </span>
                     </li>
                   </ul>
