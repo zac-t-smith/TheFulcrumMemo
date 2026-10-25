@@ -25,6 +25,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Casework from "./pages/Casework";
 import RestorationCaseStudy from "./pages/casework/RestorationCaseStudy";
+import PrintMemoShell from "./pages/print/PrintMemoShell";
 import BoardRoom from "./strategy/pages/BoardRoom";
 import PlayerView from "./strategy/pages/PlayerView";
 import OpsView from "./strategy/pages/OpsView";
@@ -62,6 +63,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/casework" element={<Casework />} />
             <Route path="/casework/restoration" element={<RestorationCaseStudy />} />
+            <Route path="/print/memos/:slug" element={<PrintMemoShell />} />
             <Route path="/strategy" element={<BoardRoom />} />
             <Route path="/strategy/play" element={<PlayerView />} />
             <Route path="/strategy/ops" element={<OpsView />} />

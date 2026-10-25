@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
-import { PageHeader, TagChip, Callout } from '@/components/system';
+import { PageHeader, TagChip, Callout, MemoDownload } from '@/components/system';
 
 const LycraMemo = () => {
   return (
@@ -27,6 +27,7 @@ const LycraMemo = () => {
             </>
           }
         />
+        <MemoDownload file="Fulcrum-Memo_LYCRA.pdf" />
 
           {/* Lead Paragraph */}
           <motion.div

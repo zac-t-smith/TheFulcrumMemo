@@ -12,3 +12,4 @@ export { Button } from "./Button";
 export { StatBlock } from "./StatBlock";
 export { MemoCard } from "./MemoCard";
 export { SeriesCard } from "./SeriesCard";
+export { MemoDownload } from "./MemoDownload";

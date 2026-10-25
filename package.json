@@ -13,7 +13,8 @@
     "data:etf": "cd quant && python scripts/fetch_etf_data.py --ts-dir ../src/data --data-dir data",
     "data:all": "npm run data:fred && npm run data:etf",
     "data:test": "cd quant && python scripts/test_pipeline.py",
-    "simulate": "tsx scripts/simulate-class.ts"
+    "simulate": "tsx scripts/simulate-class.ts",
+    "render:pdfs": "tsx scripts/render-pdfs.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -88,6 +89,7 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
     "lovable-tagger": "^1.1.13",
+    "playwright": "^1.64.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.23.15",

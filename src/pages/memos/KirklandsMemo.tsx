@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
-import { PageHeader, TagChip, Callout } from '@/components/system';
+import { PageHeader, TagChip, Callout, MemoDownload } from '@/components/system';
 
 const KirklandsMemo = () => {
   return (
@@ -28,6 +28,7 @@ const KirklandsMemo = () => {
             </>
           }
         />
+        <MemoDownload file="Fulcrum-Memo_Kirklands.pdf" />
 
           {/* Lead Paragraph */}
           <motion.div

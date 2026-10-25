@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
+import { MemoDownload } from '@/components/system';
 import {
   ReadingProgress,
   TableOfContents,
@@ -42,6 +43,7 @@ const ShadowPartnerMemo = () => {
           <TableOfContents items={tocItems} />
 
           <article ref={contentRef} className="memo-article">
+            <MemoDownload file="Fulcrum-Memo_Shadow-Partner.pdf" />
             {/* Back Link */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

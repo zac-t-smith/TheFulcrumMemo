@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
+import { MemoDownload } from '@/components/system';
 import {
   ReadingProgress,
   TableOfContents,
@@ -76,14 +77,7 @@ const IranMemoPartIFull = () => {
           <TableOfContents items={tocItems} />
 
           <article ref={contentRef} className="memo-article">
-          {/* Back Link */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            {/* Phase A: back link removed; global nav handles it */}
-          </motion.div>
+          <MemoDownload file="Fulcrum-Memo_Iran-Part-I.pdf" />
 
           {/* Series Banner */}
           <motion.div

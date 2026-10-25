@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
-import { PageHeader, TagChip, Badge, Callout } from '@/components/system';
+import { PageHeader, TagChip, Badge, Callout, MemoDownload } from '@/components/system';
 
 const PartyCityMemo = () => {
   return (
@@ -30,6 +30,7 @@ const PartyCityMemo = () => {
             </>
           }
         />
+        <MemoDownload file="Fulcrum-Memo_Party-City.pdf" />
 
           {/* Lead Paragraph */}
           <motion.div

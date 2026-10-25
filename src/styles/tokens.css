@@ -153,3 +153,82 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* =====================================================================
+ * Print mode — toggled by `.tfm-print` on <html>/<body>.
+ * Used by the /#/print/memos/:slug routes and the Playwright renderer.
+ * Chrome off; readable column; hairline-rule accents; aggressive
+ * page-break hints so tables and callouts stay intact.
+ * ===================================================================*/
+
+html.tfm-print,
+body.tfm-print {
+  background: #ffffff !important;
+  color: var(--ink);
+  font-family: var(--font-serif);
+}
+
+/* Hide everything that isn't the memo body: nav, footer, archive banner,
+ * TOC, reading progress, memo back-link div, play/dialog chrome. */
+body.tfm-print nav,
+body.tfm-print footer,
+body.tfm-print [role="navigation"],
+body.tfm-print [aria-label="Field Notes sections"],
+body.tfm-print .memo-page-wrapper > :first-child,  /* TOC */
+body.tfm-print [class*="reading-progress"],
+body.tfm-print [class*="ReadingProgress"] {
+  display: none !important;
+}
+
+/* Reset the sticky top padding and container limits. */
+body.tfm-print main,
+body.tfm-print .memo-page-wrapper,
+body.tfm-print [class*="pt-24"],
+body.tfm-print [class*="pt-10"] {
+  padding-top: 0 !important;
+}
+
+body.tfm-print article {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Letter page geometry */
+@page {
+  size: Letter;
+  margin: 0.75in;
+}
+
+/* Keep callouts and tables together on a page */
+body.tfm-print aside,
+body.tfm-print table,
+body.tfm-print blockquote,
+body.tfm-print figure,
+body.tfm-print .memo-callout {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Headings don't orphan at page bottom */
+body.tfm-print h1,
+body.tfm-print h2,
+body.tfm-print h3 {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+/* Avoid absolute positioning in print (prior Kirkland PDF bug) */
+body.tfm-print * {
+  position: static !important;
+}
+
+/* Links shown as text; URL stripped (recruiters hate raw URLs mid-sentence) */
+body.tfm-print a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* Running footer line at page bottom (via CSS counters is browser-dependent;
+ * for the Playwright renderer we pass headerTemplate/footerTemplate instead). */

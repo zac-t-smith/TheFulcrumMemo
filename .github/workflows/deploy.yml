@@ -27,7 +27,25 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build
+      # Build once so vite preview has something to serve for the PDF renderer.
+      - name: Initial build
+        run: npm run build
+        env:
+          VITE_AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
+          VITE_FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          VITE_EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_OPS_PIN: ${{ secrets.VITE_OPS_PIN }}
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Render memo PDFs
+        run: npm run render:pdfs
+
+      # Rebuild so the just-rendered public/pdfs/*.pdf land inside dist/.
+      - name: Rebuild with PDFs bundled
         run: npm run build
         env:
           VITE_AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
