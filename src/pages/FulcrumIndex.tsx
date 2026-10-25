@@ -1039,7 +1039,7 @@ const FulcrumIndexPage = () => {
           {/* Header */}
           <div
             className="flex items-stretch gap-3.5 pb-3.5 mb-4"
-            style={{ borderBottom: '1px solid #1a1a1a' }}
+            style={{ borderBottom: '1px solid var(--ink)' }}
           >
             <div className="w-2 flex-shrink-0" style={{ background: 'var(--red)' }} />
             <div className="flex flex-col justify-center gap-1">
@@ -1072,13 +1072,13 @@ The Fulcrum Index
               <div
                 className="grid grid-cols-2 md:grid-cols-4 gap-0 mb-4"
                 style={{
-                  borderTop: '1px solid #d9d4c7',
-                  borderBottom: '1px solid #d9d4c7',
+                  borderTop: '1px solid var(--rule)',
+                  borderBottom: '1px solid var(--rule)',
                 }}
               >
                 <div
                   className="py-3 px-3.5 flex flex-col gap-1"
-                  style={{ borderRight: '1px solid #d9d4c7' }}
+                  style={{ borderRight: '1px solid var(--rule)' }}
                 >
                   <div
                     className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold"
@@ -1103,7 +1103,7 @@ The Fulcrum Index
 
                 <div
                   className="py-3 px-3.5 flex flex-col gap-1"
-                  style={{ borderRight: '1px solid #d9d4c7' }}
+                  style={{ borderRight: '1px solid var(--rule)' }}
                 >
                   <div
                     className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold"
@@ -1129,7 +1129,7 @@ The Fulcrum Index
 
                 <div
                   className="py-3 px-3.5 flex flex-col gap-1"
-                  style={{ borderRight: '1px solid #d9d4c7' }}
+                  style={{ borderRight: '1px solid var(--rule)' }}
                 >
                   <div
                     className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold"
@@ -1292,7 +1292,7 @@ The Fulcrum Index — Composite Path
                 className="p-4 mb-4"
                 style={{
                   background: 'var(--paper-raised)',
-                  border: '1px solid #d9d4c7',
+                  border: '1px solid var(--rule)',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
               >
@@ -1307,7 +1307,7 @@ The Fulcrum Index — Composite Path
                 className="p-3 mb-4"
                 style={{
                   background: 'var(--paper-raised)',
-                  border: '1px solid #d9d4c7',
+                  border: '1px solid var(--rule)',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
               >
@@ -1331,7 +1331,7 @@ The Fulcrum Index — Composite Path
                 className="p-4 mb-4"
                 style={{
                   background: 'var(--paper-raised)',
-                  border: '1px solid #d9d4c7',
+                  border: '1px solid var(--rule)',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
               >
@@ -1348,7 +1348,7 @@ The Fulcrum Index — Composite Path
               <div
                 className="mb-4 overflow-hidden"
                 style={{
-                  border: '1px solid #d9d4c7',
+                  border: '1px solid var(--rule)',
                   background: 'var(--paper-raised)',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
@@ -1358,7 +1358,7 @@ The Fulcrum Index — Composite Path
                   className="px-4 py-3 flex items-center justify-between"
                   style={{
                     background: 'var(--ink)',
-                    borderBottom: '1px solid #d9d4c7',
+                    borderBottom: '1px solid var(--rule)',
                   }}
                 >
                   <div>
@@ -1388,7 +1388,7 @@ The Fulcrum Index — Composite Path
                 {/* Backtest summary metrics card */}
                 <div
                   className="px-4 py-3 grid grid-cols-1 md:grid-cols-3 gap-4"
-                  style={{ borderBottom: '1px solid #d9d4c7', background: 'rgba(0,0,0,0.02)' }}
+                  style={{ borderBottom: '1px solid var(--rule)', background: 'rgba(0,0,0,0.02)' }}
                 >
                   <div>
                     <div
@@ -1445,7 +1445,7 @@ The Fulcrum Index — Composite Path
                   className="px-4 py-2 text-[12px] text-[#1a1a1a]"
                   style={{
                     fontFamily: 'var(--font-serif)',
-                    borderBottom: '1px solid #d9d4c7',
+                    borderBottom: '1px solid var(--rule)',
                     background: 'rgba(200, 16, 46, 0.03)',
                   }}
                 >
@@ -1482,7 +1482,7 @@ The Fulcrum Index — Composite Path
                   className="px-4 py-2 text-[11px] text-[#4a4a4a] italic leading-relaxed"
                   style={{
                     fontFamily: 'var(--font-serif)',
-                    borderTop: '1px solid #d9d4c7',
+                    borderTop: '1px solid var(--rule)',
                     background: 'rgba(0,0,0,0.02)',
                   }}
                 >
@@ -1498,14 +1498,14 @@ The Fulcrum Index — Composite Path
               <div
                 className="mb-4 overflow-hidden"
                 style={{
-                  border: '1px solid #d9d4c7',
+                  border: '1px solid var(--rule)',
                   background: 'var(--paper-raised)',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
               >
                 <div
                   className="px-4 py-3"
-                  style={{ borderBottom: '1px solid #d9d4c7' }}
+                  style={{ borderBottom: '1px solid var(--rule)' }}
                 >
                   <div
                     className="text-[10px] tracking-[0.16em] uppercase text-[#4a4a4a] font-bold mb-1"
@@ -1524,7 +1524,7 @@ The Fulcrum Index — Composite Path
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[500px]">
                     <thead>
-                      <tr style={{ borderBottom: '1px solid #1a1a1a' }}>
+                      <tr style={{ borderBottom: '1px solid var(--ink)' }}>
                         <th
                           className="px-4 py-2 text-left text-[10px] tracking-[0.14em] uppercase text-[#4a4a4a] font-bold"
                           style={{ fontFamily: 'var(--font-sans)' }}
@@ -1666,7 +1666,7 @@ The Fulcrum Index — Composite Path
                   className="px-4 py-2 text-[11px] text-[#4a4a4a] italic leading-relaxed"
                   style={{
                     fontFamily: 'var(--font-serif)',
-                    borderTop: '1px solid #d9d4c7',
+                    borderTop: '1px solid var(--rule)',
                     background: 'rgba(0,0,0,0.02)',
                   }}
                 >
@@ -1681,7 +1681,7 @@ The Fulcrum Index — Composite Path
               <div
                 className="mb-4 overflow-x-auto"
                 style={{
-                  border: '1px solid #d9d4c7',
+                  border: '1px solid var(--rule)',
                   background: 'var(--paper-raised)',
                   boxShadow: '0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
                 }}
@@ -1689,7 +1689,7 @@ The Fulcrum Index — Composite Path
                 <div
                   className="grid grid-cols-[60px_1fr_1.4fr_1fr] md:grid-cols-[80px_1fr_1.4fr_1fr] gap-0 py-2.5 px-3.5 text-[10px] tracking-[0.16em] uppercase text-[#4a4a4a] font-bold min-w-[600px]"
                   style={{
-                    borderBottom: '1px solid #1a1a1a',
+                    borderBottom: '1px solid var(--ink)',
                     fontFamily: 'var(--font-sans)',
                   }}
                 >
@@ -1704,7 +1704,7 @@ The Fulcrum Index — Composite Path
                     className={`grid grid-cols-[60px_1fr_1.4fr_1fr] md:grid-cols-[80px_1fr_1.4fr_1fr] gap-0 py-2.5 px-3.5 text-[13px] items-center min-w-[600px] ${
                       band.isActive ? 'bg-[rgba(200,16,46,0.06)]' : ''
                     }`}
-                    style={{ borderBottom: '1px solid #d9d4c7' }}
+                    style={{ borderBottom: '1px solid var(--rule)' }}
                   >
                     <div>
                       {band.isActive && (
@@ -1740,7 +1740,7 @@ The Fulcrum Index — Composite Path
               {/* Footer */}
               <div
                 className="flex flex-col md:flex-row justify-between items-baseline gap-4 pt-2.5"
-                style={{ borderTop: '1px solid #1a1a1a' }}
+                style={{ borderTop: '1px solid var(--ink)' }}
               >
                 <div
                   className="text-[10px] text-[#4a4a4a] tracking-[0.04em] max-w-full md:max-w-[75%]"
