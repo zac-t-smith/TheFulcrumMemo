@@ -1,10 +1,8 @@
 import { useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Download, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import PageLayout from '@/components/PageLayout';
 import {
   ReadingProgress,
   TableOfContents,
@@ -68,25 +66,13 @@ const IranMemoPartIFull = () => {
   };
 
   return (
-    <>
-      <Helmet>
-        <title>The Asymmetric Restructuring of the Middle East | The Fulcrum Memo</title>
-        <meta
-          name="description"
-          content="How Iran's infrastructure-targeting strategy exploits asymmetric cost dynamics to achieve leverage no conventional military campaign could deliver."
-        />
-        <meta property="og:title" content="The Asymmetric Restructuring of the Middle East" />
-        <meta property="og:description" content="How Iran's infrastructure-targeting strategy exploits asymmetric cost dynamics to achieve leverage no conventional military campaign could deliver." />
-        <meta property="og:type" content="article" />
-        <meta name="twitter:card" content="summary_large_image" />
-      </Helmet>
-
+    <PageLayout
+      title="The Asymmetric Restructuring of the Middle East"
+      description="How Iran's infrastructure-targeting strategy exploits asymmetric cost dynamics to achieve leverage no conventional military campaign could deliver."
+      bare
+    >
       <ReadingProgress />
-
-      <div className="min-h-screen bg-background">
-        <Navbar />
-
-        <div className="memo-page-wrapper">
+      <div className="memo-page-wrapper pt-10">
           <TableOfContents items={tocItems} />
 
           <article ref={contentRef} className="memo-article">
@@ -897,10 +883,7 @@ const IranMemoPartIFull = () => {
           </motion.footer>
         </article>
         </div>
-
-        <Footer />
-      </div>
-    </>
+    </PageLayout>
   );
 };
 

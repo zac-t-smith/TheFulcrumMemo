@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -48,6 +49,44 @@ const TimelinePage = () => {
               <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-xs">
                 <span>Series archived · data as of Apr 26, 2026</span>
               </div>
+
+              {/* Phase 2.5: mirror tabs — Day log (/#/field-notes) · Full timeline (active). */}
+              <nav
+                aria-label="Field Notes sections"
+                className="flex items-center gap-6 mt-8"
+                style={{ borderBottom: '1px solid var(--rule)' }}
+              >
+                <Link
+                  to="/field-notes"
+                  className="pb-3 -mb-px"
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: 'var(--ink-muted)',
+                    borderBottom: '2px solid transparent',
+                  }}
+                >
+                  ← Day log
+                </Link>
+                <span
+                  aria-current="page"
+                  className="pb-3 -mb-px"
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: 'var(--ink)',
+                    borderBottom: '2px solid var(--red)',
+                  }}
+                >
+                  Full timeline
+                </span>
+              </nav>
             </motion.div>
           </div>
 

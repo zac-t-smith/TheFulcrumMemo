@@ -1,10 +1,8 @@
-import { useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Download, Loader2 } from 'lucide-react';
+import { useRef } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import PageLayout from '@/components/PageLayout';
 import {
   ReadingProgress,
   TableOfContents,
@@ -34,25 +32,13 @@ const ShadowPartnerMemo = () => {
   const contentRef = useRef<HTMLElement>(null);
 
   return (
-    <>
-      <Helmet>
-        <title>The Shadow Partner: Russia as Off-Balance-Sheet Beneficiary | The Fulcrum Memo</title>
-        <meta
-          name="description"
-          content="Mapping the intelligence, economic, and strategic arbitrage — how Russia emerges as the unpriced counterparty in the 2026 Iran conflict architecture."
-        />
-        <meta property="og:title" content="The Shadow Partner: Russia as Off-Balance-Sheet Beneficiary" />
-        <meta property="og:description" content="Mapping the intelligence, economic, and strategic arbitrage in the 2026 Iran conflict." />
-        <meta property="og:type" content="article" />
-        <meta name="twitter:card" content="summary_large_image" />
-      </Helmet>
-
+    <PageLayout
+      title="The Shadow Partner — Russia as Unpriced Counterparty"
+      description="Mapping the intelligence, economic, and strategic arbitrage — how Russia emerges as the unpriced counterparty in the 2026 Iran conflict architecture."
+      bare
+    >
       <ReadingProgress />
-
-      <div className="min-h-screen bg-background">
-        <Navbar />
-
-        <div className="memo-page-wrapper">
+      <div className="memo-page-wrapper pt-10">
           <TableOfContents items={tocItems} />
 
           <article ref={contentRef} className="memo-article">
@@ -1071,10 +1057,7 @@ const ShadowPartnerMemo = () => {
             </motion.div>
           </article>
         </div>
-
-        <Footer />
-      </div>
-    </>
+    </PageLayout>
   );
 };
 

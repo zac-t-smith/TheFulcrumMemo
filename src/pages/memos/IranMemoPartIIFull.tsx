@@ -1,10 +1,8 @@
 import { useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Download, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import PageLayout from '@/components/PageLayout';
 import {
   ReadingProgress,
   TableOfContents,
@@ -54,25 +52,13 @@ const IranMemoPartIIFull = () => {
   };
 
   return (
-    <>
-      <Helmet>
-        <title>Second-Order Effects: Sector Repricing & The Coming Restructuring Cycle | The Fulcrum Memo</title>
-        <meta
-          name="description"
-          content="How the Iran conflict cascades from sovereign crisis to domestic political constraint to sector-level credit stress — and why the next 12-18 months will produce the largest restructuring cycle since 2008."
-        />
-        <meta property="og:title" content="Second-Order Effects: The Coming Restructuring Cycle" />
-        <meta property="og:description" content="How the Iran conflict cascades to sector-level credit stress and why the next 12-18 months will produce the largest restructuring cycle since 2008." />
-        <meta property="og:type" content="article" />
-        <meta name="twitter:card" content="summary_large_image" />
-      </Helmet>
-
+    <PageLayout
+      title="Second-Order Effects — The Coming Restructuring Cycle"
+      description="How the Iran conflict cascades from sovereign crisis to domestic political constraint to sector-level credit stress — and why the next 12–18 months will produce the largest restructuring cycle since 2008."
+      bare
+    >
       <ReadingProgress />
-
-      <div className="min-h-screen bg-background">
-        <Navbar />
-
-        <div className="memo-page-wrapper">
+      <div className="memo-page-wrapper pt-10">
           <TableOfContents items={tocItems} />
 
           <article ref={contentRef} className="memo-article">
@@ -761,10 +747,7 @@ const IranMemoPartIIFull = () => {
           </motion.footer>
         </article>
         </div>
-
-        <Footer />
-      </div>
-    </>
+    </PageLayout>
   );
 };
 

@@ -1,70 +1,35 @@
-import { ArrowLeft, Download } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import PageLayout from '@/components/PageLayout';
+import { PageHeader, TagChip, Badge } from '@/components/system';
 
 const PartyCityMemo = () => {
   return (
-    <>
-      <Helmet>
-        <title>Party City | The Fulcrum Memo</title>
-        <meta
-          name="description"
-          content="Post-mortem analysis of a failed bankruptcy restructuring. When debt reduction can't save a dying business."
-        />
-      </Helmet>
-
-      <div className="min-h-screen bg-background">
-        <Navbar />
-
-        <article className="container mx-auto px-6 pt-24 pb-12 max-w-3xl">
-          {/* Back Link */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            {/* Phase A: back link removed; global nav handles it */}
-          </motion.div>
-
-          {/* Header */}
-          <motion.header
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-8"
-          >
-            <p className="text-primary text-[10px] tracking-[0.2em] uppercase mb-2">
-              Credit Memo
-            </p>
-            <span className="inline-block bg-red-500/20 text-red-400 px-3 py-1 text-[10px] uppercase tracking-wider mb-4">
-              Restructuring Failure
-            </span>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <span className="tag-pill">Corporate RX</span>
-              <span className="tag-pill">Retail</span>
-            </div>
-            <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
-              Party City: When Debt Reduction Can't Save a Dying Business
-            </h1>
-            <p className="text-muted-foreground text-base italic mb-6 leading-relaxed">
-              Post-mortem analysis of a failed bankruptcy restructuring. The specialty retailer
-              eliminated nearly $1 billion in debt, only to liquidate 14 months later—a case study
-              in mistaking balance sheet repair for business model salvation.
-            </p>
-            <div className="flex flex-wrap gap-4 text-muted-foreground text-xs">
+    <PageLayout
+      title="Party City — Post-Mortem"
+      description="Post-mortem of a failed bankruptcy restructuring. The specialty retailer eliminated nearly $1 billion in debt only to liquidate 14 months later."
+      bare
+    >
+      <article className="max-w-[720px] mx-auto px-4 pt-10 pb-12">
+        <div className="mb-3">
+          <Badge tone="neg">Restructuring failure</Badge>
+        </div>
+        <PageHeader
+          kicker="Credit memo · Oct 2025"
+          title="When Debt Reduction Can't Save a Dying Business"
+          dek="Post-mortem of a failed bankruptcy restructuring. The specialty retailer eliminated nearly $1 billion in debt, only to liquidate 14 months later — a case study in mistaking balance sheet repair for business model salvation."
+          meta={
+            <>
               <span>October 2025</span>
-              <span className="text-primary">|</span>
-              <span>Zachary Smith</span>
-              <span className="text-primary">|</span>
-              <span>Specialty Retail</span>
-            </div>
-          </motion.header>
-
-          {/* Gold line */}
-          <div className="gold-line mb-8" />
+              <span style={{ color: 'var(--rule)' }} aria-hidden="true">·</span>
+              <span>Zachary T. Smith</span>
+              <span style={{ color: 'var(--rule)' }} aria-hidden="true">·</span>
+              <span className="mono">Specialty retail</span>
+              <span style={{ color: 'var(--rule)' }} aria-hidden="true">·</span>
+              <TagChip>Corporate RX</TagChip>
+              <TagChip>Post-mortem</TagChip>
+            </>
+          }
+        />
 
           {/* Lead Paragraph */}
           <motion.div
@@ -190,11 +155,8 @@ const PartyCityMemo = () => {
               sources and estimates, which may prove incorrect.
             </p>
           </motion.footer>
-        </article>
-
-        <Footer />
-      </div>
-    </>
+      </article>
+    </PageLayout>
   );
 };
 

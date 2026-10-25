@@ -1,67 +1,33 @@
-import { ArrowLeft, Download } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import PageLayout from '@/components/PageLayout';
+import { PageHeader, TagChip } from '@/components/system';
 
 const KirklandsMemo = () => {
   return (
-    <>
-      <Helmet>
-        <title>Kirkland's Credit Analysis | The Fulcrum Memo</title>
-        <meta
-          name="description"
-          content="The Beyond Inc. takeover of Kirkland's demonstrates how creditor-friendly financing can achieve effective control without triggering takeover regulations."
-        />
-      </Helmet>
-
-      <div className="min-h-screen bg-background">
-        <Navbar />
-
-        <article className="container mx-auto px-6 pt-24 pb-12 max-w-3xl">
-          {/* Back Link */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            {/* Phase A: back link removed; global nav handles it */}
-          </motion.div>
-
-          {/* Header */}
-          <motion.header
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-8"
-          >
-            <p className="text-primary text-[10px] tracking-[0.2em] uppercase mb-2">
-              The Fulcrum Memo
-            </p>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <span className="tag-pill">Corporate RX</span>
-              <span className="tag-pill">Retail</span>
-              <span className="tag-pill">Special Situations</span>
-            </div>
-            <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
-              When Your White Knight Is Actually a Vulture
-            </h1>
-            <p className="text-muted-foreground text-base italic mb-6 leading-relaxed">
-              The Beyond Inc. takeover of Kirkland's demonstrates how creditor-friendly financing
-              can achieve effective control without triggering takeover regulations
-            </p>
-            <div className="flex flex-wrap gap-4 text-muted-foreground text-xs">
+    <PageLayout
+      title="Kirkland's — When Your White Knight Is Actually a Vulture"
+      description="The Beyond Inc. takeover of Kirkland's demonstrates how creditor-friendly financing can achieve effective control without triggering takeover regulations."
+      bare
+    >
+      <article className="max-w-[720px] mx-auto px-4 pt-10 pb-12">
+        <PageHeader
+          kicker="Credit memo · Oct 2025"
+          title="When Your White Knight Is Actually a Vulture"
+          dek="The Beyond Inc. takeover of Kirkland's demonstrates how creditor-friendly financing can achieve effective control without triggering takeover regulations."
+          meta={
+            <>
               <span>October 2025</span>
-              <span className="text-primary">|</span>
-              <span>Zachary Smith</span>
-              <span className="text-primary">|</span>
-              <span>NASDAQ: KIRK</span>
-            </div>
-          </motion.header>
-
-          {/* Gold line */}
-          <div className="gold-line mb-8" />
+              <span style={{ color: 'var(--rule)' }} aria-hidden="true">·</span>
+              <span>Zachary T. Smith</span>
+              <span style={{ color: 'var(--rule)' }} aria-hidden="true">·</span>
+              <span className="mono">NASDAQ: KIRK</span>
+              <span style={{ color: 'var(--rule)' }} aria-hidden="true">·</span>
+              <TagChip>Corporate RX</TagChip>
+              <TagChip>Retail</TagChip>
+              <TagChip>Creditor control</TagChip>
+            </>
+          }
+        />
 
           {/* Lead Paragraph */}
           <motion.div
@@ -182,11 +148,8 @@ const KirklandsMemo = () => {
               sources and estimates, which may prove incorrect.
             </p>
           </motion.footer>
-        </article>
-
-        <Footer />
-      </div>
-    </>
+      </article>
+    </PageLayout>
   );
 };
 

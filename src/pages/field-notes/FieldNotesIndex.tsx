@@ -58,13 +58,45 @@ const FieldNotesIndex = () => {
               Each entry includes thesis validation, scenario probability revisions, and trading
               implications. The data snapshot is Apr 26, 2026; this series is no longer updated.
             </p>
-            <p className="text-muted-foreground text-sm max-w-2xl mt-3">
-              Also:{' '}
-              <Link to="/timeline" className="text-primary hover:underline">
-                full conflict timeline →
-              </Link>
-            </p>
           </motion.div>
+
+          {/* Phase 2.5: tabs — Day log (default, this page) · Full timeline (/#/timeline) */}
+          <nav
+            aria-label="Field Notes sections"
+            className="flex items-center gap-6 mt-8 mb-10"
+            style={{ borderBottom: '1px solid var(--rule)' }}
+          >
+            <span
+              aria-current="page"
+              className="pb-3 -mb-px"
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: 'var(--ink)',
+                borderBottom: '2px solid var(--red)',
+              }}
+            >
+              Day log
+            </span>
+            <Link
+              to="/timeline"
+              className="pb-3 -mb-px hover:text-foreground transition-colors"
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: 'var(--ink-muted)',
+                borderBottom: '2px solid transparent',
+              }}
+            >
+              Full timeline →
+            </Link>
+          </nav>
 
           {/* Live Market Data Banner */}
           <motion.div

@@ -1,66 +1,32 @@
-import { ArrowLeft, Download } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import PageLayout from '@/components/PageLayout';
+import { PageHeader, TagChip } from '@/components/system';
 
 const LycraMemo = () => {
   return (
-    <>
-      <Helmet>
-        <title>The LYCRA Company | The Fulcrum Memo</title>
-        <meta
-          name="description"
-          content="When debt reduction isn't enough: The LYCRA Company's serial distress demonstrates that capital structure fixes cannot solve broken business models."
-        />
-      </Helmet>
-
-      <div className="min-h-screen bg-background">
-        <Navbar />
-
-        <article className="container mx-auto px-6 pt-24 pb-12 max-w-3xl">
-          {/* Back Link */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            {/* Phase A: back link removed; global nav handles it */}
-          </motion.div>
-
-          {/* Header */}
-          <motion.header
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-8"
-          >
-            <p className="text-primary text-[10px] tracking-[0.2em] uppercase mb-2">
-              The Fulcrum Memo
-            </p>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <span className="tag-pill">Corporate RX</span>
-              <span className="tag-pill">Energy & Commodities</span>
-            </div>
-            <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
-              The Second Restructuring
-            </h1>
-            <p className="text-muted-foreground text-base italic mb-6 leading-relaxed">
-              When debt reduction isn't enough: The LYCRA Company's serial distress demonstrates
-              that capital structure fixes cannot solve broken business models
-            </p>
-            <div className="flex flex-wrap gap-4 text-muted-foreground text-xs">
+    <PageLayout
+      title="LYCRA — The Second Restructuring"
+      description="When debt reduction isn't enough: The LYCRA Company's serial distress demonstrates that capital structure fixes cannot solve broken business models."
+      bare
+    >
+      <article className="max-w-[720px] mx-auto px-4 pt-10 pb-12">
+        <PageHeader
+          kicker="Credit memo · Oct 2025"
+          title="The Second Restructuring"
+          dek="When debt reduction isn't enough: The LYCRA Company's serial distress demonstrates that capital structure fixes cannot solve broken business models."
+          meta={
+            <>
               <span>October 2025</span>
-              <span className="text-primary">|</span>
-              <span>Zachary Smith</span>
-              <span className="text-primary">|</span>
-              <span>Chemical Manufacturing</span>
-            </div>
-          </motion.header>
-
-          {/* Gold line */}
-          <div className="gold-line mb-8" />
+              <span style={{ color: 'var(--rule)' }} aria-hidden="true">·</span>
+              <span>Zachary T. Smith</span>
+              <span style={{ color: 'var(--rule)' }} aria-hidden="true">·</span>
+              <span className="mono">Chemical manufacturing</span>
+              <span style={{ color: 'var(--rule)' }} aria-hidden="true">·</span>
+              <TagChip>Corporate RX</TagChip>
+              <TagChip>Liability management</TagChip>
+            </>
+          }
+        />
 
           {/* Lead Paragraph */}
           <motion.div
@@ -216,11 +182,8 @@ const LycraMemo = () => {
               sources and estimates, which may prove incorrect.
             </p>
           </motion.footer>
-        </article>
-
-        <Footer />
-      </div>
-    </>
+      </article>
+    </PageLayout>
   );
 };
 

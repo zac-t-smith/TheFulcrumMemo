@@ -1,10 +1,8 @@
 import { useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Download, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import PageLayout from '@/components/PageLayout';
 import {
   ReadingProgress,
   TableOfContents,
@@ -62,25 +60,13 @@ const IranMemoPartIIIFull = () => {
   };
 
   return (
-    <>
-      <Helmet>
-        <title>The Trojan Horse: The Largest Distressed Asset Play in History | The Fulcrum Memo</title>
-        <meta
-          name="description"
-          content="How the sequencing of Venezuela, tariffs, and Iran describes the construction of structural energy and trade dominance — a sovereign-level distressed asset play reframing the entire conflict."
-        />
-        <meta property="og:title" content="The Trojan Horse: The Largest Distressed Asset Play in History" />
-        <meta property="og:description" content="How the sequencing of Venezuela, tariffs, and Iran describes the construction of structural energy and trade dominance — a sovereign-level distressed asset play." />
-        <meta property="og:type" content="article" />
-        <meta name="twitter:card" content="summary_large_image" />
-      </Helmet>
-
+    <PageLayout
+      title="The Trojan Horse — The Largest Distressed Asset Play in History"
+      description="How the sequencing of Venezuela, tariffs, and Iran describes the construction of structural energy and trade dominance — a sovereign-level distressed asset play reframing the entire conflict."
+      bare
+    >
       <ReadingProgress />
-
-      <div className="min-h-screen bg-background">
-        <Navbar />
-
-        <div className="memo-page-wrapper">
+      <div className="memo-page-wrapper pt-10">
           <TableOfContents items={tocItems} />
 
           <article ref={contentRef} className="memo-article">
@@ -1206,10 +1192,7 @@ const IranMemoPartIIIFull = () => {
           </motion.footer>
         </article>
         </div>
-
-        <Footer />
-      </div>
-    </>
+    </PageLayout>
   );
 };
 
