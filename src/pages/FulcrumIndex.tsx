@@ -1031,11 +1031,11 @@ const FulcrumIndexPage = () => {
       {/* Economist-style light theme page */}
       <div className="min-h-screen flex flex-col" style={{ background: 'var(--paper)', color: 'var(--ink)' }}>
         <Navbar />
-        <div className="pt-[64px]">
+        <header className="pt-[64px]" aria-label="Archive notice">
           <ArchiveBanner />
-        </div>
+        </header>
 
-        <div className="max-w-[1080px] mx-auto px-7 pb-12 pt-6 w-full">
+        <main className="max-w-[1080px] mx-auto px-7 pb-12 pt-6 w-full">
           {/* Header */}
           <div
             className="flex items-stretch gap-3.5 pb-3.5 mb-4"
@@ -1465,7 +1465,7 @@ The Fulcrum Index — Composite Path
                   <PositionCategory
                     label="Conditional"
                     badge="⚠"
-                    color="#B7791F"
+                    color="#8A5A17"
                     positions={CONDITIONAL_POSITIONS}
                   />
                   <PositionCategory
@@ -1539,7 +1539,7 @@ The Fulcrum Index — Composite Path
                         </th>
                         <th
                           className="px-4 py-2 text-center text-[10px] tracking-[0.14em] uppercase font-bold"
-                          style={{ fontFamily: 'var(--font-sans)', color: '#B07D2B' }}
+                          style={{ fontFamily: 'var(--font-sans)', color: '#8A5A17' }}
                         >
                           USO <span className="text-[#4a4a4a] font-normal normal-case tracking-normal">(daily / ann.)</span>
                         </th>
@@ -1605,7 +1605,7 @@ The Fulcrum Index — Composite Path
                                 {perf.hygReturn > 0 ? '+' : ''}{perf.hygReturn.toFixed(2)}%
                               </div>
                               {perf.sampleDays > 0 && (
-                                <div className="text-[11px] opacity-70">
+                                <div className="text-[11px] text-[#4a4a4a]">
                                   {annualizePct(perf.hygReturn) > 0 ? '+' : ''}{annualizePct(perf.hygReturn).toFixed(1)}% ann.
                                 </div>
                               )}
@@ -1620,7 +1620,7 @@ The Fulcrum Index — Composite Path
                                 {perf.usoReturn > 0 ? '+' : ''}{perf.usoReturn.toFixed(2)}%
                               </div>
                               {perf.sampleDays > 0 && (
-                                <div className="text-[11px] opacity-70">
+                                <div className="text-[11px] text-[#4a4a4a]">
                                   {annualizePct(perf.usoReturn) > 0 ? '+' : ''}{annualizePct(perf.usoReturn).toFixed(1)}% ann.
                                 </div>
                               )}
@@ -1635,7 +1635,7 @@ The Fulcrum Index — Composite Path
                                 {perf.gldReturn > 0 ? '+' : ''}{perf.gldReturn.toFixed(2)}%
                               </div>
                               {perf.sampleDays > 0 && (
-                                <div className="text-[11px] opacity-70">
+                                <div className="text-[11px] text-[#4a4a4a]">
                                   {annualizePct(perf.gldReturn) > 0 ? '+' : ''}{annualizePct(perf.gldReturn).toFixed(1)}% ann.
                                 </div>
                               )}
@@ -1757,7 +1757,7 @@ The Fulcrum Index — Composite Path
               </div>
             </>
           )}
-        </div>
+        </main>
         <Footer />
       </div>
     </>

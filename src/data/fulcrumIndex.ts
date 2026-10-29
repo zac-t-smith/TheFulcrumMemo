@@ -361,10 +361,10 @@ export function getRiskRegime(idx: number): RiskRegimeInfo {
       bandMin: 0,
       bandMax: 25,
       // Amber, not green: complacency is a WARNING state (reach-for-yield + unpriced
-      // covenant erosion). Prior green reading misled readers into thinking it was benign.
-      color: '#B7791F',
-      swatchColor: '#B7791F',
-      pillBg: 'bg-[#2f8a4d]',
+      // covenant erosion). Darkened to #8A5A17 so caption-size pill text hits AA.
+      color: '#8A5A17',
+      swatchColor: '#8A5A17',
+      pillBg: 'bg-[#8A5A17]',
     };
   }
   if (idx < 50) {
@@ -375,9 +375,10 @@ export function getRiskRegime(idx: number): RiskRegimeInfo {
       posture: 'Selective shorts. Stress-test exposures.',
       bandMin: 25,
       bandMax: 50,
-      color: '#6fb487',
-      swatchColor: '#6fb487',
-      pillBg: 'bg-[#d97706]',
+      // Darkened from #6fb487 (fails AA on cream) to --pos #2E7D4F.
+      color: '#2E7D4F',
+      swatchColor: '#2E7D4F',
+      pillBg: 'bg-[#8A5A17]',
     };
   }
   if (idx < 75) {
@@ -388,9 +389,10 @@ export function getRiskRegime(idx: number): RiskRegimeInfo {
       posture: 'Staff up. Pipeline RX mandates.',
       bandMin: 50,
       bandMax: 75,
-      color: '#d98484',
-      swatchColor: '#d98484',
-      pillBg: 'bg-[#c8102e]',
+      // Darkened from #d98484 (fails AA on cream) to --red #C8102E.
+      color: '#C8102E',
+      swatchColor: '#C8102E',
+      pillBg: 'bg-[#C8102E]',
     };
   }
   return {
@@ -402,7 +404,7 @@ export function getRiskRegime(idx: number): RiskRegimeInfo {
     bandMax: 100,
     color: '#8a1818',
     swatchColor: '#8a1818',
-    pillBg: 'bg-[#c8102e]',
+    pillBg: 'bg-[#8a1818]',
   };
 }
 

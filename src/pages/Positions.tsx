@@ -196,7 +196,7 @@ const avgPotentialReturn = positions.reduce((sum, p) => sum + p.potentialReturn,
 const PositionCard = ({ position }: { position: Position }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const directionColor = position.direction === 'NO' ? 'text-emerald-400' : 'text-red-400';
+  const directionColor = position.direction === 'NO' ? 'text-emerald-700' : 'text-red-700';
   const directionBg = position.direction === 'NO' ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-red-500/10 border-red-500/30';
 
   return (
@@ -218,12 +218,12 @@ const PositionCard = ({ position }: { position: Position }) => {
               <span className={cn(
                 'px-2 py-0.5 rounded text-[10px] uppercase tracking-wider',
                 position.status === 'OPEN'
-                  ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+                  ? 'bg-blue-500/10 text-blue-700 border border-blue-500/30'
                   : position.outcome === 'WON'
-                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                  ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30'
                   : position.outcome === 'LOST'
-                  ? 'bg-red-500/10 text-red-400 border border-red-500/30'
-                  : 'bg-slate-500/10 text-slate-400 border border-slate-500/30'
+                  ? 'bg-red-500/10 text-red-700 border border-red-500/30'
+                  : 'bg-slate-500/10 text-slate-600 border border-slate-500/30'
               )}>
                 {position.status === 'OPEN'
                   ? 'OPEN'
@@ -240,7 +240,7 @@ const PositionCard = ({ position }: { position: Position }) => {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-amber-400">
+            <p className="text-2xl font-bold text-amber-700">
               {position.potentialReturn}%
             </p>
             <p className="text-[10px] text-muted-foreground uppercase">
@@ -256,8 +256,8 @@ const PositionCard = ({ position }: { position: Position }) => {
             <p className="text-lg font-semibold text-foreground">{position.entryAvg}¢</p>
           </div>
           <div className="p-3 bg-amber-500/10 rounded border border-amber-500/20">
-            <p className="text-xs text-amber-400 mb-1">Edge at Entry</p>
-            <p className="text-lg font-semibold text-amber-400">{position.edgePercent}¢</p>
+            <p className="text-xs text-amber-700 mb-1">Edge at Entry</p>
+            <p className="text-lg font-semibold text-amber-700">{position.edgePercent}¢</p>
           </div>
           <div className="p-3 bg-muted/30 rounded">
             <p className="text-xs text-muted-foreground mb-1">Date Opened</p>
@@ -362,14 +362,14 @@ const PositionCard = ({ position }: { position: Position }) => {
 
               {/* Risk Factors */}
               <div>
-                <h4 className="text-xs uppercase tracking-wider text-red-400 mb-3 flex items-center gap-2">
+                <h4 className="text-xs uppercase tracking-wider text-red-700 mb-3 flex items-center gap-2">
                   <AlertTriangle size={14} />
                   Risk Factors Acknowledged
                 </h4>
                 <ul className="space-y-2">
                   {position.riskFactors.map((risk, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="text-red-400 mt-1">•</span>
+                      <span className="text-red-700 mt-1">•</span>
                       {risk}
                     </li>
                   ))}
@@ -407,7 +407,7 @@ const PositionsPage = () => {
             className="mb-12"
           >
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 bg-slate-500/10 border border-slate-500/30 rounded text-slate-400 text-[10px] uppercase tracking-wider">
+              <span className="px-3 py-1 bg-slate-500/10 border border-slate-500/30 rounded text-slate-600 text-[10px] uppercase tracking-wider">
                 Kalshi — CFTC Regulated
               </span>
             </div>
@@ -437,20 +437,20 @@ const PositionsPage = () => {
               <p className="text-[10px] text-muted-foreground uppercase">Total Positions</p>
             </div>
             <div className="p-4 surface-card border border-border rounded-lg text-center">
-              <TrendingUp size={16} className="text-blue-400 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-blue-400">{openPositions.length}</p>
+              <TrendingUp size={16} className="text-blue-700 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-blue-700">{openPositions.length}</p>
               <p className="text-[10px] text-muted-foreground uppercase">Open</p>
             </div>
             <div className="p-4 surface-card border border-border rounded-lg text-center">
-              <Target size={16} className="text-emerald-400 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-emerald-400">
+              <Target size={16} className="text-emerald-700 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-emerald-700">
                 {hitRate != null ? `${hitRate.toFixed(0)}%` : '—'}
               </p>
               <p className="text-[10px] text-muted-foreground uppercase">Hit Rate (resolved)</p>
             </div>
             <div className="p-4 surface-card border border-border rounded-lg text-center">
-              <Percent size={16} className="text-amber-400 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-amber-400">
+              <Percent size={16} className="text-amber-700 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-amber-700">
                 {avgRealized != null ? `${avgRealized.toFixed(0)}%` : '—'}
               </p>
               <p className="text-[10px] text-muted-foreground uppercase">Avg Realized Return</p>
@@ -507,19 +507,19 @@ const PositionsPage = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="p-4 bg-amber-500/10 rounded border border-amber-500/20 text-center">
-                <p className="text-3xl font-bold text-amber-400">{avgEdge.toFixed(0)}¢</p>
+                <p className="text-3xl font-bold text-amber-700">{avgEdge.toFixed(0)}¢</p>
                 <p className="text-xs text-muted-foreground mt-1">Average Edge at Entry</p>
-                <p className="text-[10px] text-amber-400/70 mt-2">per $1 contract</p>
+                <p className="text-[10px] text-amber-800 mt-2">per $1 contract</p>
               </div>
               <div className="p-4 bg-emerald-500/10 rounded border border-emerald-500/20 text-center">
-                <p className="text-3xl font-bold text-emerald-400">{avgPotentialReturn.toFixed(0)}%</p>
+                <p className="text-3xl font-bold text-emerald-700">{avgPotentialReturn.toFixed(0)}%</p>
                 <p className="text-xs text-muted-foreground mt-1">Potential Return at Entry</p>
-                <p className="text-[10px] text-emerald-400/70 mt-2">pre-resolution, each contract</p>
+                <p className="text-[10px] text-emerald-800 mt-2">pre-resolution, each contract</p>
               </div>
               <div className="p-4 bg-blue-500/10 rounded border border-blue-500/20 text-center">
-                <p className="text-3xl font-bold text-blue-400">100%</p>
+                <p className="text-3xl font-bold text-blue-700">100%</p>
                 <p className="text-xs text-muted-foreground mt-1">Positions with Prior Analysis</p>
-                <p className="text-[10px] text-blue-400/70 mt-2">timestamped & verifiable</p>
+                <p className="text-[10px] text-blue-800 mt-2">timestamped & verifiable</p>
               </div>
             </div>
             <div className="mt-6 p-4 bg-muted/30 rounded">
