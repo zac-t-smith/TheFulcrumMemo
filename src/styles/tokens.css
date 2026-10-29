@@ -224,6 +224,19 @@ body.tfm-print * {
   position: static !important;
 }
 
+/* Force all framer-motion whileInView sections visible in print.
+ * The Playwright renderer loads the page without scrolling, so sections
+ * that only animate when they enter the viewport stay at opacity:0 /
+ * y:20 — invisible in the PDF. Shadow Partner uses whileInView
+ * throughout (33 instances); without this override the PDF renders as
+ * a single blank page. Values below mirror framer-motion's `animate`
+ * target so the final visual state is identical. */
+body.tfm-print [style*="opacity: 0"],
+body.tfm-print [style*="opacity:0"] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 /* Links shown as text; URL stripped (recruiters hate raw URLs mid-sentence) */
 body.tfm-print a {
   color: var(--ink);

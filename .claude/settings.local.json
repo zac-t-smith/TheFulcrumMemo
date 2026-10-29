@@ -50,7 +50,8 @@
       "Bash(curl -sS \"https://api.github.com/repos/zac-t-smith/TheFulcrumMemo/actions/runs?per_page=1&event=push\")",
       "Bash(npx playwright *)",
       "Bash(curl -sS -H \"Accept: application/vnd.github+json\" \"https://api.github.com/repos/zac-t-smith/TheFulcrumMemo/actions/runs?per_page=5\")",
-      "Bash(grep -rnE \"'#[0-9A-Fa-f]{3,8}'|\\\\\"#[0-9A-Fa-f]{3,8}\\\\\"|rgba?\\\\\\(|hsl\\\\\\(|\\\\\\\\[hsl\\\\\\(\" src/strategy)"
+      "Bash(grep -rnE \"'#[0-9A-Fa-f]{3,8}'|\\\\\"#[0-9A-Fa-f]{3,8}\\\\\"|rgba?\\\\\\(|hsl\\\\\\(|\\\\\\\\[hsl\\\\\\(\" src/strategy)",
+      "Bash(pkill -f \"vite preview\")"
     ]
   }
 }

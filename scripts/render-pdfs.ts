@@ -72,6 +72,23 @@ async function renderOne(url: string, outPath: string): Promise<void> {
     // Give any late-rendering charts a beat; our pages are mostly static.
     await page.waitForTimeout(1500);
 
+    // Framer-motion whileInView wrappers (Shadow Partner has 33) only animate when
+    // the element enters the viewport. Playwright page.pdf() captures from the
+    // current scroll position, so without this step those sections stay at
+    // opacity:0 and the memo renders as a single blank page. Scroll through the
+    // full height once at a modest viewport, then back to top, so every
+    // whileInView fires.
+    await page.evaluate(async () => {
+      const totalHeight = document.documentElement.scrollHeight;
+      const step = window.innerHeight * 0.6;
+      for (let y = 0; y < totalHeight; y += step) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 150));
+      }
+      window.scrollTo(0, 0);
+      await new Promise((r) => setTimeout(r, 400));
+    });
+
     const pdfBuffer = await page.pdf({
       format: 'Letter',
       printBackground: true,
