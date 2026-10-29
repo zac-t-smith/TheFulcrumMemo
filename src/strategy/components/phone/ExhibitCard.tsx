@@ -73,7 +73,8 @@ function MiniChart({ chart }: { chart: Round["exhibit"]["chart"] }) {
   const W = 240;
   const stepX = chart.labels.length > 1 ? W / (chart.labels.length - 1) : W;
   const y = (v: number) => H - ((v - min) / (max - min || 1)) * (H - 10) - 5;
-  const colors = ["hsl(358,88%,55%)", "hsl(210,70%,55%)"];
+  // Token-aligned (red primary, cat-1 editorial blue). SVG strokes resolve at render.
+  const colors = ["#C8102E", "#1F3A5F"];
 
   if (chart.type === "bar") {
     const barW = Math.max(10, (W / chart.labels.length) * 0.6);
