@@ -26,7 +26,14 @@ export default function BoardRoom() {
 
   return (
     <StrategyErrorBoundary projector>
-      <div className="min-h-screen bg-[hsl(220,40%,8%)] text-white" style={{ fontFamily: "Georgia, serif" }}>
+      <div
+        className="strategy-dark min-h-screen"
+        style={{
+          background: 'var(--paper)',
+          color: 'var(--ink)',
+          fontFamily: 'var(--font-serif)',
+        }}
+      >
         {isDemo ? <BoardRoomDemo /> : code ? <BoardRoomLive code={code} /> : <BoardRoomChooser />}
       </div>
     </StrategyErrorBoundary>
@@ -41,7 +48,7 @@ function BoardRoomChooser() {
       <div className="grid md:grid-cols-2 gap-4 max-w-3xl w-full">
         <a
           href="?demo=1"
-          className="rounded-xl border border-white/20 p-6 hover:border-[hsl(358,88%,55%)] transition"
+          className="rounded-xl border border-white/20 p-6 hover:border-[#E0263F] transition"
         >
           <div className="text-xs uppercase tracking-widest opacity-60 mb-2">Rehearsal</div>
           <div className="text-2xl font-semibold mb-2">Demo mode</div>
@@ -50,7 +57,7 @@ function BoardRoomChooser() {
             backup if the network drops.
           </div>
         </a>
-        <a href="#/strategy/ops" className="rounded-xl border border-white/20 p-6 hover:border-[hsl(358,88%,55%)] transition">
+        <a href="#/strategy/ops" className="rounded-xl border border-white/20 p-6 hover:border-[#E0263F] transition">
           <div className="text-xs uppercase tracking-widest opacity-60 mb-2">Live</div>
           <div className="text-2xl font-semibold mb-2">Open ops console →</div>
           <div className="text-sm opacity-70">
@@ -213,7 +220,7 @@ function BoardRoomInner({
                 <ul className="space-y-3 text-xl">
                   {content.meta.objectives.map((o, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <span className="text-[hsl(358,88%,55%)]">▸</span>
+                      <span className="text-[#E0263F]">▸</span>
                       <span>{o}</span>
                     </li>
                   ))}
@@ -241,13 +248,13 @@ function BoardRoomInner({
             <div className="grid lg:grid-cols-2 gap-8">
               {roundContent.concepts.map((c, i) => (
                 <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-8">
-                  <div className="text-xs uppercase tracking-[0.4em] text-[hsl(358,88%,65%)] mb-3">
+                  <div className="text-xs uppercase tracking-[0.4em] text-[#E0263F] mb-3">
                     {c.label}: {c.title}
                   </div>
                   <ul className="space-y-3 text-lg">
                     {c.bullets.map((b, j) => (
                       <li key={j} className="flex items-start gap-3">
-                        <span className="text-[hsl(358,88%,55%)]">▸</span>
+                        <span className="text-[#E0263F]">▸</span>
                         <span>{b}</span>
                       </li>
                     ))}
@@ -260,7 +267,7 @@ function BoardRoomInner({
           {phase.startsWith("decide_") && roundContent && (
             <div className="grid lg:grid-cols-2 gap-10">
               <div>
-                <div className="text-xs uppercase tracking-[0.4em] text-[hsl(358,88%,65%)] mb-3">
+                <div className="text-xs uppercase tracking-[0.4em] text-[#E0263F] mb-3">
                   APPLICATION
                 </div>
                 <h3 className="text-4xl font-semibold mb-4">{roundContent.question}</h3>
@@ -364,7 +371,7 @@ function FinalRevealStage({
     <div className="grid lg:grid-cols-2 gap-10">
       <div>
         <h3 className="text-3xl font-semibold mb-4">The client was…</h3>
-        <div className="text-6xl font-bold text-[hsl(358,88%,70%)] mb-4">
+        <div className="text-6xl font-bold text-[#E0263F] mb-4">
           {content.meta.realName}
         </div>
         <p className="text-base opacity-80 mb-2">{content.finalReveal.identity}</p>
@@ -430,7 +437,7 @@ function CalibrationChart({
       <line x1={x(50)} y1={pad} x2={x(50)} y2={H - pad} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="2,3" />
       {points.map((p, i) => (
         <g key={i}>
-          <circle cx={x(p.avgConf)} cy={y(p.meterDelta)} r={6} fill="hsl(358,88%,55%)" opacity={0.85} />
+          <circle cx={x(p.avgConf)} cy={y(p.meterDelta)} r={6} fill="#C8102E" opacity={0.85} />
           <text x={x(p.avgConf) + 8} y={y(p.meterDelta) + 3} fontSize="10" fill="currentColor">
             {p.code}
           </text>

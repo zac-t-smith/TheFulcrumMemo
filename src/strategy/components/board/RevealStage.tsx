@@ -7,9 +7,9 @@ export function WhatHappenedCard({ round }: { round: Round }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.3 }}
-      className="rounded-2xl p-8 border border-[hsl(358,88%,55%)]/50 bg-[hsl(358,88%,55%)]/10"
+      className="rounded-2xl p-8 border border-[#E0263F]/50 bg-[#E0263F]/10"
     >
-      <div className="text-xs uppercase tracking-[0.4em] text-[hsl(358,88%,70%)] mb-3">
+      <div className="text-xs uppercase tracking-[0.4em] text-[#E0263F] mb-3">
         {round.whatHappened.date}
       </div>
       <h3 className="text-3xl font-semibold mb-4">{round.whatHappened.title}</h3>

@@ -15,8 +15,8 @@ export function RoleIntelCard({
   // In firms of 3 the CFO also reads the GC card. We don't know the firm size from here;
   // the parent is responsible for passing GC intel too if applicable.
   const colors = {
-    red: "border-[hsl(358,88%,55%)] bg-[hsl(358,88%,55%)]/5",
-    navy: "border-[hsl(220,40%,30%)] bg-[hsl(220,40%,30%)]/5",
+    red: "border-[#E0263F] bg-[#E0263F]/5",
+    navy: "border-[#2A3344] bg-[#2A3344]/5",
     amber: "border-amber-500 bg-amber-50",
     slate: "border-slate-500 bg-slate-50",
   } as const;

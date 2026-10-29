@@ -59,7 +59,7 @@ export function ConsequenceCard({
         <p className="text-sm leading-relaxed">{consequence.body}</p>
       </motion.div>
 
-      <div className="space-y-3 bg-[hsl(220,40%,10%)] text-white rounded-xl p-4">
+      <div className="space-y-3 bg-[#161E2D] text-white rounded-xl p-4">
         <Meter label="Cash runway" value={consequence.meters.cash} tone="cash" />
         <Meter label="Stakeholder trust" value={consequence.meters.trust} tone="trust" />
         <Meter label="Strategic fit" value={consequence.meters.fit} tone="fit" />

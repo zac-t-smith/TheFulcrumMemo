@@ -33,7 +33,7 @@ export function ChoiceDistribution({
                 initial={{ width: 0 }}
                 animate={{ width: `${pct}%` }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="h-full bg-[hsl(358,88%,55%)]"
+                className="h-full bg-[#E0263F]"
               />
             </div>
             {picks.length > 0 && (

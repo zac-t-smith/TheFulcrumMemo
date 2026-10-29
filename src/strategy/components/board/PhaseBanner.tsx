@@ -14,7 +14,7 @@ export function PhaseBanner({
   timerSeconds: number;
 }) {
   return (
-    <div className="flex items-end justify-between border-b-4 border-[hsl(358,88%,55%)] pb-6 mb-10">
+    <div className="flex items-end justify-between border-b-4 border-[#E0263F] pb-6 mb-10">
       <div>
         <motion.div
           key={phase}

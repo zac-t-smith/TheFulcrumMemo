@@ -16,7 +16,7 @@ export class StrategyErrorBoundary extends React.Component<Props, State> {
     if (!this.state.error) return this.props.children;
     if (this.props.projector) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-[hsl(220,40%,8%)] text-white">
+        <div className="min-h-screen flex items-center justify-center bg-[#0E1420] text-white">
           <div className="text-center">
             <div className="text-sm uppercase tracking-[0.3em] opacity-60 mb-4">Standby</div>
             <div className="text-3xl font-semibold">Reconnecting…</div>

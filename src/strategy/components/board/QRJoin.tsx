@@ -14,7 +14,7 @@ export function QRJoin({ sessionCode }: { sessionCode: string }) {
       <div>
         <div className="text-xs uppercase tracking-[0.4em] opacity-60 mb-3">Scan to join</div>
         <div className="text-4xl font-semibold mb-4">Session code</div>
-        <div className="text-7xl font-bold tracking-widest text-[hsl(358,88%,65%)]">{sessionCode}</div>
+        <div className="text-7xl font-bold tracking-widest text-[#E0263F]">{sessionCode}</div>
         <div className="text-sm opacity-60 mt-4">{url}</div>
       </div>
     </div>
