@@ -1,21 +1,16 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { Calendar, TrendingUp, AlertTriangle, ChevronRight, ArrowLeft, Map, Radio, RefreshCw } from 'lucide-react';
+import { Calendar, TrendingUp, AlertTriangle, ChevronRight, Map } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import ArchiveBanner from '@/components/ArchiveBanner';
-import { fieldNotes, getLatestScenario, getAvailableFieldNoteDays, conflictMetadata, EIA_SOURCE_ATTRIBUTION } from '@/data/iranConflictData';
+import { fieldNotes, getLatestScenario, getAvailableFieldNoteDays, EIA_SOURCE_ATTRIBUTION } from '@/data/iranConflictData';
 import { ConflictMap } from '@/components/maps/ConflictMap';
-import { useLiveMarketData } from '@/hooks/useLiveMarketData';
+import { BRENT, BRENT_CHANGE_PCT, HY_SPREAD, CONFLICT_DAYS, SERIES_SNAPSHOT } from '@/content/marketFigures';
 
 const FieldNotesIndex = () => {
   const availableDays = getAvailableFieldNoteDays();
   const latestScenario = getLatestScenario();
-  const { oil, spreads, isLoading, lastUpdated, refresh } = useLiveMarketData();
-
-  // Calculate change from pre-war baseline
-  const preWarBrent = 71.32;
-  const brentChange = oil ? ((oil.brent - preWarBrent) / preWarBrent * 100).toFixed(0) : '--';
 
   return (
     <>
@@ -23,7 +18,7 @@ const FieldNotesIndex = () => {
         <title>Field Notes | Iran Conflict Analysis | The Fulcrum Memo</title>
         <meta
           name="description"
-          content="Real-time analysis updates on the U.S.-Iran conflict. Tracking thesis validation, scenario probabilities, and market implications."
+          content="Archived day-by-day field notes on the 2025–26 U.S.–Iran conflict. Thesis validation, scenario probability revisions, and trading implications. Data snapshot: Apr 26, 2026."
         />
       </Helmet>
 
@@ -45,7 +40,7 @@ const FieldNotesIndex = () => {
             className="mb-12"
           >
             <div className="flex items-center gap-3 mb-4">
-              <span className="w-2 h-2 rounded-full bg-red-500" />
+              <span className="w-2 h-2 rounded-full" style={{ background: 'var(--red)' }} />
               <span className="text-[10px] uppercase tracking-wider text-red-400">
                 Archived · Iran Series
               </span>
@@ -98,7 +93,7 @@ const FieldNotesIndex = () => {
             </Link>
           </nav>
 
-          {/* Live Market Data Banner */}
+          {/* Archive snapshot panel — final published figures, Apr 26, 2026. */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -106,64 +101,46 @@ const FieldNotesIndex = () => {
             className="mb-8 p-4 surface-card border border-border rounded-lg"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                {(oil?.isLive || spreads?.isLive) && (
-                  <Radio size={12} className="text-emerald-400 animate-pulse" />
-                )}
-                <h2 className="text-[10px] uppercase tracking-wider text-primary">
-                  {oil?.isLive || spreads?.isLive ? 'Live Market Data' : 'Market Data'}
-                </h2>
-              </div>
-              <div className="flex items-center gap-2">
-                {lastUpdated && (
-                  <span className="text-[9px] text-muted-foreground">
-                    {lastUpdated.toLocaleTimeString()}
-                  </span>
-                )}
-                <button
-                  onClick={() => refresh()}
-                  disabled={isLoading}
-                  className="p-1 rounded hover:bg-muted/50 transition-colors disabled:opacity-50"
-                  title="Refresh data"
-                >
-                  <RefreshCw size={12} className={`text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
-                </button>
-              </div>
+              <h2 className="text-[10px] uppercase tracking-wider text-primary">
+                Market snapshot — final published figures
+              </h2>
+              <span className="text-[9px] text-muted-foreground">
+                as of {SERIES_SNAPSHOT.asOf}
+              </span>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <p className="text-xl font-bold text-amber-400">
-                  {isLoading ? '...' : oil ? `$${oil.brent.toFixed(0)}` : '--'}
+                <p className="text-xl font-bold text-amber-400 nums-tabular">
+                  ${BRENT.lastArchived.toFixed(0)}
                 </p>
                 <p className="text-[10px] text-muted-foreground">Brent Crude</p>
-                {oil && (
-                  <p className="text-[9px] text-amber-400/70">+{brentChange}% from pre-war</p>
-                )}
+                <p className="text-[9px] text-amber-400/70">
+                  +{BRENT_CHANGE_PCT}% from pre-war
+                </p>
               </div>
               <div className="text-center">
-                <p className="text-xl font-bold text-blue-400">
-                  {isLoading ? '...' : oil ? `$${oil.wti.toFixed(0)}` : '--'}
+                <p className="text-xl font-bold text-blue-400 nums-tabular">
+                  ${BRENT.wtiLastArchived.toFixed(0)}
                 </p>
                 <p className="text-[10px] text-muted-foreground">WTI Crude</p>
               </div>
               <div className="text-center">
-                <p className="text-xl font-bold text-red-400">
-                  {isLoading ? '...' : spreads ? spreads.hy : '--'}
+                <p className="text-xl font-bold text-red-400 nums-tabular">
+                  {HY_SPREAD.lastArchived}
                 </p>
                 <p className="text-[10px] text-muted-foreground">HY Spread (bps)</p>
               </div>
               <div className="text-center">
-                <p className="text-xl font-bold text-foreground">
-                  Day {conflictMetadata.conflictDay}
+                <p className="text-xl font-bold text-foreground nums-tabular">
+                  Day {CONFLICT_DAYS.finalArchivedDay}
                 </p>
                 <p className="text-[10px] text-muted-foreground">of Conflict</p>
               </div>
             </div>
 
-            <div className="mt-3 pt-2 border-t border-border flex flex-wrap gap-4 text-[9px] text-muted-foreground/70">
-              <span>{oil?.attribution}</span>
-              <span>{spreads?.attribution}</span>
+            <div className="mt-3 pt-2 border-t border-border text-[9px] text-muted-foreground/70">
+              <span>{EIA_SOURCE_ATTRIBUTION} · Series archived; figures do not update.</span>
             </div>
           </motion.div>
 

@@ -751,7 +751,9 @@ export const ConflictMap = ({
   showLegend = true,
   showDaySlider = false,
   showLayerControls = true,
-  showLiveFeed = true,
+  // Phase 4B: series archived; live GDELT feed off by default so there's no
+  // "LIVE" chrome anywhere on the site. Opt-in via prop if ever needed.
+  showLiveFeed = false,
   aisApiKey = import.meta.env.VITE_AISSTREAM_API_KEY,
 }: ConflictMapProps) => {
   const [selectedDay, setSelectedDay] = useState(throughDay);

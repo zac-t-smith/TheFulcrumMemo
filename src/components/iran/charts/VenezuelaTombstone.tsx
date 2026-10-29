@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useLiveOilPrice } from '@/hooks/useLiveMarketData';
-import { Radio } from 'lucide-react';
+import { BRENT } from '@/content/marketFigures';
 
 interface DealMetric {
   label: string;
@@ -26,26 +25,17 @@ const dealMetrics: DealMetric[] = [
 ];
 
 export const VenezuelaTombstone = ({ className }: { className?: string }) => {
-  const { oil, isLoading } = useLiveOilPrice();
   const acquisitionBasis = 60;
+  // Phase 4B: pull from archive snapshot — no live fetch, no pulsing dot.
+  const archivedBrent = BRENT.lastArchived;
+  const priceChange = ((archivedBrent - acquisitionBasis) / acquisitionBasis * 100).toFixed(0);
 
-  // Use live data if available, otherwise show loading state
-  const currentBrent = oil?.brent ?? 0;
-  const priceChange = currentBrent > 0
-    ? ((currentBrent - acquisitionBasis) / acquisitionBasis * 100).toFixed(0)
-    : '--';
-
-  // Calculate current valuation dynamically
   const metricsWithValues = dealMetrics.map(metric => {
     if (metric.label === 'Current Valuation') {
       return {
         ...metric,
-        value: currentBrent > 0
-          ? `~$${currentBrent.toFixed(0)}/bbl Brent`
-          : 'Loading...',
-        subtext: currentBrent > 0
-          ? `+${priceChange}% from acquisition`
-          : 'Fetching live data...'
+        value: `~$${archivedBrent.toFixed(0)}/bbl Brent`,
+        subtext: `+${priceChange}% from acquisition (as of ${BRENT.lastArchivedAsOf})`,
       };
     }
     return metric;
@@ -126,12 +116,6 @@ export const VenezuelaTombstone = ({ className }: { className?: string }) => {
               <span className="w-2 h-2 rounded-full bg-primary" />
               <span className="text-[10px] text-zinc-400">U.S. Controlled</span>
             </div>
-            {oil?.isLive && (
-              <div className="flex items-center gap-1.5">
-                <Radio size={10} className="text-emerald-400 animate-pulse" />
-                <span className="text-[10px] text-emerald-400">LIVE</span>
-              </div>
-            )}
           </div>
           <p className="text-[9px] text-zinc-600 italic">
             "Buying the company for the price of the debt"
@@ -140,7 +124,7 @@ export const VenezuelaTombstone = ({ className }: { className?: string }) => {
         {/* EIA Attribution */}
         <div className="mt-2 pt-2 border-t border-zinc-800">
           <p className="text-[9px] text-zinc-600">
-            {oil?.attribution || 'Source: U.S. Energy Information Administration'}
+            Source: U.S. Energy Information Administration · Series archived
           </p>
         </div>
       </div>

@@ -23,8 +23,25 @@ export const BRENT = {
   preWarAsOf: 'Feb 27, 2026',
   /** WTI pre-war close pair. */
   wtiPreWar: 66.96,
-  /** Last archived Brent spot for the Iran series. Match the chart's final point. */
-  lastArchived: null as number | null,   // populate when backfilling
+  /** Final archived Brent spot for the Iran series (EIA, Apr 26, 2026). */
+  lastArchived: 124.60,
+  wtiLastArchived: 113.90,
+  lastArchivedAsOf: 'Apr 26, 2026',
+} as const;
+
+/**
+ * Percentage change from pre-war Brent to the archive snapshot.
+ * `((124.60 - 71.32) / 71.32) * 100` rounded.
+ */
+export const BRENT_CHANGE_PCT = Math.round(
+  ((BRENT.lastArchived - BRENT.preWar) / BRENT.preWar) * 100
+);
+
+export const HY_SPREAD = {
+  /** Pre-war HY OAS (bps). */
+  preWar: 281,
+  /** Archive-date HY OAS; adjust when a more precise reading is confirmed. */
+  lastArchived: 525,
   lastArchivedAsOf: 'Apr 26, 2026',
 } as const;
 
@@ -34,8 +51,6 @@ export const CONFLICT_DAYS = {
    * The field notes series ran up to day 58 by the archive date.
    */
   finalArchivedDay: 58,
-  /** Day numbers that have published field notes (sourced via getAvailableFieldNoteDays). */
-  availabilityNote: 'Live counts come from iranConflictData.ts; this constant is only used in top-of-page copy.',
 } as const;
 
 export const FUEL_SHOCK = {

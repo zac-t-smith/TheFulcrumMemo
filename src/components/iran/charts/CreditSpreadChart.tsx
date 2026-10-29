@@ -10,9 +10,8 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { cn } from '@/lib/utils';
-import { Radio } from 'lucide-react';
 import { creditMarketData, hySpreadHistory } from '@/data/iranConflictData';
-import { useLiveHYSpread } from '@/hooks/useLiveMarketData';
+import { HY_SPREAD } from '@/content/marketFigures';
 
 // Use shared data layer for historical HY spread data
 const historicalData = hySpreadHistory;
@@ -44,11 +43,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export const CreditSpreadChart = ({ className }: { className?: string }) => {
-  const { spreads, isLoading } = useLiveHYSpread();
-
-  // Use live spread if available, otherwise fallback to static
-  const currentSpread = spreads?.hy ?? creditMarketData.hySpread.current;
-  const isLive = spreads?.isLive ?? false;
+  // Phase 4B: archive snapshot only. No live fetch, no pulsing dot.
+  const currentSpread = HY_SPREAD.lastArchived;
 
   return (
     <motion.div
@@ -110,7 +106,7 @@ export const CreditSpreadChart = ({ className }: { className?: string }) => {
               stroke="#2E7D4F"
               strokeDasharray="3 3"
               label={{
-                value: `Current: ${currentSpread} bps${isLive ? ' (LIVE)' : ''}`,
+                value: `Archive: ${currentSpread} bps`,
                 position: 'right',
                 style: { fontSize: 10, fill: '#2E7D4F' },
               }}
@@ -134,17 +130,11 @@ export const CreditSpreadChart = ({ className }: { className?: string }) => {
           Credit Market Setup
         </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-3 bg-emerald-500/10 rounded border border-emerald-500/20 text-center relative">
-            {isLive && (
-              <div className="absolute top-1 right-1 flex items-center gap-1">
-                <Radio size={8} className="text-emerald-400 animate-pulse" />
-                <span className="text-[8px] text-emerald-400">LIVE</span>
-              </div>
-            )}
+          <div className="p-3 bg-emerald-500/10 rounded border border-emerald-500/20 text-center">
             <p className="text-2xl font-bold text-emerald-400">
-              {isLoading ? '...' : currentSpread}
+              {currentSpread}
             </p>
-            <p className="text-[10px] text-muted-foreground">Current HY Spread (bps)</p>
+            <p className="text-[10px] text-muted-foreground">Archive HY Spread (bps)</p>
           </div>
           <div className="p-3 bg-amber-500/10 rounded border border-amber-500/20 text-center">
             <p className="text-2xl font-bold text-amber-400">
