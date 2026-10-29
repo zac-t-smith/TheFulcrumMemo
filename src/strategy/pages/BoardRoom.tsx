@@ -47,7 +47,7 @@ function BoardRoomChooser() {
       <p className="text-xl opacity-70 mb-8">Choose how to run the room.</p>
       <div className="grid md:grid-cols-2 gap-4 max-w-3xl w-full">
         <a
-          href="?demo=1"
+          href="#/strategy?demo=1"
           className="rounded-xl border border-white/20 p-6 hover:border-[#E0263F] transition"
         >
           <div className="text-xs uppercase tracking-widest opacity-60 mb-2">Rehearsal</div>
@@ -203,7 +203,18 @@ function BoardRoomInner({
         >
           {phase === "lobby" && (
             <div className="grid lg:grid-cols-2 gap-12 items-start">
-              <QRJoin sessionCode={sessionCode} />
+              {sessionCode === "DEMO" ? (
+                <div className="rounded-xl border border-white/15 p-8">
+                  <div className="text-xs uppercase tracking-[0.3em] opacity-60 mb-3">Rehearsal</div>
+                  <div className="text-3xl font-semibold mb-3">Projector only</div>
+                  <div className="text-sm opacity-70">
+                    Demo mode runs the full flow against fake firms. Phones can't join. Use this as the
+                    backup if the network drops.
+                  </div>
+                </div>
+              ) : (
+                <QRJoin sessionCode={sessionCode} />
+              )}
               <div>
                 <div className="text-xs uppercase tracking-[0.3em] opacity-60 mb-3">
                   Firms assembling

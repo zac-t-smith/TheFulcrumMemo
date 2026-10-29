@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 import caseContent from "../content/case.json";
 import type { CaseContent } from "../content/types";
 import { useSession } from "../hooks/useSession";
@@ -183,8 +184,11 @@ function OpsConsole({
     setErr(null);
     try {
       await advanceSession(session.id, secret, target);
+      toast.success(direction === 1 ? `Advanced to ${target}.` : `Back to ${target}.`);
     } catch (e) {
-      setErr((e as Error).message);
+      const msg = (e as Error).message;
+      setErr(msg);
+      toast.error(`Advance failed: ${msg}`);
     } finally {
       setBusy(false);
     }
@@ -194,8 +198,11 @@ function OpsConsole({
     if (!session) return;
     try {
       await advanceSession(session.id, secret, session.phase as Phase, DEFAULT_TIMER[session.phase as Phase]);
+      toast.success("Timer reset.");
     } catch (e) {
-      setErr((e as Error).message);
+      const msg = (e as Error).message;
+      setErr(msg);
+      toast.error(`Timer reset failed: ${msg}`);
     }
   }
 
@@ -206,12 +213,17 @@ function OpsConsole({
     const r = phaseRound(session.phase as Phase);
     if (!r) return;
     const sb = (await import("../lib/supabase")).getSupabase();
-    const { error } = await sb
+    const { error, count } = await sb
       .from("submissions")
-      .update({ locked: true })
+      .update({ locked: true }, { count: "exact" })
       .eq("session_id", session.id)
       .eq("round", r);
-    if (error) setErr(error.message);
+    if (error) {
+      setErr(error.message);
+      toast.error(`Lock failed: ${error.message}`);
+    } else {
+      toast.success(`Locked round ${r}${typeof count === "number" ? ` (${count} submissions)` : ""}.`);
+    }
   }
 
   if (bundle.loading) return <div className="p-6">Loading…</div>;
@@ -283,6 +295,7 @@ function OpsConsole({
               opsSecret={secret}
               round={session.round}
               canned={injectBank}
+              phoneCount={bundle.players.length}
             />
             <div className="rounded-xl border p-4 bg-card text-xs text-muted-foreground">
               <div className="font-semibold text-foreground mb-1">Up next</div>
