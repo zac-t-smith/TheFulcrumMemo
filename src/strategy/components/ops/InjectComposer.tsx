@@ -22,10 +22,10 @@ export function InjectComposer({
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  function selectPreset(c: Inject) {
+  function selectPresetKeyed(c: Inject, key: string) {
     setTitle(c.title);
     setBody(c.body);
-    setSelectedId(c.id);
+    setSelectedId(key);
     setErr(null);
   }
 
@@ -57,12 +57,15 @@ export function InjectComposer({
     <div className="rounded-xl border p-4 bg-card space-y-3">
       <div className="text-sm font-semibold">Fire inject</div>
       <div className="flex flex-wrap gap-2">
-        {canned.map((c) => {
-          const isSelected = c.id === selectedId;
+        {canned.map((c, i) => {
+          // case.json injects don't carry stable ids; fall back to title+index
+          // so React can key the list without "same key" warnings.
+          const key = c.id ?? `${c.title}-${i}`;
+          const isSelected = key === selectedId;
           return (
             <button
-              key={c.id}
-              onClick={() => selectPreset(c)}
+              key={key}
+              onClick={() => selectPresetKeyed(c, key)}
               className={`text-xs px-3 py-1 border rounded-full transition ${
                 isSelected
                   ? "bg-primary text-primary-foreground border-primary"

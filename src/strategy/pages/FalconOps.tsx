@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { StrategyErrorBoundary } from "../components/shared/ErrorBoundary";
 import { OpsConsole } from "../components/ops/OpsConsole";
-import { useSession } from "../hooks/useSession";
-import { supabaseConfigured } from "../lib/supabase";
+import { getSupabase, supabaseConfigured } from "../lib/supabase";
 import { verifyOpsSecret, resetSession } from "../hooks/useOps";
 
 const FALCON = "FALCON";
@@ -31,20 +30,45 @@ export default function FalconOps() {
 }
 
 function FalconOpsInner() {
-  const bundle = useSession(FALCON);
-  const session = bundle.session;
+  // One-shot fetch for the FALCON session id. This page does NOT subscribe
+  // to the session — that is OpsConsole's job. Running two overlapping
+  // useSession hooks on the same page previously caused the admin's own
+  // mutations not to reflect in the UI (two channels competing for the
+  // same subscription slots).
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionLoadError, setSessionLoadError] = useState<string | null>(null);
   const [pin, setPin] = useState<string>(() => sessionStorage.getItem(PIN_KEY) ?? "");
   const [verified, setVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [tab, setTab] = useState<"console" | "qa">("console");
 
-  // When a PIN is already cached, verify silently as soon as the session loads.
   useEffect(() => {
-    if (!pin || !session || verified) return;
+    let cancelled = false;
     (async () => {
       try {
-        const ok = await verifyOpsSecret(session.id, pin);
+        const sb = getSupabase();
+        const { data, error } = await sb
+          .from("game_sessions")
+          .select("id")
+          .eq("code", FALCON)
+          .maybeSingle();
+        if (cancelled) return;
+        if (error) throw error;
+        setSessionId((data as { id: string } | null)?.id ?? null);
+      } catch (ex) {
+        if (!cancelled) setSessionLoadError((ex as Error).message);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Verify cached PIN silently as soon as the session id is known.
+  useEffect(() => {
+    if (!pin || !sessionId || verified) return;
+    (async () => {
+      try {
+        const ok = await verifyOpsSecret(sessionId, pin);
         if (ok) setVerified(true);
         else {
           sessionStorage.removeItem(PIN_KEY);
@@ -55,18 +79,18 @@ function FalconOpsInner() {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.id]);
+  }, [sessionId]);
 
-  if (bundle.loading && !session) {
-    return <CenterFrame>Loading session…</CenterFrame>;
+  if (sessionLoadError) {
+    return <CenterFrame>Loading error: {sessionLoadError}</CenterFrame>;
   }
-  if (!session) {
+  if (!sessionId) {
     return (
       <CenterFrame>
         <div className="text-center">
-          <div className="text-xl font-semibold mb-2">No FALCON session.</div>
+          <div className="text-xl font-semibold mb-2">Looking up FALCON…</div>
           <div className="text-sm text-muted-foreground">
-            Run the live-entry migration first. Then set the PIN hash in the SQL editor.
+            If this hangs, confirm the live-entry migration ran and FALCON exists.
           </div>
         </div>
       </CenterFrame>
@@ -75,7 +99,7 @@ function FalconOpsInner() {
 
   async function tryPin(e?: React.FormEvent) {
     e?.preventDefault();
-    if (!session) return;
+    if (!sessionId) return;
     if (pin.length < 6) {
       setErr("PIN must be at least 6 characters.");
       return;
@@ -83,7 +107,7 @@ function FalconOpsInner() {
     setVerifying(true);
     setErr(null);
     try {
-      const ok = await verifyOpsSecret(session.id, pin);
+      const ok = await verifyOpsSecret(sessionId, pin);
       if (ok) {
         sessionStorage.setItem(PIN_KEY, pin);
         setVerified(true);
@@ -136,7 +160,7 @@ function FalconOpsInner() {
       secret={pin}
       tab={tab}
       setTab={setTab}
-      headerExtras={<CockpitButtons sessionId={session.id} pin={pin} />}
+      headerExtras={<CockpitButtons sessionId={sessionId} pin={pin} />}
     />
   );
 }
@@ -180,6 +204,8 @@ function ResetButton({ sessionId, pin }: { sessionId: string; pin: string }) {
       toast.success("Session reset — all firms, players, submissions, injects deleted.");
       setOpen(false);
       setTyped("");
+      // No explicit refetch here — OpsConsole polls every 5s AND reacts
+      // to realtime, so the firms grid clears within a tick.
     } catch (e) {
       toast.error(`Reset failed: ${(e as Error).message}`);
     } finally {

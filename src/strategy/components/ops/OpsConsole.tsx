@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Copy } from "lucide-react";
 import caseContent from "../../content/case.json";
@@ -76,8 +76,19 @@ export function OpsConsole({
   );
   const injectBank = useMemo(() => content.rounds.flatMap((r) => r.injects), []);
 
+  // Admin-side poll fallback: realtime on firms/players is unreliable because
+  // the admin page already holds a competing useSession channel upstream in
+  // FalconOps. Poll every 5s so the firms grid and player count stay fresh
+  // even if the WebSocket subscription silently drops events.
+  useEffect(() => {
+    if (!session) return;
+    const t = setInterval(() => { void bundle.refetch(); }, 5000);
+    return () => clearInterval(t);
+  }, [session?.id, bundle.refetch]);
+
   async function doAdvance(direction: 1 | -1) {
     if (!session) return;
+    if (busy) return; // guard against double-click producing two advances
     const target = stepPhase(session.phase as Phase, direction);
     if (!target) return;
     setBusy(true);
@@ -85,6 +96,7 @@ export function OpsConsole({
     try {
       await advanceSession(session.id, secret, target);
       toast.success(direction === 1 ? `Advanced to ${target}.` : `Back to ${target}.`);
+      await bundle.refetch(); // don't trust realtime; our own RPC must reflect immediately
     } catch (e) {
       const msg = (e as Error).message;
       setErr(msg);
@@ -99,6 +111,7 @@ export function OpsConsole({
     try {
       await advanceSession(session.id, secret, session.phase as Phase, DEFAULT_TIMER[session.phase as Phase]);
       toast.success("Timer reset.");
+      await bundle.refetch();
     } catch (e) {
       const msg = (e as Error).message;
       setErr(msg);
@@ -121,6 +134,7 @@ export function OpsConsole({
       toast.error(`Lock failed: ${error.message}`);
     } else {
       toast.success(`Locked round ${r}${typeof count === "number" ? ` (${count} submissions)` : ""}.`);
+      await bundle.refetch();
     }
   }
 

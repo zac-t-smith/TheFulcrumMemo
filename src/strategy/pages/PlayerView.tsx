@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSession } from "../hooks/useSession";
 import { usePlayerIdentity } from "../hooks/usePlayer";
@@ -97,10 +97,17 @@ function PlayerViewInner({ code }: { code: string }) {
   if (bundle.loading) return <Full>Loading…</Full>;
   if (!session) return <Full>No session <span className="font-mono">{code}</span>.</Full>;
   if (!me || !myFirm) {
+    // Transition hiccup: if `me` just got set from the join RPC but the local
+    // bundle hasn't picked up the new firm row yet (realtime hiccup / short
+    // network blip), show a short waiting state and refetch — rather than
+    // bouncing the user back to the idle join form.
+    if (me && !myFirm) {
+      return <JoinWaiting onRetry={() => void bundle.refetch()} />;
+    }
     return (
       <>
         <InjectBanner latest={latestInject} />
-        <JoinFlow session={session} onJoined={setMe} />
+        <JoinFlow session={session} onJoined={async (p) => { setMe(p); await bundle.refetch(); }} />
       </>
     );
   }
@@ -214,4 +221,33 @@ function PlayerViewInner({ code }: { code: string }) {
 
 function Full({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen flex items-center justify-center p-6 text-center">{children}</div>;
+}
+
+function JoinWaiting({ onRetry }: { onRetry: () => void }) {
+  // Light auto-retry: the firm row usually arrives within ~500ms. Poll a few
+  // times then expose a manual retry so the player is never silently stuck.
+  const [tries, setTries] = useState(0);
+  useEffect(() => {
+    if (tries >= 6) return;
+    const t = setTimeout(() => { onRetry(); setTries((n) => n + 1); }, 800);
+    return () => clearTimeout(t);
+  }, [tries, onRetry]);
+  return (
+    <div className="min-h-screen flex items-center justify-center p-6 text-center">
+      <div>
+        <div className="text-xs uppercase tracking-[0.3em] opacity-60 mb-2">
+          Attaching to firm
+        </div>
+        <div className="text-xl font-semibold mb-4">Just a moment…</div>
+        {tries >= 6 && (
+          <button
+            onClick={() => { onRetry(); setTries(0); }}
+            className="px-4 py-2 border rounded-md text-sm"
+          >
+            Still waiting — retry
+          </button>
+        )}
+      </div>
+    </div>
+  );
 }
