@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
+import { Copy } from "lucide-react";
 import caseContent from "../../content/case.json";
 import type { CaseContent } from "../../content/types";
 import { useSession } from "../../hooks/useSession";
@@ -12,6 +13,43 @@ import { advanceSession, stepPhase } from "../../hooks/useOps";
 import { DEFAULT_TIMER, nextPhase, phaseRound, Phase } from "../../lib/phases";
 
 const content = caseContent as CaseContent;
+
+function JoinLinkInfo({ playerCount }: { playerCount: number }) {
+  const base = import.meta.env.BASE_URL;
+  const url =
+    typeof window !== "undefined"
+      ? `${window.location.origin}${base}#/join`
+      : `${base}#/join`;
+  const copy = () => {
+    navigator.clipboard?.writeText(url).then(
+      () => toast.success("Player join link copied."),
+      () => toast.error("Clipboard blocked — copy from the URL field.")
+    );
+  };
+  return (
+    <div className="flex items-center gap-2 min-w-0">
+      <div className="min-w-0">
+        <div className="text-xs uppercase tracking-widest text-muted-foreground">
+          Players join
+        </div>
+        <div className="font-mono text-sm truncate" title={url}>
+          {url.replace(/^https?:\/\//, "")}
+        </div>
+        <div className="text-xs text-muted-foreground">
+          {playerCount} connected
+        </div>
+      </div>
+      <button
+        onClick={copy}
+        className="shrink-0 px-2 py-1 border rounded-md text-xs hover:bg-muted"
+        aria-label="Copy player join link"
+      >
+        <Copy className="h-3 w-3 inline mr-1" />
+        Copy
+      </button>
+    </div>
+  );
+}
 
 export function OpsConsole({
   code,
@@ -92,9 +130,12 @@ export function OpsConsole({
   return (
     <div className="min-h-screen bg-muted/20">
       <header className="sticky top-0 z-30 bg-background border-b px-4 py-3 flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <div className="text-xs uppercase tracking-widest text-muted-foreground">Session</div>
-          <div className="font-mono text-lg font-bold">{session.code}</div>
+        <div className="flex items-center gap-6 flex-wrap">
+          <div>
+            <div className="text-xs uppercase tracking-widest text-muted-foreground">Session</div>
+            <div className="font-mono text-lg font-bold">{session.code}</div>
+          </div>
+          <JoinLinkInfo playerCount={bundle.players.length} />
         </div>
         <div className="flex gap-2 flex-wrap items-center">
           <button
