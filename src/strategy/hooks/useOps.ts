@@ -69,6 +69,25 @@ export async function fireInject(
   if (error) throw error;
 }
 
+export async function verifyOpsSecret(sessionId: string, opsSecret: string): Promise<boolean> {
+  const sb = getSupabase();
+  const { data, error } = await sb.rpc("verify_ops_secret", {
+    p_session_id: sessionId,
+    p_secret: opsSecret,
+  });
+  if (error) throw error;
+  return data === true;
+}
+
+export async function resetSession(sessionId: string, opsSecret: string): Promise<void> {
+  const sb = getSupabase();
+  const { error } = await sb.rpc("reset_session", {
+    p_session_id: sessionId,
+    p_secret: opsSecret,
+  });
+  if (error) throw error;
+}
+
 export function stepPhase(current: Phase, direction: 1 | -1): Phase | null {
   const i = PHASE_ORDER.indexOf(current);
   const j = i + direction;

@@ -29,6 +29,8 @@ import PrintMemoShell from "./pages/print/PrintMemoShell";
 import BoardRoom from "./strategy/pages/BoardRoom";
 import PlayerView from "./strategy/pages/PlayerView";
 import OpsView from "./strategy/pages/OpsView";
+import FalconOps from "./strategy/pages/FalconOps";
+import FalconJoin from "./strategy/pages/FalconJoin";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +66,10 @@ const App = () => (
             <Route path="/casework" element={<Casework />} />
             <Route path="/casework/restoration" element={<RestorationCaseStudy />} />
             <Route path="/print/memos/:slug" element={<PrintMemoShell />} />
+            {/* FALCON entry flow */}
+            <Route path="/join" element={<FalconJoin />} />
+            <Route path="/falcon" element={<FalconOps />} />
+            {/* Board + legacy strategy routes (OpsView now redirects to /falcon) */}
             <Route path="/strategy" element={<BoardRoom />} />
             <Route path="/strategy/play" element={<PlayerView />} />
             <Route path="/strategy/ops" element={<OpsView />} />

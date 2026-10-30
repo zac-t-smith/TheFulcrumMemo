@@ -36,11 +36,20 @@ Copy `.env.local.example` and fill in:
 ```
 VITE_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOi...        # Supabase → Project Settings → API → anon public
-VITE_OPS_PIN=4219                           # whatever short pin you want for the ops console UI gate
 
 # Only used by scripts/simulate-class.ts — never ships to the browser
 SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...     # Supabase → Project Settings → API → service_role
+```
+
+The ops console no longer has a build-time PIN. The facilitator PIN is a
+per-session value stored as a SHA-256 hash on the FALCON session row and
+verified server-side via the `falcon.verify_ops_secret` RPC. Set it with:
+
+```sql
+update falcon.game_sessions
+   set ops_secret_hash = encode(extensions.digest('YOUR_PIN','sha256'),'hex')
+ where code = 'FALCON';
 ```
 
 ### GitHub Pages (production build)
@@ -49,7 +58,6 @@ Add these as **Repository secrets** (Settings → Secrets and variables → Acti
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
-- `VITE_OPS_PIN`
 
 The deploy workflow (`.github/workflows/deploy.yml`) already reads them at build time. Push to `main` or run the workflow manually to deploy.
 
@@ -67,15 +75,15 @@ Demo mode runs the entire flow locally with 5 synthetic firms (ALP, BRV, CDR, DL
 
 Three windows:
 
-1. **Projector** — `/TheFulcrumMemo/strategy?s=FALCON` (large screen)
-2. **Facilitator phone / laptop** — `/TheFulcrumMemo/strategy/ops`
-3. **Student phones** — scan the QR code on the projector; it links to `/TheFulcrumMemo/strategy/play?s=FALCON`
+1. **Projector** — `/TheFulcrumMemo/#/strategy?s=FALCON` (large screen)
+2. **Facilitator phone / laptop** — `/TheFulcrumMemo/#/falcon` (enter PIN)
+3. **Student phones** — scan the QR code on the projector; it links to `/TheFulcrumMemo/#/join`
 
 ### Facilitator flow
 
-1. Open `/strategy/ops` → **New session**. Pick a code (shown on screen, e.g. `FALCON`) and an ops secret (keep private; it's required for all phase changes).
-2. In the **Sealed predictions** card: paste your pre-written prediction text, click **Commit hash**. The projector's kickoff screen now shows the hash.
-3. Open the projector tab at `/strategy?s=FALCON`.
+1. Open `/#/falcon`, enter the team PIN. Server verifies via `verify_ops_secret`; wrong PIN never opens the console.
+2. The console header has **Open board** (new tab), **Rehearsal** (demo mode), and **Reset session** (type `RESET` to confirm; calls `reset_session` RPC which preserves the FALCON row and PIN hash).
+3. In the **Sealed predictions** card: paste your pre-written prediction text, click **Commit hash**. The projector's kickoff screen now shows the hash.
 4. Hit **Next phase →** to drive: lobby → kickoff → anchor → teach_1 → decide_1 → reveal_1 → teach_2 → decide_2 → reveal_2 → teach_3 → decide_3 → reveal_3 → final_reveal → done.
 5. On `final_reveal`: re-paste the SAME prediction text and click **Reveal text**. The projector live-recomputes SHA-256 and shows a MATCH badge.
 
@@ -97,14 +105,15 @@ The script spawns 5 firms and 20 bot players, then auto-submits randomly wheneve
 
 | URL (relative) | Who | What |
 |---|---|---|
-| `/strategy` | projector | Lobby/QR, kickoff, teach, decide status, reveals, final |
-| `/strategy?demo=1` | projector (rehearsal) | Offline run, keyboard-driven |
-| `/strategy?s=CODE` | projector (live) | Live session view |
-| `/strategy/play` | student phones | Join flow + per-phase cards |
-| `/strategy/play?s=CODE` | student phones (direct) | Skip code entry |
-| `/strategy/ops` | facilitator | PIN-gated console |
+| `/#/strategy` | projector | Chooser (Rehearsal + FALCON console link) |
+| `/#/strategy?demo=1` | projector (rehearsal) | Offline run, keyboard-driven |
+| `/#/strategy?s=FALCON` | projector (live) | Live session view |
+| `/#/join` | student phones | Auto-attach to FALCON (QR target) |
+| `/#/falcon` | facilitator | PIN-gated console (server verify) |
+| `/#/strategy/play?s=…` | legacy student | Still works; equivalent to `/#/join` |
+| `/#/strategy/ops` | legacy facilitator | Redirects to `/#/falcon` |
 
-Existing routes (`/`, `/my-business`) are untouched.
+Existing portfolio routes (`/`, `/memos`, etc.) are untouched.
 
 ## 7. Known limits & intentional punts
 

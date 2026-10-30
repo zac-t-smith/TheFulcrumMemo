@@ -36,7 +36,6 @@ jobs:
           VITE_EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_OPS_PIN: ${{ secrets.VITE_OPS_PIN }}
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
@@ -59,7 +58,6 @@ jobs:
           VITE_EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_OPS_PIN: ${{ secrets.VITE_OPS_PIN }}
 
       - name: Confirm PDFs made it into dist/
         run: |

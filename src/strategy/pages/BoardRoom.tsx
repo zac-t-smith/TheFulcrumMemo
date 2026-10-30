@@ -57,11 +57,11 @@ function BoardRoomChooser() {
             backup if the network drops.
           </div>
         </a>
-        <a href="#/strategy/ops" className="rounded-xl border border-white/20 p-6 hover:border-[#E0263F] transition">
+        <a href="#/falcon" className="rounded-xl border border-white/20 p-6 hover:border-[#E0263F] transition">
           <div className="text-xs uppercase tracking-widest opacity-60 mb-2">Live</div>
-          <div className="text-2xl font-semibold mb-2">Open ops console →</div>
+          <div className="text-2xl font-semibold mb-2">Open FALCON console →</div>
           <div className="text-sm opacity-70">
-            Create a new session there, then open this page with <code>?s=CODE</code>.
+            Facilitator PIN required. Opens the live session students join at <code>/#/join</code>.
           </div>
         </a>
       </div>
