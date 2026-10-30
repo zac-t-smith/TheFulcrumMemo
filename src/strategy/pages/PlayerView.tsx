@@ -72,7 +72,11 @@ function PlayerViewInner({ code }: { code: string }) {
 
   const session = bundle.session;
   const myFirm = me && session ? bundle.firms.find((f) => f.id === me.firmId) ?? null : null;
-  const latestInject = bundle.injects[0] ?? null;
+  // Suppress the breaking-news banner in the pre-game lobby. Admins fire
+  // injects on test runs; nothing should flash on a student's phone before
+  // the game starts.
+  const latestInject =
+    session && session.phase !== "lobby" ? bundle.injects[0] ?? null : null;
 
   const r = session ? phaseRound(session.phase) : null;
   const myFirmId = myFirm?.id ?? null;

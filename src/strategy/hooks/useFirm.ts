@@ -1,6 +1,6 @@
 import { getSupabase } from "../lib/supabase";
 import { assignGroups, randomFirmCode, GroupCounters } from "../lib/balance";
-import { newPlayerId, savePlayer, PlayerIdentity, RoleId } from "./usePlayer";
+import { loadPlayer, savePlayer, stablePlayerId, PlayerIdentity, RoleId } from "./usePlayer";
 import type { FirmRow, PlayerRow, SessionRow } from "./useSession";
 
 export type JoinResult = {
@@ -58,6 +58,28 @@ export async function joinOrCreateByCode(opts: {
   displayName: string;
 }): Promise<JoinResult> {
   const sb = getSupabase();
+
+  // Short-circuit: if this browser already joined this session, return the
+  // stored identity instead of re-inserting. Covers the "clicked twice,
+  // page re-mounted" case cheaply (no round trips).
+  const prior = loadPlayer(opts.session.code);
+  if (prior) {
+    const firmRes = await sb
+      .from("firms")
+      .select("*")
+      .eq("id", prior.firmId)
+      .maybeSingle();
+    if (firmRes.data) {
+      return { player: prior, firm: firmRes.data as FirmRow };
+    }
+    // Firm was deleted (reset session). Fall through and re-join.
+  }
+
+  // Stable per-device id. If a concurrent click races past the short-circuit
+  // above, both inserts carry the SAME id — the second hits the primary-key
+  // constraint and fails cleanly instead of creating a ghost member.
+  const id = stablePlayerId(opts.session.code);
+
   let firm: FirmRow | null = null;
 
   if (opts.joinCode) {
@@ -90,18 +112,17 @@ export async function joinOrCreateByCode(opts: {
     firm = data as FirmRow;
   }
 
-  // Fetch existing members to decide the new player's role (round-robin per firm).
-  const { data: existingMembers } = await sb
-    .from("players")
-    .select("*")
-    .eq("firm_id", firm.id);
-  const role = nextRoleForFirm((existingMembers ?? []) as PlayerRow[]);
-
-  const counters = await readCounters(opts.session.id);
+  // Parallelize the two independent reads needed for the player insert.
+  const [membersRes, counters] = await Promise.all([
+    sb.from("players").select("*").eq("firm_id", firm.id),
+    readCounters(opts.session.id),
+  ]);
+  const role = nextRoleForFirm((membersRes.data ?? []) as PlayerRow[]);
   const assignment = assignGroups(counters);
 
-  const id = newPlayerId();
-  const { data: playerData, error: pErr } = await sb
+  // Idempotent insert. If a prior request already landed this id, we read
+  // the existing row back instead of creating a duplicate.
+  const insertRes = await sb
     .from("players")
     .insert({
       id,
@@ -113,18 +134,32 @@ export async function joinOrCreateByCode(opts: {
       role,
     })
     .select("*")
-    .single();
-  if (pErr) throw pErr;
+    .maybeSingle();
+
+  let playerRow = insertRes.data as PlayerRow | null;
+  if (insertRes.error) {
+    // 23505 = unique_violation. Treat as "already joined, read the row."
+    const code = (insertRes.error as unknown as { code?: string }).code;
+    if (code !== "23505") throw insertRes.error;
+    const existing = await sb
+      .from("players")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (existing.error) throw existing.error;
+    playerRow = existing.data as PlayerRow | null;
+  }
+  if (!playerRow) throw new Error("Join succeeded but player row missing. Please retry.");
 
   const player: PlayerIdentity = {
-    id: playerData.id,
+    id: playerRow.id,
     sessionCode: opts.session.code,
     firmId: firm.id,
     firmCode: firm.code,
-    displayName: opts.displayName,
-    anchor: assignment.anchor,
-    framing: assignment.framing,
-    role,
+    displayName: playerRow.display_name,
+    anchor: playerRow.anchor_group,
+    framing: playerRow.framing_group,
+    role: playerRow.role,
   };
   savePlayer(player);
   return { player, firm };

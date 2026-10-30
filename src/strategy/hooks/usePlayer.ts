@@ -14,6 +14,23 @@ export type PlayerIdentity = {
 };
 
 const KEY = (sessionCode: string) => `fm_strategy_player_${sessionCode.toUpperCase()}`;
+const DEVICE_ID_KEY = (sessionCode: string) => `fm_strategy_device_${sessionCode.toUpperCase()}`;
+
+/**
+ * Returns a stable per-browser player id for this session, generating one on
+ * first call and caching it in localStorage. Used so that a double-tap on
+ * the join button sends two inserts with the SAME id — the second hits the
+ * primary-key constraint instead of creating a ghost member.
+ */
+export function stablePlayerId(sessionCode: string): string {
+  const k = DEVICE_ID_KEY(sessionCode);
+  let id = localStorage.getItem(k);
+  if (!id) {
+    id = newPlayerId();
+    localStorage.setItem(k, id);
+  }
+  return id;
+}
 
 export function loadPlayer(sessionCode: string): PlayerIdentity | null {
   if (!sessionCode) return null;
