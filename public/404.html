@@ -6,32 +6,25 @@
     <script>
       // HashRouter deep-link recovery.
       // Pages serves 404.html for any path that isn't a built file.
-      // Rewrite /TheFulcrumMemo/<path> -> /TheFulcrumMemo/#/<path> so
-      // old BrowserRouter-style URLs (e.g. /TheFulcrumMemo/my-business)
-      // and typos still land on the correct route.
+      // Rewrite /<path> -> /#/<path> so direct URLs like /join, /falcon,
+      // /memos/kirklands, and anything a user types / pastes still land
+      // on the correct route under HashRouter.
       (function () {
-        var base = '/TheFulcrumMemo/';
+        var base = '/';
         var l = window.location;
-        // Strip the base, if present.
-        var pathAfterBase = l.pathname.indexOf(base) === 0
-          ? l.pathname.slice(base.length)
-          : l.pathname.replace(/^\//, '');
-        // If someone hit the root (shouldn't 404, but just in case), go home.
+        var pathAfterBase = l.pathname.replace(/^\/+/, '');
         if (!pathAfterBase) {
           l.replace(base);
           return;
         }
-        // Preserve query + any existing hash the browser kept.
-        var hash = l.hash && l.hash !== '#' ? l.hash.replace(/^#\/?/, '') : '';
-        var target = base + '#/' + pathAfterBase.replace(/^\/+/, '') +
-          (l.search || '') +
-          (hash ? (l.search ? '&' : '') : '');
-        l.replace(target);
+        // Preserve the existing search string; drop any stray hash — the
+        // 404 can't have arrived with a meaningful one.
+        l.replace(base + '#/' + pathAfterBase + (l.search || ''));
       })();
     </script>
   </head>
   <body>
     If you aren't redirected automatically,
-    <a href="/TheFulcrumMemo/">return to The Fulcrum Memo</a>.
+    <a href="/">return to The Fulcrum Memo</a>.
   </body>
 </html>

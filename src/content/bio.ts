@@ -12,7 +12,7 @@ export const TWITTER_HANDLE = "@TheFulcrumMemo";
 
 export const RESUME_PDF = `${import.meta.env.BASE_URL}Smith_Zachary_Resume.pdf`;
 
-export const SITE_URL = "https://zac-t-smith.github.io/TheFulcrumMemo";
+export const SITE_URL = "https://thefulcrummemo.com";
 
 // The one bio line used everywhere a bio appears (memo footers, About,
 // Resume sidebar, meta descriptions when short, etc.).

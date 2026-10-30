@@ -23,7 +23,7 @@ const ROUTES = [
   { name: 'Contact',        path: '/#/contact' },
 ];
 
-const BASE = '/TheFulcrumMemo/';
+const BASE = '/';
 const PORT = 4177;
 
 async function waitForPort(port, timeoutMs = 30_000) {

@@ -4,7 +4,7 @@ import { Button } from './Button';
 /**
  * Download-PDF button rendered under each memo header. The PDF files
  * are generated at build time by scripts/render-pdfs.ts (Playwright
- * print-to-PDF) and served from /TheFulcrumMemo/pdfs/.
+ * print-to-PDF) and served from /pdfs/.
  *
  * Hidden on print (via the body.tfm-print selectors in tokens.css).
  */

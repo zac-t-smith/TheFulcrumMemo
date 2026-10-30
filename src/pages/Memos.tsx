@@ -96,7 +96,7 @@ const MemosPage = () => {
       description="Long-form credit, restructuring, and macro research. Memos on distressed situations, intercreditor priority, and sovereign-level asset plays."
     >
       <Helmet>
-        <link rel="canonical" href="https://zac-t-smith.github.io/TheFulcrumMemo/#/memos" />
+        <link rel="canonical" href="https://thefulcrummemo.com/#/memos" />
       </Helmet>
 
       <PageHeader

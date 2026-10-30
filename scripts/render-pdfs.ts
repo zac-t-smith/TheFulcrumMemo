@@ -22,7 +22,7 @@ import * as net from 'node:net';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 
-const BASE_URL_PATH = '/TheFulcrumMemo/';
+const BASE_URL_PATH = '/';
 
 // Keep in sync with src/pages/print/PrintMemoShell.tsx MEMO_MAP keys.
 const MEMOS: Array<{ slug: string; filename: string }> = [

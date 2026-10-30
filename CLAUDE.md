@@ -12,7 +12,7 @@
 - Interactive conflict map and data visualizations
 - Market snapshot tracking (Brent, VIX, gas, HY spreads, VLCC rates)
 
-**Site URL:** https://zac-t-smith.github.io/TheFulcrumMemo/
+**Site URL:** https://thefulcrummemo.com/ (apex, custom domain). The old `https://zac-t-smith.github.io/TheFulcrumMemo/` still redirects via Pages until the repo renames or is unlinked.
 
 ---
 
