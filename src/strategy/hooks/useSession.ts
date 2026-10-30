@@ -65,13 +65,20 @@ export type SessionBundle = {
   refetch: () => Promise<void>;
 };
 
+// Explicit column list excludes ops_secret_hash. The server also
+// revokes table-level SELECT and grants column-level SELECT excluding
+// the hash — but keeping the client list explicit means a stray
+// select("*") won't start leaking the hash if the server grants change.
+const SESSION_COLS =
+  "id,code,phase,round,phase_started_at,timer_seconds,prediction_hash,prediction_text,metadata";
+
 async function fetchAll(sessionCodeOrId: string): Promise<Omit<SessionBundle, "loading" | "error" | "refetch">> {
   const sb = getSupabase();
   // Accept either code or id
   const sessionRes =
     sessionCodeOrId.length === 36
-      ? await sb.from("game_sessions").select("*").eq("id", sessionCodeOrId).maybeSingle()
-      : await sb.from("game_sessions").select("*").eq("code", sessionCodeOrId.toUpperCase()).maybeSingle();
+      ? await sb.from("game_sessions").select(SESSION_COLS).eq("id", sessionCodeOrId).maybeSingle()
+      : await sb.from("game_sessions").select(SESSION_COLS).eq("code", sessionCodeOrId.toUpperCase()).maybeSingle();
   if (sessionRes.error) throw sessionRes.error;
   const session = sessionRes.data as SessionRow | null;
   if (!session) return { session: null, firms: [], players: [], submissions: [], injects: [], answers: [] };
