@@ -18,9 +18,13 @@ import { randomUUID } from "crypto";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
-const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!url || !svcKey) {
-  console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local");
+// Prefer the anon key: writes still work (RLS on falcon is USING(true), and
+// anon has INSERT/UPDATE grants on firms/players/submissions). service_role
+// is not granted on the falcon schema in migrations, so trying to use it
+// yields "permission denied for table game_sessions".
+const key = process.env.VITE_SUPABASE_ANON_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!url || !key) {
+  console.error("Missing SUPABASE_URL or VITE_SUPABASE_ANON_KEY in .env.local");
   process.exit(1);
 }
 
@@ -35,10 +39,14 @@ const caseJson = JSON.parse(
 );
 
 // Game data lives in the `falcon` schema — same as the browser client.
-const sb = createClient(url, svcKey, {
+const sb = createClient(url, key, {
   db: { schema: "falcon" },
   auth: { persistSession: false },
 });
+
+// Explicit column list excludes ops_secret_hash (anon has no grant on it).
+const SESSION_COLS =
+  "id,code,phase,round,phase_started_at,timer_seconds,prediction_hash,prediction_text,metadata";
 
 const FIRM_NAMES = ["Keystone Capital", "Harbor Advisory", "Ironside Partners", "North Peak", "Lantern Group"];
 const NAMES = [
@@ -58,7 +66,7 @@ async function main() {
   console.log(`[sim] session ${sessionCode}`);
   const { data: session, error: sErr } = await sb
     .from("game_sessions")
-    .select("*")
+    .select(SESSION_COLS)
     .eq("code", sessionCode)
     .maybeSingle();
   if (sErr || !session) {
