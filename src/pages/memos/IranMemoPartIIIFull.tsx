@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
+import ArchiveBanner from '@/components/ArchiveBanner';
 import { MemoDownload } from '@/components/system';
 import {
   ReadingProgress,
@@ -67,6 +68,7 @@ const IranMemoPartIIIFull = () => {
       bare
     >
       <ReadingProgress />
+      <ArchiveBanner label="[ARCHIVE BANNER — ZAC TO WRITE]" />
       <div className="memo-page-wrapper pt-10">
           <TableOfContents items={tocItems} />
 

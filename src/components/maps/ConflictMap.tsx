@@ -359,102 +359,22 @@ function useGDELTAttackEvents(enabled: boolean) {
   return { events, loading, error, lastUpdate };
 }
 
-// AIS vessel tracking hook
-function useAISVessels(enabled: boolean, apiKey?: string) {
+// AIS vessel tracking hook — live WebSocket path removed in the Nov 2026
+// archive freeze. The map is a research archive; no reason to burn
+// aisstream.io API credits on every page view. The hook still hydrates
+// `vessels` from any cached snapshot in localStorage so the layer toggle
+// isn't visually empty, but it never opens a socket and the apiKey
+// parameter is intentionally unused.
+function useAISVessels(enabled: boolean, _apiKey?: string) {
   const [vessels, setVessels] = useState<AISVessel[]>([]);
-  const [connected, setConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    if (!enabled || !apiKey) {
-      const cached = getCachedData<AISVessel[]>(AIS_CACHE_KEY, AIS_CACHE_EXPIRY);
-      if (cached) setVessels(cached);
-      return;
-    }
+    if (!enabled) return;
+    const cached = getCachedData<AISVessel[]>(AIS_CACHE_KEY, AIS_CACHE_EXPIRY);
+    if (cached) setVessels(cached);
+  }, [enabled]);
 
-    const connectWebSocket = () => {
-      try {
-        const socket = new WebSocket('wss://stream.aisstream.io/v0/stream');
-        socketRef.current = socket;
-
-        socket.onopen = () => {
-          setConnected(true);
-          setError(null);
-          socket.send(JSON.stringify({
-            Apikey: apiKey,
-            BoundingBoxes: [[[23.0, 54.0], [27.5, 60.0]]],
-            FilterMessageTypes: ['PositionReport'],
-          }));
-        };
-
-        socket.onmessage = (event) => {
-          try {
-            const msg = JSON.parse(event.data);
-            if (msg.MessageType === 'PositionReport' && msg.MetaData && msg.Message?.PositionReport) {
-              const pos = msg.Message.PositionReport;
-              const meta = msg.MetaData;
-
-              let type: AISVessel['type'] = 'other';
-              const nameLower = (meta.ShipName || '').toLowerCase();
-              if (nameLower.includes('tanker') || nameLower.includes('crude') || nameLower.includes('vlcc')) {
-                type = 'tanker';
-              } else if (nameLower.includes('cargo') || nameLower.includes('container')) {
-                type = 'cargo';
-              } else if (meta.MMSI?.toString().startsWith('3') || nameLower.includes('navy')) {
-                type = 'military';
-              }
-
-              const vessel: AISVessel = {
-                mmsi: meta.MMSI?.toString() || 'Unknown',
-                name: meta.ShipName || 'Unknown Vessel',
-                lat: pos.Latitude,
-                lng: pos.Longitude,
-                heading: pos.TrueHeading || pos.Cog || 0,
-                speed: pos.Sog || 0,
-                flag: meta.country || 'Unknown',
-                type,
-                destination: pos.Destination,
-                draft: pos.Draught,
-                lastUpdate: Date.now(),
-              };
-
-              setVessels(prev => {
-                const updated = prev.filter(v => v.mmsi !== vessel.mmsi);
-                const newVessels = [...updated, vessel];
-                setCachedData(AIS_CACHE_KEY, newVessels);
-                return newVessels;
-              });
-            }
-          } catch {
-            // Invalid message, ignore
-          }
-        };
-
-        socket.onerror = () => {
-          setError('AIS connection error');
-          setConnected(false);
-        };
-
-        socket.onclose = () => {
-          setConnected(false);
-          setTimeout(connectWebSocket, 5000);
-        };
-      } catch {
-        setError('Failed to connect to AIS stream');
-      }
-    };
-
-    connectWebSocket();
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.close();
-      }
-    };
-  }, [enabled, apiKey]);
-
-  return { vessels, connected, error };
+  return { vessels, connected: false, error: null as string | null };
 }
 
 // =============================================================================

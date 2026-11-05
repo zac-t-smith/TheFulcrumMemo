@@ -2,11 +2,19 @@
  * Single-source archive banner for the Iran series and anything tied to its
  * April 2026 data snapshot. Phase A: data stopped moving; the site is a
  * research archive, not a live feed.
+ *
+ * The default label is the shared "Series archived · data as of {asOf}"
+ * line used by Field Notes, Timeline, and Fulcrum Index. Pass a custom
+ * `label` to render page-specific archive copy — the four long-form memo
+ * pages (Part I, II, III, Shadow Partner) render a placeholder that Zac
+ * will replace with memo-specific closing-out language.
  */
 const ArchiveBanner = ({
   asOf = "Apr 26, 2026",
+  label,
 }: {
   asOf?: string;
+  label?: string;
 }) => {
   return (
     <div
@@ -28,7 +36,7 @@ const ArchiveBanner = ({
           className="text-[11px] tracking-[0.14em] uppercase font-semibold"
           style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
         >
-          Series archived · data as of {asOf}
+          {label ?? `Series archived · data as of ${asOf}`}
         </p>
       </div>
     </div>
