@@ -22,6 +22,7 @@ const Navbar = () => {
   const navLinks: Array<{ label: string; href: string }> = [
     { label: 'Memos', href: '/memos' },
     { label: 'Field Notes', href: '/field-notes' },
+    { label: 'Scorecard', href: '/scorecard' },
     { label: 'Casework', href: '/casework' },
     { label: 'Fulcrum Index', href: '/fulcrum-index' },
     { label: 'Track Record', href: '/positions' },

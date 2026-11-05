@@ -18,6 +18,8 @@ import IranMemoPartIIIFull from "./pages/memos/IranMemoPartIIIFull";
 import ShadowPartnerMemo from "./pages/memos/ShadowPartnerMemo";
 import FieldNotesIndex from "./pages/field-notes/FieldNotesIndex";
 import FieldNoteDay from "./pages/field-notes/FieldNoteDay";
+import ClosingDispatch from "./pages/field-notes/ClosingDispatch";
+import Scorecard from "./pages/Scorecard";
 import TimelinePage from "./pages/TimelinePage";
 import PositionsPage from "./pages/Positions";
 import FulcrumIndexPage from "./pages/FulcrumIndex";
@@ -57,7 +59,9 @@ const App = () => (
             <Route path="/memos/iran-part-iii" element={<IranMemoPartIIIFull />} />
             <Route path="/memos/shadow-partner" element={<ShadowPartnerMemo />} />
             <Route path="/field-notes" element={<FieldNotesIndex />} />
+            <Route path="/field-notes/closing-dispatch" element={<ClosingDispatch />} />
             <Route path="/field-notes/:day" element={<FieldNoteDay />} />
+            <Route path="/scorecard" element={<Scorecard />} />
             <Route path="/positions" element={<PositionsPage />} />
             <Route path="/timeline" element={<TimelinePage />} />
             <Route path="/fulcrum-index" element={<FulcrumIndexPage />} />

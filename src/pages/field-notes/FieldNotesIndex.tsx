@@ -59,6 +59,25 @@ const FieldNotesIndex = () => {
 
           <CorrectionNote context="Field notes index" />
 
+          <Link
+            to="/field-notes/closing-dispatch"
+            className="block mt-6 p-5 surface-card border border-red-500/40 rounded-lg hover:border-red-500 transition-colors"
+          >
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.18em] text-red-400 mb-1">
+                  Closing Dispatch · November 4, 2026
+                </div>
+                <div className="text-lg font-semibold text-foreground">
+                  [CLOSING DISPATCH TITLE — ZAC TO WRITE]
+                </div>
+              </div>
+              <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                Read →
+              </span>
+            </div>
+          </Link>
+
           {/* Phase 2.5: tabs — Day log (default, this page) · Full timeline (/#/timeline) */}
           <nav
             aria-label="Field Notes sections"
