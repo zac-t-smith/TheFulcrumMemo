@@ -45,10 +45,15 @@ export const BRENT_CHANGE_PCT = Math.round(
 import { hyOasHistory } from '@/data/hyOasHistory';
 
 const _lastHy = hyOasHistory[hyOasHistory.length - 1];
+// Pre-war pivot: Feb 27, 2026 close. Earlier draft hardcoded 281 bps; the
+// actual FRED Feb 27 close is 310 bps (281 was the Jan 2026 monthly average,
+// not the close). Corrected Nov 2026 to derive from the series file.
+const _preWarHy = hyOasHistory.find((p) => p.date === '2026-02-27');
 
 export const HY_SPREAD = {
-  /** Pre-war HY OAS (bps). */
-  preWar: 281,
+  /** Pre-war HY OAS (bps), FRED Feb 27 2026 close. */
+  preWar: _preWarHy ? Math.round(_preWarHy.value) : 310,
+  preWarAsOf: '2026-02-27',
   /** Archive-date HY OAS, derived from FRED BAMLH0A0HYM2 last observation. */
   lastArchived: Math.round(_lastHy.value),
   lastArchivedAsOf: _lastHy.date, // ISO; render pretty where used

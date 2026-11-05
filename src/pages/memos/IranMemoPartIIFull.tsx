@@ -202,7 +202,7 @@ const IranMemoPartIIFull = () => {
                 <span>
                   <strong className="text-foreground">Market impact accelerating:</strong> Brent
                   crude surged to $83.58 (+7.5%) on March 3. S&P 500 fell 2.34%. KOSPI crashed 7.2%.
-                  VIX spiked to 25.40.
+                  VIX closed at 23.57 [corrected Nov 2026; originally published as 25.40].
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -210,7 +210,7 @@ const IranMemoPartIIFull = () => {
                 <span>
                   <strong className="text-foreground">Credit cycle catalyst identified:</strong>{' '}
                   <GlossaryTooltip term="hyspread">HY spreads</GlossaryTooltip> entered the conflict
-                  at historic lows (~281 bps vs. 525 bps 30-year average). Oil shock + inflation +
+                  at historic lows (310 bps vs. 525 bps 30-year average [corrected Nov 2026; originally published as ~281 bps]). Oil shock + inflation +
                   consumer compression = the trigger that moves overleveraged sectors from "stressed"
                   to "distressed."
                 </span>
@@ -437,7 +437,7 @@ const IranMemoPartIIFull = () => {
                     { index: 'South Korea KOSPI', move: '-7.2%', signal: 'Largest single-day drop', color: 'red' },
                     { index: 'Brent Crude', move: '+7.5%', signal: 'Analysts project $100-$120', color: 'green' },
                     { index: 'Gold', move: '$5,041-$5,317/oz', signal: 'Haven bid', color: 'green' },
-                    { index: 'VIX', move: '25.40 (+17%)', signal: 'Fear spike, not crisis levels', color: 'amber' },
+                    { index: 'VIX', move: '23.57 (+18.7%)', signal: 'Fear spike, not crisis levels [corrected Nov 2026; originally published as 25.40 / +17%]', color: 'amber' },
                   ].map((row) => (
                     <tr key={row.index} className="border-t border-border hover:bg-muted/30">
                       <td className="p-3 text-xs text-foreground font-semibold">

@@ -9886,6 +9886,9 @@ export const brentSpotHistory: DailyDataPoint[] = [
   { date: "2026-04-23", value: 113.2500 },
   { date: "2026-04-24", value: 111.8600 },
   { date: "2026-04-27", value: 113.8900 },
+  { date: "2026-04-28", value: 117.6200 },
+  { date: "2026-04-29", value: 124.1600 },
+  { date: "2026-04-30", value: 124.2400 },
 ];
 
 export const brentSpotHistoryMeta = {
@@ -9893,6 +9896,6 @@ export const brentSpotHistoryMeta = {
   label: "Brent Crude Spot Price (Europe)",
   units: "percent",
   firstObservation: "1987-05-20",
-  lastObservation: "2026-04-27",
-  observationCount: 9879,
+  lastObservation: "2026-04-30",
+  observationCount: 9882,
 } as const;

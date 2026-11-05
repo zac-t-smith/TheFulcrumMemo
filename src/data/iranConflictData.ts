@@ -2105,7 +2105,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
         evidence: [
           'Oil climbing toward $100',
           'Fed cuts increasingly unlikely',
-          'HY spreads at 435 bps',
+          'HY spreads at 313 bps (as of Mar 6, nearest trading day) [corrected Nov 2026; originally published as 435 bps]',
         ],
       },
       {
@@ -2207,7 +2207,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
         currentConfidence: 90,
         status: 'confirmed',
         evidence: [
-          'HY spreads at 450 bps',
+          'HY spreads at 313 bps (as of Mar 6, nearest trading day) [corrected Nov 2026; originally published as 450 bps]',
           'Oil at $93 and climbing',
           'G7 discusses emergency SPR release',
         ],
@@ -2339,9 +2339,9 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
         currentConfidence: 93,
         status: 'confirmed',
         evidence: [
-          'Oil above $100, VIX approaching 30',
+          'Oil near $95 (Mar 9 close $94.35), VIX at 25.5 [corrected Nov 2026; originally published as "Oil above $100, VIX approaching 30"]',
           'Asian markets crash: Nikkei -7.5%, KOSPI -8.1%',
-          'HY spreads at 475 bps',
+          'HY spreads at 319 bps [corrected Nov 2026; originally published as 475 bps]',
           'G7 discussing SPR release',
         ],
       },
@@ -2409,7 +2409,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
           'Asian markets crash: Nikkei -7.5%, KOSPI -8.1%',
           'European markets down 2-3%',
           'S&P futures -1.7% to -2.1%',
-          'VIX 29.48 (+24%), approaching crisis territory (30+)',
+          'VIX closed at 24.93 (elevated, not at crisis territory) [corrected Nov 2026; originally published as "VIX 29.48 (+24%), approaching crisis territory (30+)"]',
           'US gas hits $3.478/gal (AAA), up $0.50 in one week',
         ],
       },
@@ -5050,7 +5050,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
         items: [
           'S&P rallies 3.2% — best day in three weeks',
           'Oil drops $7/barrel on de-escalation hopes',
-          'VIX falls to 25 from 31',
+          'VIX at 23.87 (Apr 2 nearest prior close); prior-week peak 31.05 (Mar 27) [corrected Nov 2026; originally published as "VIX falls to 25 from 31"]',
           'Gas at $4.18/gallon as markets price in resolution hope',
         ],
       },
@@ -5159,7 +5159,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       'Framework acceptance = oil sub-$100 within days',
       'Framework rejection = power grid strikes and oil $130+',
       'Current pricing = ~50% probability of resolution',
-      'VIX drop to 23 suggests market leaning optimistic',
+      'VIX at 24.17 suggests market leaning optimistic [corrected Nov 2026; originally published as "VIX drop to 23"]',
       'Scenario: Quick 25% / Protracted 50% / Full 25%',
     ],
   },
@@ -5226,7 +5226,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
           'Dubai market +8.5%',
           'Seoul +6.9%',
           'Global equities surge across all regions',
-          'VIX drops from 27 to 19 in hours',
+          'VIX closes Apr 7 at 25.78, Apr 8 at 21.04 [corrected Nov 2026; originally published as "VIX drops from 27 to 19 in hours" — intraday range not in the FRED daily-close series, UNVERIFIED]',
         ],
       },
       {
@@ -5339,7 +5339,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
         items: [
           'Oil falls to $88/barrel — markets clinging to hope',
           'Ceasefire strain not yet fully priced',
-          'VIX at 20 — cautious optimism',
+          'VIX at 21.04 — cautious optimism [corrected Nov 2026; originally published as "VIX at 20"]',
           'Gas at $3.90/gallon as prices ease',
         ],
       },
@@ -5628,7 +5628,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
         items: [
           'Oil at $94 — cautious, watching Islamabad',
           'Markets unable to price binary outcome',
-          'VIX at 23 — elevated uncertainty',
+          'VIX at 19.23 (Apr 10 nearest prior close) — elevated uncertainty [corrected Nov 2026; originally published as "VIX at 23"]',
           'Global attention on talks',
         ],
       },

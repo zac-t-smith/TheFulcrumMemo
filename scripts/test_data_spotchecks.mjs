@@ -51,7 +51,8 @@ const checks = [
   { file: 'src/data/brentSpotHistory.ts', date: '2026-02-27', expected: 71.32, tol: 0.02, label: 'Brent pre-conflict baseline' },
   { file: 'src/data/brentSpotHistory.ts', date: '2026-03-09', expected: 94.35, tol: 0.02, label: 'Brent Mar 9 (post-insurance expiry)' },
   { file: 'src/data/brentSpotHistory.ts', date: '2026-04-02', expected: 127.61, tol: 0.02, label: 'Brent Apr 2 (contrasts with narrative Dated-Brent $141)' },
-  { file: 'src/data/brentSpotHistory.ts', date: '2026-04-27', expected: 113.89, tol: 0.02, label: 'Brent Apr 27 — repo file last obs' },
+  { file: 'src/data/brentSpotHistory.ts', date: '2026-04-27', expected: 113.89, tol: 0.02, label: 'Brent Apr 27' },
+  { file: 'src/data/brentSpotHistory.ts', date: '2026-04-30', expected: 124.24, tol: 0.02, label: 'Brent Apr 30 — repo file last obs (backfilled Nov 2026)' },
 ];
 
 const cache = new Map();
