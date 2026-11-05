@@ -13,6 +13,8 @@
     "data:etf": "cd quant && python scripts/fetch_etf_data.py --ts-dir ../src/data --data-dir data",
     "data:all": "npm run data:fred && npm run data:etf",
     "data:test": "cd quant && python scripts/test_pipeline.py",
+    "data:spotcheck": "node scripts/test_data_spotchecks.mjs",
+    "data:verify-fred": "node scripts/verify_fred_against_repo.mjs",
     "simulate": "tsx scripts/simulate-class.ts",
     "render:pdfs": "tsx scripts/render-pdfs.ts"
   },
