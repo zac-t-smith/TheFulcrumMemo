@@ -205,8 +205,8 @@ const IranMemoPartIIIFull = () => {
                 <span>
                   <strong className="text-foreground">Hormuz closure impact:</strong> ~16 million
                   bpd offline (80% decline from 20M average). Brent from $71 to ${latestOilPrice.brentSpot.toFixed(2)}.
-                  Dated Brent hit $141 on April 2.{' '}
-                  <span className="text-muted-foreground/70 text-[10px]">({EIA_SOURCE_ATTRIBUTION})</span>
+                  Platts Dated Brent assessed $141.365 on April 2, 2026.{' '}
+                  <span className="text-muted-foreground/70 text-[10px]">({EIA_SOURCE_ATTRIBUTION} · Platts/Argus for Dated Brent)</span>
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -572,7 +572,7 @@ const IranMemoPartIIIFull = () => {
                     <li>• Brent: $71.32 → $94.35 by March 9</li>
                     <li>• Crossed $100 on March 12</li>
                     <li>• Peaked at $121.88 (March 30)</li>
-                    <li>• Dated Brent hit $141 (April 2)</li>
+                    <li>• Platts Dated Brent assessed $141.365 (April 2)</li>
                   </ul>
                   <p className="text-[9px] text-muted-foreground/70 mt-2">
                     {EIA_SOURCE_ATTRIBUTION}
@@ -832,10 +832,12 @@ const IranMemoPartIIIFull = () => {
                 </p>
                 <p>
                   <strong className="text-primary">Oil prices are structurally repriced.</strong>{' '}
-                  Even if Hormuz reopens tomorrow, the risk premium is permanently embedded. The EIA
-                  forecasts Brent remaining above $95 through May. Goldman's extreme scenario puts
-                  Brent at $135 if flows remain disrupted for six months. The days of $60 Brent may
-                  be over for a cycle.
+                  Even if Hormuz reopens tomorrow, the risk premium is permanently embedded. Goldman
+                  raised its March–April Brent forecast to $110/bbl (March 2026 note) [revised Nov 2026;
+                  originally cited an EIA Brent forecast above $95 through May]. Goldman's risk scenario put
+                  Brent at $135 at peak uncertainty, assuming 10 weeks of very low Hormuz flows and demand
+                  destruction over six months (March 2026 note) [revised Nov 2026]. The days of $60 Brent
+                  may be over for a cycle.
                 </p>
                 <p>
                   <strong className="text-primary">The restructuring cycle from Part II accelerates.</strong>{' '}

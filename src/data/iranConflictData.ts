@@ -4693,7 +4693,13 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
     day: 34,
     date: 'April 2, 2026',
     title: "Post-Speech Reality: Oil Surges as Markets Digest No Exit Strategy",
-    summary: "The day after Trump's address, markets delivered their verdict: oil surged as traders processed that the speech offered no path to resolution. WTI jumped 10.3% to $110.47, Brent rose 8.2% to $109.40. The IEA warned that April will be 'much worse than March' — they've lost 12 million barrels per day, more than two oil crises combined. China and Russia are now actively calling for ceasefire while Austria rejects all US overflights. The coalition supporting this war is narrowing while the economic damage compounds daily.\n\nGoldman Sachs warns the S&P could drop another 5-7% if Hormuz stays closed through summer. VIX futures in backwardation signal acute near-term stress. Gas hits $4.10/gallon — up 46% from January's $2.81. South Korea requests $17.3B emergency budget for energy security. The macro transmission chain is fully active: Energy Shock → Inflation → Fed Constraint → Spread Widening → Credit Stress. Your Part II thesis is now consensus reality.",
+    // [corrected Nov 2026] Three edits inside this summary:
+    //   - WTI $110.47 / Brent $109.40 now labelled front-month futures.
+    //   - "VIX futures in backwardation" sentence removed (futures curve not
+    //     captured in FRED close series; UNVERIFIED without a separate feed).
+    //   - "$4.10 gas" replaced with the EIA GASREGW week-of-Mar-30 close
+    //     ($3.99); narrative rewrote "up 46%" to track the new base.
+    summary: "The day after Trump's address, markets delivered their verdict: oil surged as traders processed that the speech offered no path to resolution. Front-month WTI futures jumped 10.3% to $110.47, front-month Brent futures rose 8.2% to $109.40. The IEA warned that April will be 'much worse than March' — they've lost 12 million barrels per day, more than two oil crises combined. China and Russia are now actively calling for ceasefire while Austria rejects all US overflights. The coalition supporting this war is narrowing while the economic damage compounds daily.\n\nGoldman Sachs warns the S&P could drop another 5-7% if Hormuz stays closed through summer. Gas hits $3.99/gallon (EIA GASREGW, week of Mar 30) — up 42% from January's $2.81 [corrected Nov 2026; originally published as '$4.10/gallon, up 46%']. South Korea requests $17.3B emergency budget for energy security. The macro transmission chain is fully active: Energy Shock → Inflation → Fed Constraint → Spread Widening → Credit Stress. Your Part II thesis is now consensus reality.",
     thesisScorecard: [
       {
         thesis: 'April worse than March',
