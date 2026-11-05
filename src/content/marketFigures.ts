@@ -37,12 +37,21 @@ export const BRENT_CHANGE_PCT = Math.round(
   ((BRENT.lastArchived - BRENT.preWar) / BRENT.preWar) * 100
 );
 
+// HY_SPREAD is derived from the verified FRED series file (hyOasHistory.ts)
+// so this constant can never drift from the authoritative data. The previous
+// hand-authored value (525 bps) was a fabrication copied out of Part II's
+// "30-year average" citation — the real last-archived reading per FRED
+// BAMLH0A0HYM2 is in the ~280s bps range.
+import { hyOasHistory } from '@/data/hyOasHistory';
+
+const _lastHy = hyOasHistory[hyOasHistory.length - 1];
+
 export const HY_SPREAD = {
   /** Pre-war HY OAS (bps). */
   preWar: 281,
-  /** Archive-date HY OAS; adjust when a more precise reading is confirmed. */
-  lastArchived: 525,
-  lastArchivedAsOf: 'Apr 26, 2026',
+  /** Archive-date HY OAS, derived from FRED BAMLH0A0HYM2 last observation. */
+  lastArchived: Math.round(_lastHy.value),
+  lastArchivedAsOf: _lastHy.date, // ISO; render pretty where used
 } as const;
 
 export const CONFLICT_DAYS = {

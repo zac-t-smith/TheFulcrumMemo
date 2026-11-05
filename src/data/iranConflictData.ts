@@ -3,6 +3,7 @@
 // Designed to support Field Notes updates with timestamped scenario probability revisions.
 
 import { getOilPrice, EIA_SOURCE_ATTRIBUTION } from './oilPriceData';
+import { latestVerifiedMarket } from './verifiedMarketLookup';
 
 // Re-export for convenience
 export { EIA_SOURCE_ATTRIBUTION };
@@ -175,10 +176,11 @@ export interface FieldNoteDay {
     items: string[];
   }[];
   marketSnapshot: {
-    brentCrude: number;
+    // Brent / HY OAS / VIX are NOT stored — the renderer derives them per
+    // note date via src/data/verifiedMarketLookup from the verified FRED/EIA
+    // series files. Previously these three fields held hand-authored scenario
+    // numbers (now removed).
     vlccRate: number;  // NOTE: VLCC rates are estimates - no live API available
-    hySpread: number;
-    vix: number;
     usGas: number;
   };
   tradingImplications: string[];
@@ -1898,10 +1900,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 85.41,
       vlccRate: 460000,
-      hySpread: 410,
-      vix: 26.5,
       usGas: 3.26,
     },
     tradingImplications: [
@@ -2047,10 +2046,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 85.41,
       vlccRate: 460000,
-      hySpread: 410,
-      vix: 26.5,
       usGas: 3.26,
     },
     tradingImplications: [
@@ -2166,10 +2162,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 92.0,
       vlccRate: 440000,
-      hySpread: 435,
-      vix: 27.5,
       usGas: 3.38,
     },
     tradingImplications: [
@@ -2311,10 +2304,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 92.69,
       vlccRate: 450000,
-      hySpread: 450,
-      vix: 28.0,
       usGas: 3.42,
     },
     tradingImplications: [
@@ -2492,10 +2482,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 108.75,
       vlccRate: 455000,
-      hySpread: 475,
-      vix: 29.48,
       usGas: 3.478,
     },
     tradingImplications: [
@@ -2589,10 +2576,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 94,
       vlccRate: 460000,
-      hySpread: 485,
-      vix: 28.5,
       usGas: 3.52,
     },
     tradingImplications: [
@@ -2708,10 +2692,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 87.69,
       vlccRate: 450000,
-      hySpread: 480,
-      vix: 27.2,
       usGas: 3.58,
     },
     tradingImplications: [
@@ -2914,10 +2895,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 100.11,
       vlccRate: 460000,
-      hySpread: 495,
-      vix: 24.77,
       usGas: 3.60,
     },
     tradingImplications: [
@@ -3029,10 +3007,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 103.14,
       vlccRate: 460000,
-      hySpread: 505,
-      vix: 25.5,
       usGas: 3.60,
     },
     tradingImplications: [
@@ -3138,10 +3113,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 103,
       vlccRate: 460000,
-      hySpread: 515,
-      vix: 26.0,
       usGas: 3.60,
     },
     tradingImplications: [
@@ -3223,10 +3195,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 102,
       vlccRate: 465000,
-      hySpread: 520,
-      vix: 26.5,
       usGas: 3.65,
     },
     tradingImplications: [
@@ -3304,10 +3273,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 103,
       vlccRate: 468000,
-      hySpread: 525,
-      vix: 27.0,
       usGas: 3.68,
     },
     tradingImplications: [
@@ -3377,10 +3343,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 103,
       vlccRate: 470000,
-      hySpread: 530,
-      vix: 27.5,
       usGas: 3.72,
     },
     tradingImplications: [
@@ -3450,10 +3413,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 108.78,
       vlccRate: 485000,
-      hySpread: 550,
-      vix: 30.0,
       usGas: 3.75,
     },
     tradingImplications: [
@@ -3533,10 +3493,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 108.65,
       vlccRate: 490000,
-      hySpread: 560,
-      vix: 31.0,
       usGas: 3.80,
     },
     tradingImplications: [
@@ -3633,10 +3590,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 107.40,
       vlccRate: 495000,
-      hySpread: 565,
-      vix: 30.5,
       usGas: 3.85,
     },
     tradingImplications: [
@@ -3730,10 +3684,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 108.22,
       vlccRate: 498000,
-      hySpread: 570,
-      vix: 31.2,
       usGas: 3.92,
     },
     tradingImplications: [
@@ -3825,10 +3776,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 114.85,
       vlccRate: 510000,
-      hySpread: 595,
-      vix: 38.7,
       usGas: 4.15,
     },
     tradingImplications: [
@@ -3930,10 +3878,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 99.48,
       vlccRate: 480000,
-      hySpread: 545,
-      vix: 28.5,
       usGas: 3.88,
     },
     tradingImplications: [
@@ -4036,10 +3981,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 104.49,
       vlccRate: 490000,
-      hySpread: 555,
-      vix: 26.5,
       usGas: 3.95,
     },
     tradingImplications: [
@@ -4157,10 +4099,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 100,
       vlccRate: 485000,
-      hySpread: 530,
-      vix: 23.5,
       usGas: 3.95,
     },
     tradingImplications: [
@@ -4234,10 +4173,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 105.85,
       vlccRate: 490000,
-      hySpread: 545,
-      vix: 25.5,
       usGas: 3.95,
     },
     tradingImplications: [
@@ -4316,10 +4252,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 112.57,
       vlccRate: 495000,
-      hySpread: 560,
-      vix: 28.0,
       usGas: 3.93,
     },
     tradingImplications: [
@@ -4386,10 +4319,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 110,
       vlccRate: 500000,
-      hySpread: 575,
-      vix: 29.5,
       usGas: 3.95,
     },
     tradingImplications: [
@@ -4475,10 +4405,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 108,
       vlccRate: 505000,
-      hySpread: 565,
-      vix: 28.5,
       usGas: 3.98,
     },
     tradingImplications: [
@@ -4552,10 +4479,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 104,
       vlccRate: 510000,
-      hySpread: 580,
-      vix: 31.05,
       usGas: 3.98,
     },
     tradingImplications: [
@@ -4658,10 +4582,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 112.78,
       vlccRate: 520000,
-      hySpread: 590,
-      vix: 28.5,
       usGas: 4.02,
     },
     tradingImplications: [
@@ -4756,10 +4677,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 104.86,
       vlccRate: 515000,
-      hySpread: 585,
-      vix: 24.54,
       usGas: 4.06,
     },
     tradingImplications: [
@@ -4853,10 +4771,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 109.40,
       vlccRate: 525000,
-      hySpread: 595,
-      vix: 24.54,
       usGas: 4.10,
     },
     tradingImplications: [
@@ -4951,10 +4866,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 121.88,
       vlccRate: 535000,
-      hySpread: 610,
-      vix: 27.80,
       usGas: 4.15,
     },
     tradingImplications: [
@@ -5049,10 +4961,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 122.50,
       vlccRate: 550000,
-      hySpread: 635,
-      vix: 31.20,
       usGas: 4.22,
     },
     tradingImplications: [
@@ -5147,10 +5056,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 115.50,
       vlccRate: 540000,
-      hySpread: 605,
-      vix: 25.40,
       usGas: 4.18,
     },
     tradingImplications: [
@@ -5245,10 +5151,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 108.30,
       vlccRate: 520000,
-      hySpread: 590,
-      vix: 23.10,
       usGas: 4.12,
     },
     tradingImplications: [
@@ -5347,10 +5250,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 92.00,
       vlccRate: 420000,
-      hySpread: 510,
-      vix: 19.00,
       usGas: 3.95,
     },
     tradingImplications: [
@@ -5445,10 +5345,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 88.00,
       vlccRate: 430000,
-      hySpread: 520,
-      vix: 20.00,
       usGas: 3.90,
     },
     tradingImplications: [
@@ -5544,10 +5441,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 90.00,
       vlccRate: 440000,
-      hySpread: 530,
-      vix: 21.50,
       usGas: 3.92,
     },
     tradingImplications: [
@@ -5644,10 +5538,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 92.00,
       vlccRate: 445000,
-      hySpread: 540,
-      vix: 22.00,
       usGas: 3.94,
     },
     tradingImplications: [
@@ -5743,10 +5634,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 94.00,
       vlccRate: 450000,
-      hySpread: 550,
-      vix: 23.00,
       usGas: 3.96,
     },
     tradingImplications: [
@@ -5857,10 +5745,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 98.00,
       vlccRate: 480000,
-      hySpread: 580,
-      vix: 26.00,
       usGas: 4.00,
     },
     tradingImplications: [
@@ -5936,10 +5821,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 102.50,
       vlccRate: 520000,
-      hySpread: 420,
-      vix: 28.00,
       usGas: 4.05,
     },
     tradingImplications: [
@@ -6001,10 +5883,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 105.30,
       vlccRate: 540000,
-      hySpread: 460,
-      vix: 29.00,
       usGas: 4.10,
     },
     tradingImplications: [
@@ -6066,10 +5945,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 107.20,
       vlccRate: 560000,
-      hySpread: 475,
-      vix: 31.00,
       usGas: 4.15,
     },
     tradingImplications: [
@@ -6143,10 +6019,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 99.80,
       vlccRate: 480000,
-      hySpread: 450,
-      vix: 26.00,
       usGas: 4.00,
     },
     tradingImplications: [
@@ -6208,10 +6081,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 90.50,
       vlccRate: 420000,
-      hySpread: 410,
-      vix: 22.00,
       usGas: 3.85,
     },
     tradingImplications: [
@@ -6285,10 +6155,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 98.70,
       vlccRate: 500000,
-      hySpread: 485,
-      vix: 28.00,
       usGas: 4.00,
     },
     tradingImplications: [
@@ -6362,10 +6229,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 108.40,
       vlccRate: 600000,
-      hySpread: 520,
-      vix: 34.00,
       usGas: 4.25,
     },
     tradingImplications: [
@@ -6427,10 +6291,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 112.80,
       vlccRate: 620000,
-      hySpread: 530,
-      vix: 32.00,
       usGas: 4.30,
     },
     tradingImplications: [
@@ -6504,10 +6365,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 115.20,
       vlccRate: 640000,
-      hySpread: 540,
-      vix: 30.00,
       usGas: 4.35,
     },
     tradingImplications: [
@@ -6581,10 +6439,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 118.90,
       vlccRate: 680000,
-      hySpread: 555,
-      vix: 33.00,
       usGas: 4.45,
     },
     tradingImplications: [
@@ -6658,10 +6513,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 116.50,
       vlccRate: 660000,
-      hySpread: 530,
-      vix: 29.00,
       usGas: 4.40,
     },
     tradingImplications: [
@@ -6744,10 +6596,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 119.80,
       vlccRate: 700000,
-      hySpread: 565,
-      vix: 35.00,
       usGas: 4.50,
     },
     tradingImplications: [
@@ -6842,10 +6691,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 122.40,
       vlccRate: 720000,
-      hySpread: 575,
-      vix: 36.00,
       usGas: 4.55,
     },
     tradingImplications: [
@@ -6941,10 +6787,7 @@ export const fieldNotes: Record<number, FieldNoteDay> = {
       },
     ],
     marketSnapshot: {
-      brentCrude: 124.60,
       vlccRate: 750000,
-      hySpread: 590,
-      vix: 37.00,
       usGas: 4.60,
     },
     tradingImplications: [
@@ -7050,7 +6893,11 @@ export const scenarioData = scenarioUpdates[4].probabilities.map((p, index) => {
 
 export const creditMarketData = {
   hySpread: {
-    current: getLatest(marketTimeline).hySpread ?? 425,
+    // Derived from the verified FRED series (BAMLH0A0HYM2). Last published
+    // observation in hyOasHistory.ts — cannot drift from the authoritative
+    // data file. Previously read from a hand-authored marketTimeline entry.
+    current: latestVerifiedMarket().hySpread.value,
+    currentAsOf: latestVerifiedMarket().hySpread.date,
     thirtyYearAverage: 525,
     unit: 'bps',
     note: 'Entered crisis at historic lows - maximum widening potential',
@@ -7248,7 +7095,16 @@ export const macroTransmissionChain = [
     id: 'energy-shock',
     label: 'Energy Shock',
     description: 'Strait of Hormuz closure, 20% global oil disrupted',
-    metrics: [`Brent +${((getLatest(marketTimeline).brentCrude - 77.52) / 77.52 * 100).toFixed(1)}% to $${getLatest(marketTimeline).brentCrude}`, `VLCC rates $${(getLatest(hormuzTimeline).vlccRate / 1000).toFixed(0)}K/day`, '100% transit collapse - zero transits 4 days'],
+    metrics: [
+      // Verified: latest FRED/EIA Brent close vs. the pre-conflict pivot $77.52.
+      (() => {
+        const b = latestVerifiedMarket().brentCrude;
+        const pct = ((b.value - 77.52) / 77.52) * 100;
+        return `Brent ${pct >= 0 ? '+' : ''}${pct.toFixed(1)}% to $${b.value.toFixed(2)} (as of ${b.date})`;
+      })(),
+      `VLCC rates $${(getLatest(hormuzTimeline).vlccRate / 1000).toFixed(0)}K/day`,
+      '100% transit collapse - zero transits 4 days',
+    ],
     color: '#C8102E',
   },
   {
@@ -7269,7 +7125,11 @@ export const macroTransmissionChain = [
     id: 'spread-widening',
     label: 'Spread Widening',
     description: 'Credit markets reprice risk',
-    metrics: [`HY OAS: ${getLatest(marketTimeline).hySpread} bps`, '30-yr avg: 525 bps', 'Max widening potential'],
+    metrics: [
+      `HY OAS: ${latestVerifiedMarket().hySpread.value.toFixed(0)} bps (as of ${latestVerifiedMarket().hySpread.date})`,
+      '30-yr avg: 525 bps',
+      'Max widening potential',
+    ],
     color: '#2E7D4F',
   },
   {

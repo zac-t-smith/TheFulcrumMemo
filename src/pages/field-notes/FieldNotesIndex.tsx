@@ -4,7 +4,9 @@ import { Helmet } from 'react-helmet-async';
 import { Calendar, TrendingUp, AlertTriangle, ChevronRight, Map } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import ArchiveBanner from '@/components/ArchiveBanner';
+import CorrectionNote from '@/components/CorrectionNote';
 import { fieldNotes, getLatestScenario, getAvailableFieldNoteDays, EIA_SOURCE_ATTRIBUTION } from '@/data/iranConflictData';
+import { lookupVerifiedMarket, VERIFIED_MARKET_ATTRIBUTION } from '@/data/verifiedMarketLookup';
 import { ConflictMap } from '@/components/maps/ConflictMap';
 import { BRENT, BRENT_CHANGE_PCT, HY_SPREAD, CONFLICT_DAYS, SERIES_SNAPSHOT } from '@/content/marketFigures';
 
@@ -54,6 +56,8 @@ const FieldNotesIndex = () => {
               implications. The data snapshot is Apr 26, 2026; this series is no longer updated.
             </p>
           </motion.div>
+
+          <CorrectionNote context="Field notes index" />
 
           {/* Phase 2.5: tabs — Day log (default, this page) · Full timeline (/#/timeline) */}
           <nav
@@ -140,7 +144,7 @@ const FieldNotesIndex = () => {
             </div>
 
             <div className="mt-3 pt-2 border-t border-border text-[9px] text-muted-foreground/70">
-              <span>{EIA_SOURCE_ATTRIBUTION} · Series archived; figures do not update.</span>
+              <span>{VERIFIED_MARKET_ATTRIBUTION} · {EIA_SOURCE_ATTRIBUTION} · Series archived; figures do not update.</span>
             </div>
           </motion.div>
 
@@ -260,33 +264,38 @@ const FieldNotesIndex = () => {
                               {note.summary}
                             </p>
 
-                            {/* Market Snapshot */}
-                            <div className="flex flex-wrap gap-4 mt-4">
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] text-muted-foreground">
-                                  Brent:
-                                </span>
-                                <span className="text-xs text-amber-400">
-                                  ${note.marketSnapshot.brentCrude}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] text-muted-foreground">
-                                  HY Spread:
-                                </span>
-                                <span className="text-xs text-red-400">
-                                  {note.marketSnapshot.hySpread}bps
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] text-muted-foreground">
-                                  VIX:
-                                </span>
-                                <span className="text-xs text-red-400">
-                                  {note.marketSnapshot.vix}
-                                </span>
-                              </div>
-                            </div>
+                            {/* Market Snapshot — verified-only (FRED/EIA exact-date match) */}
+                            {(() => {
+                              const v = lookupVerifiedMarket(note.date);
+                              const chips: JSX.Element[] = [];
+                              if (v.brentCrude !== undefined) {
+                                chips.push(
+                                  <div key="brent" className="flex items-center gap-2">
+                                    <span className="text-[10px] text-muted-foreground">Brent:</span>
+                                    <span className="text-xs text-amber-400">${v.brentCrude.toFixed(2)}</span>
+                                  </div>
+                                );
+                              }
+                              if (v.hySpread !== undefined) {
+                                chips.push(
+                                  <div key="hy" className="flex items-center gap-2">
+                                    <span className="text-[10px] text-muted-foreground">HY Spread:</span>
+                                    <span className="text-xs text-red-400">{Math.round(v.hySpread)}bps</span>
+                                  </div>
+                                );
+                              }
+                              if (v.vix !== undefined) {
+                                chips.push(
+                                  <div key="vix" className="flex items-center gap-2">
+                                    <span className="text-[10px] text-muted-foreground">VIX:</span>
+                                    <span className="text-xs text-red-400">{v.vix.toFixed(2)}</span>
+                                  </div>
+                                );
+                              }
+                              return chips.length > 0 ? (
+                                <div className="flex flex-wrap gap-4 mt-4">{chips}</div>
+                              ) : null;
+                            })()}
                           </div>
 
                           <ChevronRight

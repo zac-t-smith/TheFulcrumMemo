@@ -22,6 +22,7 @@ import Navbar from '@/components/Navbar';
 import ArchiveBanner from '@/components/ArchiveBanner';
 import { cn } from '@/lib/utils';
 import { getFieldNote, getAvailableFieldNoteDays, type ThesisScorecard, EIA_SOURCE_ATTRIBUTION } from '@/data/iranConflictData';
+import { lookupVerifiedMarket, VERIFIED_MARKET_ATTRIBUTION } from '@/data/verifiedMarketLookup';
 import { ConflictMap } from '@/components/maps/ConflictMap';
 
 const statusConfig = {
@@ -192,46 +193,98 @@ const FieldNoteDay = () => {
                 Market Snapshot
               </h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="p-4 surface-card border border-border rounded-lg text-center">
-                <Fuel size={16} className="text-amber-400 mx-auto mb-2" />
-                <p className="text-xl font-bold text-amber-400">
-                  ${fieldNote.marketSnapshot.brentCrude}
-                </p>
-                <p className="text-[10px] text-muted-foreground">Brent Crude</p>
-              </div>
-              <div className="p-4 surface-card border border-border rounded-lg text-center">
-                <Ship size={16} className="text-blue-400 mx-auto mb-2" />
-                <p className="text-xl font-bold text-blue-400">
-                  ${(fieldNote.marketSnapshot.vlccRate / 1000).toFixed(0)}K
-                </p>
-                <p className="text-[10px] text-muted-foreground">VLCC Rate/Day <span className="text-zinc-500">(est.)</span></p>
-              </div>
-              <div className="p-4 surface-card border border-border rounded-lg text-center">
-                <DollarSign size={16} className="text-red-400 mx-auto mb-2" />
-                <p className="text-xl font-bold text-red-400">
-                  {fieldNote.marketSnapshot.hySpread}
-                </p>
-                <p className="text-[10px] text-muted-foreground">HY Spread (bps)</p>
-              </div>
-              <div className="p-4 surface-card border border-border rounded-lg text-center">
-                <Zap size={16} className="text-purple-400 mx-auto mb-2" />
-                <p className="text-xl font-bold text-purple-400">
-                  {fieldNote.marketSnapshot.vix}
-                </p>
-                <p className="text-[10px] text-muted-foreground">VIX</p>
-              </div>
-              <div className="p-4 surface-card border border-border rounded-lg text-center col-span-2 md:col-span-1">
-                <Fuel size={16} className="text-emerald-400 mx-auto mb-2" />
-                <p className="text-xl font-bold text-emerald-400">
-                  ${fieldNote.marketSnapshot.usGas}
-                </p>
-                <p className="text-[10px] text-muted-foreground">US Gas Avg</p>
-              </div>
-            </div>
-            <p className="mt-3 text-[9px] text-muted-foreground/70">
-              {EIA_SOURCE_ATTRIBUTION}
-            </p>
+            {(() => {
+              // Brent / HY OAS / VIX are derived from the verified FRED/EIA
+              // files (exact-date match). If a note's date has no published
+              // value (weekend, holiday), that tile is omitted — the previous
+              // hand-authored numbers were scenario figures, not market data.
+              const verified = lookupVerifiedMarket(fieldNote.date);
+              const tiles: Array<{ key: string; node: JSX.Element }> = [];
+              if (verified.brentCrude !== undefined) {
+                tiles.push({
+                  key: 'brent',
+                  node: (
+                    <div className="p-4 surface-card border border-border rounded-lg text-center">
+                      <Fuel size={16} className="text-amber-400 mx-auto mb-2" />
+                      <p className="text-xl font-bold text-amber-400">
+                        ${verified.brentCrude.toFixed(2)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">Brent Crude</p>
+                    </div>
+                  ),
+                });
+              }
+              tiles.push({
+                key: 'vlcc',
+                node: (
+                  <div className="p-4 surface-card border border-border rounded-lg text-center">
+                    <Ship size={16} className="text-blue-400 mx-auto mb-2" />
+                    <p className="text-xl font-bold text-blue-400">
+                      ${(fieldNote.marketSnapshot.vlccRate / 1000).toFixed(0)}K
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">VLCC Rate/Day <span className="text-zinc-500">(est.)</span></p>
+                  </div>
+                ),
+              });
+              if (verified.hySpread !== undefined) {
+                tiles.push({
+                  key: 'hy',
+                  node: (
+                    <div className="p-4 surface-card border border-border rounded-lg text-center">
+                      <DollarSign size={16} className="text-red-400 mx-auto mb-2" />
+                      <p className="text-xl font-bold text-red-400">
+                        {Math.round(verified.hySpread)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">HY Spread (bps)</p>
+                    </div>
+                  ),
+                });
+              }
+              if (verified.vix !== undefined) {
+                tiles.push({
+                  key: 'vix',
+                  node: (
+                    <div className="p-4 surface-card border border-border rounded-lg text-center">
+                      <Zap size={16} className="text-purple-400 mx-auto mb-2" />
+                      <p className="text-xl font-bold text-purple-400">
+                        {verified.vix.toFixed(2)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">VIX</p>
+                    </div>
+                  ),
+                });
+              }
+              tiles.push({
+                key: 'gas',
+                node: (
+                  <div className="p-4 surface-card border border-border rounded-lg text-center col-span-2 md:col-span-1">
+                    <Fuel size={16} className="text-emerald-400 mx-auto mb-2" />
+                    <p className="text-xl font-bold text-emerald-400">
+                      ${fieldNote.marketSnapshot.usGas}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">US Gas Avg</p>
+                  </div>
+                ),
+              });
+              // Tailwind JIT can't see dynamic class names — map explicitly.
+              const gridClass =
+                tiles.length === 2 ? 'grid grid-cols-2 md:grid-cols-2 gap-4' :
+                tiles.length === 3 ? 'grid grid-cols-2 md:grid-cols-3 gap-4' :
+                tiles.length === 4 ? 'grid grid-cols-2 md:grid-cols-4 gap-4' :
+                                     'grid grid-cols-2 md:grid-cols-5 gap-4';
+              return (
+                <>
+                  <div className={gridClass}>
+                    {tiles.map((t) => (
+                      <div key={t.key} className="contents">{t.node}</div>
+                    ))}
+                  </div>
+                  <p className="mt-3 text-[9px] text-muted-foreground/70">
+                    {VERIFIED_MARKET_ATTRIBUTION} · VLCC/US Gas: {EIA_SOURCE_ATTRIBUTION}
+                  </p>
+                </>
+              );
+            })()}
           </motion.section>
 
           {/* Scenario Probabilities */}

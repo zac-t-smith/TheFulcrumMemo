@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
 import { MemoDownload } from '@/components/system';
+import CorrectionNote from '@/components/CorrectionNote';
 import {
   ReadingProgress,
   TableOfContents,
@@ -223,6 +224,8 @@ const IranMemoPartIIFull = () => {
               </li>
             </ul>
           </motion.div>
+
+          <CorrectionNote context="Part II" />
 
           {/* Section I: Political Timeline */}
           <section id="political-timeline" className="memo-section">
