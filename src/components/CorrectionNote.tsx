@@ -28,7 +28,18 @@ const CorrectionNote = ({
         Correction · {dateLabel}{context ? ` · ${context}` : ''}
       </div>
       <p className="text-[13px] leading-snug" style={{ color: 'var(--ink, #1a1a1a)' }}>
-        [CORRECTION NOTE — ZAC TO WRITE]
+        In November I audited every market figure in this series against primary
+        FRED and EIA data. Several field notes from March and April overstated
+        high-yield spreads by roughly 120–155 bps, and some cited VIX levels
+        above 30 on April dates when the index was in the high teens to low 20s.
+        Corrected figures are marked inline with the originally published value.
+        Some oil prices referred to ICE futures or Platts Dated Brent rather
+        than the FRED spot series, and retail gasoline figures are AAA daily
+        national averages; those are now labeled by source. Snapshot tiles pull
+        directly from the FRED VIXCLS, BAMLH0A0HYM2, and DCOILBRENTEU series.
+        The corrected data strengthens rather than weakens the Part II thesis:
+        credit spreads barely moved during the largest oil supply shock in
+        decades.
       </p>
     </aside>
   );

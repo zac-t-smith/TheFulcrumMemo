@@ -23,7 +23,7 @@ export default function Scorecard() {
       <Navbar />
 
       <div className="pt-[64px]">
-        <ArchiveBanner label="[ARCHIVE BANNER — ZAC TO WRITE]" />
+        <ArchiveBanner kind="paragraph" hideSelfLink="scorecard" />
       </div>
 
       <main className="min-h-screen bg-background py-12">

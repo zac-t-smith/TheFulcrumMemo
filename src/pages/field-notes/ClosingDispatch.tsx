@@ -20,7 +20,7 @@ export default function ClosingDispatch() {
       <Navbar />
 
       <div className="pt-[64px]">
-        <ArchiveBanner label="[ARCHIVE BANNER — ZAC TO WRITE]" />
+        <ArchiveBanner kind="paragraph" hideSelfLink="closing-dispatch" />
       </div>
 
       <main className="min-h-screen bg-background py-12">

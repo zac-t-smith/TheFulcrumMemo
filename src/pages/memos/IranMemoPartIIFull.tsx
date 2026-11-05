@@ -61,7 +61,7 @@ const IranMemoPartIIFull = () => {
       bare
     >
       <ReadingProgress />
-      <ArchiveBanner label="[ARCHIVE BANNER — ZAC TO WRITE]" />
+      <ArchiveBanner kind="paragraph" />
       <div className="memo-page-wrapper pt-10">
           <TableOfContents items={tocItems} />
 
