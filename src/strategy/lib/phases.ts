@@ -11,6 +11,7 @@ export type Phase =
   | "teach_3"
   | "decide_3"
   | "reveal_3"
+  | "quiz"
   | "final_reveal"
   | "done";
 
@@ -27,6 +28,7 @@ export const PHASE_ORDER: Phase[] = [
   "teach_3",
   "decide_3",
   "reveal_3",
+  "quiz",
   "final_reveal",
   "done",
 ];
@@ -44,6 +46,7 @@ export const PHASE_LABEL: Record<Phase, string> = {
   teach_3: "Round 3 — teaching",
   decide_3: "Round 3 — decide",
   reveal_3: "Round 3 — reveal",
+  quiz: "Knowledge check",
   final_reveal: "Final reveal",
   done: "Debrief",
 };
@@ -61,6 +64,7 @@ export const DEFAULT_TIMER: Record<Phase, number> = {
   teach_3: 120,
   decide_3: 180,
   reveal_3: 120,
+  quiz: 180,
   final_reveal: 300,
   done: 0,
 };

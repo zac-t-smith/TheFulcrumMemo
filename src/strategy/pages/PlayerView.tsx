@@ -13,6 +13,7 @@ import { DecisionCard } from "../components/phone/DecisionCard";
 import { ConsequenceCard } from "../components/phone/ConsequenceCard";
 import { AnchorCard, FramingCard } from "../components/phone/SplitTestCard";
 import { InjectBanner } from "../components/phone/InjectBanner";
+import { QuizCard } from "../components/phone/QuizCard";
 import { RoleIntelCard } from "../components/phone/RoleIntelCard";
 import { StrategyErrorBoundary } from "../components/shared/ErrorBoundary";
 import { supabaseConfigured } from "../lib/supabase";
@@ -159,23 +160,43 @@ function PlayerViewInner({ code }: { code: string }) {
 
         {session.phase === "kickoff" && (
           <div className="p-6 max-w-md mx-auto">
-            <h1 className="text-2xl font-bold mb-3">{content.meta.engagementTitle}</h1>
+            <div className="text-[10px] uppercase tracking-[0.3em] text-primary mb-2">
+              Briefing
+            </div>
+            <h1 className="text-xl font-bold mb-3 leading-tight">
+              {content.meta.execSummary.title}
+            </h1>
             <ul className="space-y-2 mb-4">
-              {content.meta.objectives.map((o, i) => (
+              {content.meta.execSummary.bullets.map((b, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
                   <span className="text-primary">▸</span>
-                  <span>{o}</span>
+                  <span>{b}</span>
                 </li>
               ))}
             </ul>
-            <p className="text-xs italic text-muted-foreground mb-4">{content.meta.disclaimer}</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-3">
               Firm: <span className="font-semibold">{myFirm.name}</span> ·{" "}
               <span className="font-mono">{myFirm.code}</span> · role:{" "}
               <span className="font-semibold">
                 {content.meta.roles.find((rl) => rl.id === me.role)?.title}
               </span>
             </p>
+            <details className="mt-4 rounded-lg border border-border bg-muted/20">
+              <summary className="cursor-pointer px-3 py-2 text-xs uppercase tracking-widest text-muted-foreground">
+                What you'll learn
+              </summary>
+              <ul className="px-4 pb-3 pt-1 space-y-2">
+                {content.meta.objectives.map((o, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs">
+                    <span className="text-primary">▸</span>
+                    <span>{o}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="px-4 pb-3 text-[10px] italic text-muted-foreground">
+                {content.meta.disclaimer}
+              </p>
+            </details>
           </div>
         )}
 
@@ -232,6 +253,10 @@ function PlayerViewInner({ code }: { code: string }) {
           />
         )}
 
+        {session.phase === "quiz" && (
+          <QuizCard quiz={content.quiz} me={me} answers={bundle.answers} />
+        )}
+
         {session.phase === "final_reveal" && (
           <div className="p-6 max-w-md mx-auto">
             <h1 className="text-2xl font-bold mb-2">The debrief</h1>
@@ -245,8 +270,19 @@ function PlayerViewInner({ code }: { code: string }) {
         {session.phase === "done" && (
           <div className="p-6 max-w-md mx-auto text-center">
             <h1 className="text-2xl font-bold mb-2">Thank you.</h1>
-            <p className="text-sm text-muted-foreground mb-4">Questions welcome.</p>
-            {memoReady && <MemoReadyLink firmId={myFirm.id} />}
+            <p className="text-sm text-muted-foreground mb-5">Questions welcome.</p>
+            {memoReady ? (
+              <a
+                href={`#/strategy/memo/${myFirm.id}`}
+                className="block w-full max-w-sm mx-auto text-center py-5 bg-primary text-primary-foreground rounded-lg text-lg font-semibold shadow-sm"
+              >
+                Open your firm's case study →
+              </a>
+            ) : (
+              <p className="text-sm italic text-muted-foreground">
+                Writing your case study…
+              </p>
+            )}
           </div>
         )}
       </div>

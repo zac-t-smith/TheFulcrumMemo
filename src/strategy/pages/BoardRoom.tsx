@@ -14,6 +14,11 @@ import { ChoiceDistribution } from "../components/board/ChoiceDistribution";
 import { WhatHappenedCard } from "../components/board/RevealStage";
 import { SealedPredictionCard } from "../components/board/SealedPredictionCard";
 import { BoardBreakingBar } from "../components/board/BoardBreakingBar";
+import { QuizProgressBoard } from "../components/board/QuizProgressBoard";
+import { FirmScorecard } from "../components/board/FirmScorecard";
+import { computeFirmScores } from "../lib/scorecard";
+import { CaseStudyShowcase } from "../components/board/CaseStudyShowcase";
+import { useFirmMemos } from "../hooks/useFirmMemos";
 import { StrategyErrorBoundary } from "../components/shared/ErrorBoundary";
 import { createDemoDriver, DemoDriver } from "../lib/demo";
 import type { AnswerRow, FirmRow, PlayerRow, SubmissionRow } from "../hooks/useSession";
@@ -96,6 +101,7 @@ function BoardRoomLive({ code }: { code: string }) {
       predictionText={s.prediction_text}
       sessionCode={s.code}
       metadata={s.metadata}
+      sessionId={s.id}
       latestInjectTitle={bundle.injects[0]?.title ?? null}
       latestInjectBody={bundle.injects[0]?.body ?? null}
       latestInjectCreatedAt={bundle.injects[0]?.created_at ?? null}
@@ -147,11 +153,12 @@ function BoardRoomDemo() {
         firms={state.firms.map((f) => ({ ...f, session_id: "demo" }))}
         players={state.players.map((p) => ({ ...p, session_id: "demo" }))}
         submissions={state.submissions.map((s) => ({ ...s, session_id: "demo", updated_at: "" }))}
-        answers={[]}
+        answers={state.answers.map((a) => ({ ...a }))}
         predictionHash={state.session.prediction_hash}
         predictionText={state.session.prediction_text}
         sessionCode="DEMO"
         metadata={null}
+        sessionId={null}
         latestInjectTitle={null}
         latestInjectBody={null}
         latestInjectCreatedAt={null}
@@ -184,6 +191,7 @@ type BoardInnerProps = {
   predictionText: string | null;
   sessionCode: string;
   metadata: Record<string, unknown> | null;
+  sessionId: string | null;
   latestInjectTitle: string | null;
   latestInjectBody: string | null;
   latestInjectCreatedAt: string | null;
@@ -202,6 +210,7 @@ function BoardRoomInner({
   predictionText,
   sessionCode,
   metadata,
+  sessionId,
   latestInjectTitle,
   latestInjectBody,
   latestInjectCreatedAt,
@@ -209,6 +218,9 @@ function BoardRoomInner({
   const r = phaseRound(phase);
   const roundContent = useMemo(() => (r ? content.rounds[r - 1] : null), [r]);
   const auto = useAutoInject({ phase, phaseStartedAt: startedAt, metadata });
+  const { rows: liveMemos, loading: memosLoading } = useFirmMemos(
+    phase === "done" ? sessionId : null
+  );
 
   // Choose banner: whichever is most recent between the scheduled auto-inject
   // (fires at phase_started_at + atSeconds) and the latest manually fired
@@ -264,23 +276,30 @@ function BoardRoomInner({
           )}
 
           {phase === "kickoff" && (
-            <div className="grid lg:grid-cols-2 gap-10">
-              <div>
-                <h2 className="text-4xl font-semibold mb-4">{content.meta.engagementTitle}</h2>
-                <ul className="space-y-3 text-xl">
-                  {content.meta.objectives.map((o, i) => (
+            <div className="grid lg:grid-cols-5 gap-10">
+              <div className="lg:col-span-3 rounded-2xl border border-white/10 bg-white/5 p-8">
+                <div className="text-xs uppercase tracking-[0.4em] text-[#E0263F] mb-3">
+                  Briefing
+                </div>
+                <h2 className="text-3xl md:text-4xl font-semibold mb-6 leading-tight">
+                  {content.meta.execSummary.title}
+                </h2>
+                <ul className="space-y-4 text-xl md:text-2xl leading-snug">
+                  {content.meta.execSummary.bullets.map((b, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <span className="text-[#E0263F]">▸</span>
-                      <span>{o}</span>
+                      <span>{b}</span>
                     </li>
                   ))}
                 </ul>
-                <p className="mt-6 text-base opacity-70">
+                <p className="mt-8 text-sm opacity-70">
                   Client: <span className="font-semibold">{content.meta.clientAlias}</span> — identity
                   revealed at the end.
                 </p>
               </div>
-              <SealedPredictionCard hash={predictionHash} revealedText={null} />
+              <div className="lg:col-span-2">
+                <SealedPredictionCard hash={predictionHash} revealedText={null} />
+              </div>
             </div>
           )}
 
@@ -351,6 +370,15 @@ function BoardRoomInner({
             </div>
           )}
 
+          {phase === "quiz" && (
+            <QuizProgressBoard
+              firms={firms}
+              players={players}
+              answers={answers}
+              quiz={content.quiz}
+            />
+          )}
+
           {phase === "final_reveal" && (
             <FinalRevealStage
               submissions={submissions}
@@ -363,12 +391,23 @@ function BoardRoomInner({
           )}
 
           {phase === "done" && (
-            <div className="text-center mt-20">
-              <h2 className="text-5xl font-semibold mb-4">Thank you.</h2>
-              <p className="text-xl opacity-80">
-                Debrief in your firms. Questions welcome.
-              </p>
-            </div>
+            sessionId ? (
+              <CaseStudyShowcase
+                memos={liveMemos}
+                firms={firms}
+                submissions={submissions}
+                loading={memosLoading}
+              />
+            ) : (
+              // DEMO mode: no live memos table. Show a canned sample card
+              // so rehearsal still demonstrates the feature.
+              <CaseStudyShowcase
+                memos={buildDemoShowcase(firms, submissions)}
+                firms={firms}
+                submissions={submissions}
+                loading={false}
+              />
+            )
           )}
         </motion.div>
       </AnimatePresence>
@@ -395,6 +434,15 @@ function FinalRevealStage({
     pred: p,
     result: evaluatePrediction(p.check, { answers, players, submissions }),
   }));
+
+  const firmScores = computeFirmScores({
+    firms,
+    players,
+    submissions,
+    answers,
+    content,
+    quiz: content.quiz ?? [],
+  });
 
   // Calibration: for each firm, average confidence across rounds vs. its total meter delta.
   const calibrationPoints = firms.map((f) => {
@@ -424,8 +472,11 @@ function FinalRevealStage({
         <div className="text-6xl font-bold text-[#E0263F] mb-4">
           {content.meta.realName}
         </div>
-        <p className="text-base opacity-80 mb-2">{content.finalReveal.identity}</p>
-        <p className="text-base italic opacity-80 mb-6">{content.finalReveal.closer}</p>
+        <p className="text-base opacity-80 mb-6">{content.finalReveal.identity}</p>
+
+        <div className="mb-5">
+          <FirmScorecard scores={firmScores} />
+        </div>
 
         <div className="rounded-xl border border-white/10 bg-white/5 p-5 mb-5">
           <div className="text-xs uppercase tracking-widest opacity-60 mb-3">
@@ -452,17 +503,52 @@ function FinalRevealStage({
           </ol>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-white/5 p-5">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-5 mb-5">
           <div className="text-xs uppercase tracking-widest opacity-60 mb-3">
             Calibration: confidence vs. outcome
           </div>
           <CalibrationChart points={calibrationPoints} />
           <p className="text-xs opacity-60 mt-3">{content.calibration.note}</p>
         </div>
+
+        <p className="text-base italic opacity-80">{content.finalReveal.closer}</p>
       </div>
       <SealedPredictionCard hash={predictionHash} revealedText={predictionText} />
     </div>
   );
+}
+
+// Canned demo showcase so rehearsal (?demo=1) demonstrates the done phase
+// without a real Supabase memo. Picks the first firm.
+function buildDemoShowcase(firms: FirmRow[], _submissions: SubmissionRow[]) {
+  const f = firms[0];
+  if (!f) return [];
+  return [
+    {
+      id: "demo-memo",
+      firm_id: f.id,
+      session_id: "demo",
+      memo_json: {
+        title: "Chapter 11 was the plan, not the failure",
+        dek: "The firm bet on a going-concern rescue, saw the risk in the second round, and picked liquidation when the math turned.",
+        executive_summary:
+          "Through three rounds the firm moved from suitor to rescue to wind-down without once flinching at the shift. Confidence and outcome landed in the same lane — calibrated.",
+        overall_score: 9.1,
+        verdict: {
+          label: "Calibrated",
+          subtitle: "Right call, right confidence.",
+          total_meter: 18,
+          quiz_pct: 78,
+        },
+      },
+      grade_json: {
+        concepts: [],
+        overall_letter: "A" as const,
+        overall_note: "Demo card.",
+      },
+      created_at: new Date().toISOString(),
+    },
+  ];
 }
 
 function CalibrationChart({

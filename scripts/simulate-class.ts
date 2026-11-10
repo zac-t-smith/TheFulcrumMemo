@@ -153,6 +153,24 @@ async function main() {
           await new Promise((r) => setTimeout(r, 300 + Math.random() * 1200));
         }
       }
+      if (phase === "quiz") {
+        // Emit random quiz answers for every bot — ~70% correct so the
+        // scorecard shows realistic variance. Idempotent via upsert.
+        const quiz = caseJson.quiz ?? [];
+        for (const p of players) {
+          for (const q of quiz) {
+            const correct = Math.random() < 0.7;
+            const value = correct
+              ? q.correct
+              : rand(q.options.filter((o: { id: string }) => o.id !== q.correct)).id;
+            const { error } = await sb
+              .from("answers")
+              .upsert({ player_id: p.id, test_key: `quiz_${q.id}`, value });
+            if (error) console.error(`[sim] quiz ${p.id}:`, error.message);
+          }
+        }
+        console.log(`[sim] quiz answers submitted for ${players.length} bots.`);
+      }
       if (phase === "done") {
         console.log("[sim] session done. exiting.");
         await sb.removeChannel(channel);

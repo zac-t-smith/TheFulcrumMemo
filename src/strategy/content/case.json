@@ -7,6 +7,16 @@
       "Bluewing Airways": "JetBlue Airways"
     },
     "engagementTitle": "Project Falcon: Survive, Sell, or Shut Down?",
+    "execSummary": {
+      "title": "Executive summary: Falcon Air, July 2022",
+      "bullets": [
+        "One of America's biggest ultra-low-cost airlines: the lowest base fares, and you pay for every extra",
+        "173 jets; $3.2B revenue in 2021",
+        "Flies one seat one mile for 6.7¢ (ex-fuel). Legacy airlines: about 12–13¢",
+        "Still recovering from COVID: lost $473M in 2021",
+        "Two rival airlines have approached the board about buying Falcon"
+      ]
+    },
     "objectives": [
       "Tell corporate strategy (where to compete) apart from business strategy (how to win there) and use both on a real decision",
       "Use Five Forces, generic strategies, and Ansoff to explain why a cost leader lost its edge",
@@ -30,7 +40,7 @@
   },
   "splitTests": {
     "anchor": {
-      "question": "Gut check, no research: what is Falcon Air worth today (equity value, the whole company)?",
+      "question": "Using the executive summary you just read: what is Falcon Air worth today (equity value, the whole company)?",
       "highRef": "First: is Falcon worth more or less than $9 billion?",
       "lowRef": "First: is Falcon worth more or less than $900 million?",
       "unit": "$ billions",
@@ -664,5 +674,111 @@
   },
   "calibration": {
     "note": "At final reveal, show each firm's average confidence vs. its total meter change. Typical finding: confidence was high even on choices that went badly (overconfidence). Present it as an insight, not a prediction."
-  }
+  },
+  "quiz": [
+    {
+      "id": "q1",
+      "concept": "Strategy levels",
+      "prompt": "Falcon's board weighs merging with Summit. Falcon's marketing team launches premium 'Go Big' seats. Which is which?",
+      "options": [
+        { "id": "a", "text": "Merger = corporate strategy (where to compete); premium seats = business strategy (how to win)" },
+        { "id": "b", "text": "Merger = business strategy; premium seats = corporate strategy" },
+        { "id": "c", "text": "Both are functional strategy" },
+        { "id": "d", "text": "Both are corporate strategy" }
+      ],
+      "correct": "a",
+      "why": "Corporate level picks which businesses and markets you're in; business level is how you win inside them."
+    },
+    {
+      "id": "q2",
+      "concept": "Governance & fiduciary duty",
+      "prompt": "Offer A: $30/share, 90% likely to close. Offer B: $36/share, 50% likely to close; if blocked, holders get $2/share. Higher expected value?",
+      "options": [
+        { "id": "a", "text": "A: about $27 vs. $19" },
+        { "id": "b", "text": "B: $36 beats $30" },
+        { "id": "c", "text": "B: about $33 vs. $27" },
+        { "id": "d", "text": "They're equal" }
+      ],
+      "correct": "a",
+      "why": "EV = price × P(close) + fallback × P(blocked). A = $27. B = $18 + $1 = $19. Price vs. certainty."
+    },
+    {
+      "id": "q3",
+      "concept": "Generic strategies & VRIO",
+      "prompt": "A discount gym adds spa lounges and personal trainers. Costs jump 15%, and the premium gyms nearby already have spas. Porter would call this…",
+      "options": [
+        { "id": "a", "text": "Stuck in the middle, and the spa fails VRIO's 'rare' test" },
+        { "id": "b", "text": "A successful differentiation strategy" },
+        { "id": "c", "text": "Cost leadership with a focus twist" },
+        { "id": "d", "text": "Market development" }
+      ],
+      "correct": "a",
+      "why": "It's no longer cheapest and not truly different: the same trap as Falcon's premium bundles."
+    },
+    {
+      "id": "q4",
+      "concept": "Five Forces",
+      "prompt": "Two engine makers power nearly every jet Falcon flies. A recall grounds 40 planes and Falcon can't switch suppliers. Which force is hurting Falcon?",
+      "options": [
+        { "id": "a", "text": "Supplier power" },
+        { "id": "b", "text": "Buyer power" },
+        { "id": "c", "text": "Threat of new entrants" },
+        { "id": "d", "text": "Threat of substitutes" }
+      ],
+      "correct": "a",
+      "why": "Few suppliers + high switching costs = strong supplier power."
+    },
+    {
+      "id": "q5",
+      "concept": "Ansoff matrix",
+      "prompt": "Falcon's loyalty program and co-branded credit card earn money from banks, not from flying. On the Ansoff matrix that's closest to…",
+      "options": [
+        { "id": "a", "text": "Diversification" },
+        { "id": "b", "text": "Market penetration" },
+        { "id": "c", "text": "Market development" },
+        { "id": "d", "text": "Product development" }
+      ],
+      "correct": "a",
+      "why": "A new product in a new market. It was valuable enough to secure $1.1B of bonds."
+    },
+    {
+      "id": "q6",
+      "concept": "Restructuring",
+      "prompt": "A company swaps $795M of debt for equity in Chapter 11 and exits in four months. Its costs and prices don't change. Most likely result?",
+      "options": [
+        { "id": "a", "text": "Back in trouble: it fixed the balance sheet, not the business" },
+        { "id": "b", "text": "Cured: less debt means profit" },
+        { "id": "c", "text": "Old shareholders keep control and recover value" },
+        { "id": "d", "text": "Customers pay higher fares to cover the old debt" }
+      ],
+      "correct": "a",
+      "why": "Financial restructuring ≠ operational restructuring. Falcon filed again within a year."
+    },
+    {
+      "id": "q7",
+      "concept": "Stakeholders vs. shareholders",
+      "prompt": "Falcon is liquidated. In what order does the money go?",
+      "options": [
+        { "id": "a", "text": "Secured lenders → other creditors → shareholders" },
+        { "id": "b", "text": "Shareholders → secured lenders → other creditors" },
+        { "id": "c", "text": "Employees → shareholders → lenders" },
+        { "id": "d", "text": "Everyone shares equally" }
+      ],
+      "correct": "a",
+      "why": "Absolute priority: secured first, owners last (usually nothing). Recent wages get priority among creditors."
+    },
+    {
+      "id": "q8",
+      "concept": "Going concern vs. liquidation",
+      "prompt": "Kept flying, Falcon is worth about $400M. Sold for parts (slots, jets, HQ), it brings about $800M. The lenders own it. The board should…",
+      "options": [
+        { "id": "a", "text": "Wind down in an orderly way" },
+        { "id": "b", "text": "Keep flying to protect jobs at any cost" },
+        { "id": "c", "text": "Take any rescue that's offered" },
+        { "id": "d", "text": "Let the old shareholders vote" }
+      ],
+      "correct": "a",
+      "why": "Liquidation value > going-concern value, so the duty to creditors points to an orderly wind-down. (Numbers illustrative.)"
+    }
+  ]
 }

@@ -15,8 +15,15 @@ type MemoJson = {
   title: string;
   dek: string;
   executive_summary: string;
+  how_we_decided?: string;
   rounds: MemoRound[];
+  knowledge_check?: {
+    summary_line: string;
+    concepts: Array<{ concept: string; correct: number; total: number; pct: number; note: string }>;
+  };
   lessons: Array<{ concept: string; lesson: string }>;
+  overall_score?: number;
+  verdict?: { label: string; subtitle: string; total_meter: number; quiz_pct: number | null };
 };
 
 type ConceptScore = {
@@ -53,7 +60,8 @@ export default function FirmMemoPage() {
   useEffect(() => {
     if (!firmId || !supabaseConfigured) return;
     let cancelled = false;
-    (async () => {
+
+    const fetchOnce = async () => {
       try {
         const sb = getSupabase();
         const [memoRes, firmRes] = await Promise.all([
@@ -76,11 +84,19 @@ export default function FirmMemoPage() {
       } finally {
         if (!cancelled) setLoading(false);
       }
-    })();
+    };
+
+    void fetchOnce();
+    // While the memo isn't ready yet, poll every 3s. Once we have a row,
+    // the student can refresh manually to pick up a re-generation.
+    const t = setInterval(() => {
+      if (!row) void fetchOnce();
+    }, 3000);
     return () => {
       cancelled = true;
+      clearInterval(t);
     };
-  }, [firmId]);
+  }, [firmId, row]);
 
   if (!supabaseConfigured) return <Shell><p>Backend not configured.</p></Shell>;
   if (loading) return <Shell><p>Loading case study…</p></Shell>;
@@ -88,9 +104,9 @@ export default function FirmMemoPage() {
   if (!row) {
     return (
       <Shell>
-        <h1 className="text-2xl font-semibold mb-2">Your case study isn't ready yet.</h1>
+        <h1 className="text-2xl font-semibold mb-2">Writing your case study…</h1>
         <p className="opacity-80">
-          The facilitator will generate memos after the Final reveal. Refresh in a minute.
+          Generated after the Final reveal. This page refreshes automatically.
         </p>
       </Shell>
     );
@@ -127,7 +143,20 @@ export default function FirmMemoPage() {
       <section className="exec-summary">
         <div className="exec-kicker">Executive summary</div>
         <p>{memo.executive_summary}</p>
+        {memo.verdict && (
+          <div className="verdict-chip">
+            <span className="verdict-label">{memo.verdict.label}</span>
+            <span className="verdict-sub">{memo.verdict.subtitle}</span>
+          </div>
+        )}
       </section>
+
+      {memo.how_we_decided && (
+        <section>
+          <h2 className="section-head">How our firm decided</h2>
+          <p className="prose-body">{memo.how_we_decided}</p>
+        </section>
+      )}
 
       <section>
         <h2 className="section-head">Decision timeline</h2>
@@ -145,6 +174,33 @@ export default function FirmMemoPage() {
           ))}
         </ol>
       </section>
+
+      {memo.knowledge_check && memo.knowledge_check.concepts?.length > 0 && (
+        <section>
+          <h2 className="section-head">Knowledge check</h2>
+          <p className="prose-body">{memo.knowledge_check.summary_line}</p>
+          <table className="rubric">
+            <thead>
+              <tr>
+                <th>Concept</th>
+                <th className="score-col">Correct</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {memo.knowledge_check.concepts.map((c, i) => (
+                <tr key={i}>
+                  <td>{c.concept}</td>
+                  <td className="score-col">
+                    {c.correct}/{c.total} <span className="muted">({c.pct}%)</span>
+                  </td>
+                  <td>{c.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
 
       <section>
         <h2 className="section-head">Lessons tied to course concepts</h2>
@@ -188,7 +244,7 @@ export default function FirmMemoPage() {
 
       <div className="print-cta">
         <button onClick={() => window.print()} className="print-btn">
-          Print / Save as PDF
+          Save as PDF
         </button>
       </div>
     </Shell>
@@ -219,6 +275,11 @@ function PrintStyles() {
       .memo-title { font-size: 32px; line-height: 1.2; margin: 20px 0 6px; }
       .memo-dek { font-size: 18px; color: #333; margin: 0 0 24px; }
       .exec-summary { border: 1px solid #ddd; background: #fafafa; padding: 14px 18px; margin: 20px 0 32px; }
+      .verdict-chip { display: inline-flex; align-items: baseline; gap: 10px; margin-top: 10px; padding: 4px 10px; border: 1px solid #C8102E; border-radius: 999px; background: #fff; }
+      .verdict-label { font-family: system-ui, sans-serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #C8102E; font-weight: 700; }
+      .verdict-sub { font-size: 12px; color: #333; }
+      .prose-body { font-size: 15px; margin: 8px 0 20px; }
+      .muted { color: #666; font-size: 11px; }
       .exec-kicker { font-family: system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.25em; font-size: 10px; color: #C8102E; margin-bottom: 6px; }
       .section-head { font-size: 20px; margin: 32px 0 14px; padding-bottom: 6px; border-bottom: 1px solid #111; }
       .timeline { list-style: none; padding: 0; margin: 0; }

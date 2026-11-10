@@ -11,7 +11,7 @@ import { InjectComposer } from "./InjectComposer";
 import { QABankTab } from "./QABankTab";
 import { AnswerCounts } from "./AnswerCounts";
 import { CaseStudiesPanel } from "./CaseStudiesPanel";
-import { advanceSession, setSessionMetadata, stepPhase } from "../../hooks/useOps";
+import { advanceSession, generateFirmMemos, setSessionMetadata, stepPhase } from "../../hooks/useOps";
 import { DEFAULT_TIMER, nextPhase, phaseRound, Phase } from "../../lib/phases";
 import { useAutoInject } from "../../hooks/useAutoInject";
 import { autoEventsEnabled } from "../../content/autoInjects";
@@ -186,6 +186,21 @@ export function OpsConsole({
       await advanceSession(session.id, secret, target);
       toast.success(direction === 1 ? `Advanced to ${target}.` : `Back to ${target}.`);
       await bundle.refetch(); // don't trust realtime; our own RPC must reflect immediately
+      // Auto-generate case-study memos the first time we advance INTO
+      // final_reveal. Runs in the background so the console doesn't hang;
+      // the manual button stays as a retry.
+      if (direction === 1 && target === "final_reveal") {
+        void (async () => {
+          try {
+            const results = await generateFirmMemos(session.id, secret, content);
+            const ok = results.filter((r) => r.ok).length;
+            const fail = results.length - ok;
+            toast.success(`Case studies: ${ok} written${fail ? ` · ${fail} skipped` : ""}.`);
+          } catch (e) {
+            toast.error(`Auto-generate failed: ${(e as Error).message}. Retry via the panel.`);
+          }
+        })();
+      }
     } catch (e) {
       const msg = (e as Error).message;
       setErr(msg);

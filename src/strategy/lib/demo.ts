@@ -132,6 +132,23 @@ export function createDemoDriver(seed = 42) {
         });
       });
     }
+    // On entering the quiz phase, auto-fill random quiz answers so the demo
+    // projector shows realistic per-firm progress + final-reveal scorecards.
+    if (target === "quiz") {
+      const quizQuestions = content.quiz ?? [];
+      state.answers = state.answers.filter((a) => !a.test_key.startsWith("quiz_"));
+      for (const p of state.players) {
+        for (const q of quizQuestions) {
+          const pickRight = rand() < 0.7; // ~70% correct bias
+          const opt = pickRight ? q.correct : pick(rand, q.options.filter((o) => o.id !== q.correct)).id;
+          state.answers.push({
+            player_id: p.id,
+            test_key: `quiz_${q.id}`,
+            value: opt,
+          });
+        }
+      }
+    }
     emit();
   }
 

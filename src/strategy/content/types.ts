@@ -136,11 +136,17 @@ export type Role = {
   color: RoleColor;
 };
 
+export type ExecSummary = {
+  title: string;
+  bullets: string[];
+};
+
 export type CaseMeta = {
   clientAlias: string;
   realName: string;
   aliases: Record<string, string>;
   engagementTitle: string;
+  execSummary: ExecSummary;
   objectives: string[];
   startMeters: Meters;
   meterLabels: Record<MeterKey, string>;
@@ -158,6 +164,15 @@ export type SubmissionFieldSpec = Record<string, string>;
 
 export type Calibration = { note: string };
 
+export type QuizQuestion = {
+  id: string;
+  concept: string;
+  prompt: string;
+  options: Array<{ id: string; text: string }>;
+  correct: string;
+  why: string;
+};
+
 export type CaseContent = {
   meta: CaseMeta;
   splitTests: SplitTests;
@@ -169,6 +184,7 @@ export type CaseContent = {
   sources: Source[];
   submissionFields: SubmissionFieldSpec;
   calibration: Calibration;
+  quiz: QuizQuestion[];
 };
 
 // Clamp a meter value to [0,100].

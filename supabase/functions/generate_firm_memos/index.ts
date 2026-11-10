@@ -102,6 +102,21 @@ type FirmInput = {
   valuation_answers: Array<{ value: string }>;
   room_choice_distribution: Array<{ round: number; option_label: string; firms: number }>;
   final_identity: string;
+  // Added in D: per-firm quiz + verdict context passed to the model.
+  quiz: {
+    pct: number | null;              // 0-100, null if nobody answered
+    answered: number;
+    total: number;                   // players * questions
+    per_concept: Array<{ concept: string; correct: number; total: number; pct: number }>;
+    missed: Array<{ concept: string; prompt: string; why: string }>;
+  };
+  verdict: {
+    label: "Calibrated" | "Right, but unsure" | "Overconfident" | "Saw the risk" | "Mixed";
+    subtitle: string;
+    total_meter: number;
+    avg_confidence: number | null;
+    per_round_delta: number[];
+  };
 };
 
 function buildUserPrompt(f: FirmInput): string {
@@ -133,11 +148,24 @@ function buildUserPrompt(f: FirmInput): string {
       (c) => `  R${c.round} — ${c.option_label}: ${c.firms} firms`
     ),
     "",
+    `Firm's verdict (framing for the memo's "How your firm decided" section): ${f.verdict.label} — ${f.verdict.subtitle}. Total meter change: ${f.verdict.total_meter >= 0 ? "+" : ""}${f.verdict.total_meter}. Average confidence: ${f.verdict.avg_confidence == null ? "n/a" : f.verdict.avg_confidence.toFixed(0) + "/100"}.`,
+    "",
+    `Firm's knowledge-check results: ${f.quiz.pct == null ? "no answers yet" : f.quiz.pct + "% correct (" + f.quiz.answered + " of " + f.quiz.total + " answered)"}.`,
+    "Per concept:",
+    ...f.quiz.per_concept.map(
+      (c) => `  ${c.concept}: ${c.correct}/${c.total} correct (${c.pct}%)`
+    ),
+    f.quiz.missed.length > 0
+      ? "Concepts the firm missed (explain each correctly in one line in the Knowledge check section):"
+      : "",
+    ...f.quiz.missed.map((m) => `  - ${m.concept}: ${m.prompt} — correct reason: ${m.why}`),
+    "",
     "Write a JSON object with this exact shape:",
     `{
   "title": "<short memo title tying to the firm's arc>",
   "dek": "<1-sentence dek, analytical>",
   "executive_summary": "<2-3 sentence recap in restructuring voice>",
+  "how_we_decided": "<2-3 sentences framed by the verdict '${f.verdict.label}'. Quote the firm's dissent field if any. Non-judgmental.>",
   "rounds": [
     { "round": 1,
       "our_call": "<the option they picked, 1 line>",
@@ -148,6 +176,12 @@ function buildUserPrompt(f: FirmInput): string {
     { "round": 2, ... },
     { "round": 3, ... }
   ],
+  "knowledge_check": {
+    "summary_line": "<one line stating the firm's % correct>",
+    "concepts": [
+      { "concept": "<concept name>", "correct": <int>, "total": <int>, "pct": <int>, "note": "<one-line correct explanation if they missed it, else 'covered'>" }
+    ]
+  },
   "lessons": [
     { "concept": "<one of the course concepts>", "lesson": "<1-2 sentences tying firm's behavior to the concept>" },
     { "concept": "...", "lesson": "..." },
@@ -156,13 +190,14 @@ function buildUserPrompt(f: FirmInput): string {
 }`,
     "",
     "Quote the firm's own words when possible. Do not invent facts. Keep every field under 60 words.",
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 }
 
 type MemoJson = {
   title: string;
   dek: string;
   executive_summary: string;
+  how_we_decided?: string;
   rounds: Array<{
     round: number;
     our_call: string;
@@ -170,7 +205,15 @@ type MemoJson = {
     what_actually_happened: string;
     what_we_would_change: string;
   }>;
+  knowledge_check?: {
+    summary_line: string;
+    concepts: Array<{ concept: string; correct: number; total: number; pct: number; note: string }>;
+  };
   lessons: Array<{ concept: string; lesson: string }>;
+  // Attached post-generation by the edge function for ranking in debrief.
+  overall_score?: number;
+  // Added so the debrief showcase (E) can frame the top memo.
+  verdict?: { label: string; subtitle: string; total_meter: number; quiz_pct: number | null };
 };
 
 type ConceptScore = {
@@ -188,7 +231,9 @@ type GradeJson = {
 
 // Forgiving rubric. Baseline = "fully participated" (3 round submissions
 // with pitches and framework tags). Floor of 3 on any concept the firm
-// engaged with; overall never below B.
+// engaged with — in a pitch, tradeoff, OR via a correct quiz answer.
+// Quiz misses can lower a concept score by at most 1 and never below the
+// floor. Overall letter never below B for full participation.
 function gradeFirm(f: FirmInput): GradeJson {
   const fullText = f.rounds
     .map((r) => `${r.pitch} ${r.tradeoff ?? ""} ${r.dissent ?? ""} ${r.framework_tag}`)
@@ -197,22 +242,59 @@ function gradeFirm(f: FirmInput): GradeJson {
   const participated = f.rounds.filter((r) => r.pitch.trim().length > 0).length;
   const participationFull = participated >= 3;
 
+  // Map concept title (from quiz) → concept id (from course_concepts) by
+  // fuzzy prefix. Edge function is self-contained so we keep this simple.
+  function conceptIdFor(quizConcept: string): string | null {
+    const q = quizConcept.toLowerCase();
+    for (const c of COURSE_CONCEPTS) {
+      if (q.includes(c.title.toLowerCase().split(/[&,]/)[0].trim().split(" ")[0])) return c.id;
+      if (c.markers.some((m) => q.includes(m))) return c.id;
+    }
+    return null;
+  }
+
+  const quizByConcept = new Map<string, { correct: number; total: number }>();
+  for (const pc of f.quiz.per_concept) {
+    const id = conceptIdFor(pc.concept);
+    if (!id) continue;
+    quizByConcept.set(id, { correct: pc.correct, total: pc.total });
+  }
+
   const concepts: ConceptScore[] = COURSE_CONCEPTS.map((c) => {
     const hit = c.markers.find((m) => fullText.includes(m));
-    const engaged = Boolean(hit);
+    const engagedInText = Boolean(hit);
+    const quizStats = quizByConcept.get(c.id);
+    const engagedInQuiz = quizStats && quizStats.total > 0 && quizStats.correct > 0;
+    const engaged = engagedInText || engagedInQuiz;
+
     const quote = hit
       ? (f.rounds.find((r) =>
           `${r.pitch} ${r.tradeoff ?? ""} ${r.dissent ?? ""} ${r.framework_tag}`.toLowerCase().includes(hit)
         )?.pitch || hit)
       : "";
+
     const base: 1 | 2 | 3 | 4 = engaged ? 3 : 2;
-    const boost = engaged && (quote.length > 40 || /why|because|trade|risk/i.test(quote)) ? 1 : 0;
-    const score = Math.max(engaged ? 3 : base, Math.min(4, base + boost)) as 1 | 2 | 3 | 4;
+    const boost =
+      engagedInText && (quote.length > 40 || /why|because|trade|risk/i.test(quote)) ? 1 : 0;
+    let score = Math.max(engaged ? 3 : base, Math.min(4, base + boost)) as 1 | 2 | 3 | 4;
+
+    // Quiz miss adjustment: if the firm answered this concept's quiz items
+    // and got any wrong, drop at most 1 — but never below the floor of 3
+    // for an engaged concept.
+    if (quizStats && quizStats.total > 0 && quizStats.correct < quizStats.total) {
+      const next = Math.max(engaged ? 3 : 1, score - 1) as 1 | 2 | 3 | 4;
+      score = next;
+    }
+
     return {
       id: c.id,
       title: c.title,
       score,
-      evidence: engaged ? `“${quote.slice(0, 160)}”` : "No direct mention in this firm's pitches — opportunity for next time.",
+      evidence: engagedInText
+        ? `“${quote.slice(0, 160)}”`
+        : engagedInQuiz
+        ? `Demonstrated on the knowledge check (${quizStats!.correct}/${quizStats!.total}).`
+        : "No direct mention in this firm's pitches or quiz — opportunity for next time.",
     };
   });
 
@@ -230,8 +312,25 @@ function gradeFirm(f: FirmInput): GradeJson {
     overall_note:
       `Concepts demonstrated: ${engagedCount} of ${concepts.length}. ` +
       `Average score ${avg.toFixed(2)}/4.00. ` +
+      (f.quiz.pct != null ? `Knowledge check: ${f.quiz.pct}% correct. ` : "") +
       (participationFull ? "Full participation across all three rounds." : "Partial participation."),
   };
+}
+
+// Overall_score used by the debrief showcase (E) to rank firms. Combines
+// rubric average (dominant) with quiz % and verdict signal. Higher is better.
+function computeOverallScore(f: FirmInput, grade: GradeJson): number {
+  const rubricAvg = grade.concepts.reduce((s, c) => s + c.score, 0) / grade.concepts.length;
+  const letterBonus =
+    grade.overall_letter === "A" ? 1.0 :
+    grade.overall_letter === "A-" ? 0.75 :
+    grade.overall_letter === "B+" ? 0.4 : 0;
+  const quizPct = f.quiz.pct ?? 0;
+  const verdictBonus = f.verdict.label === "Calibrated" ? 0.5 : f.verdict.label === "Mixed" ? 0.1 : 0;
+  // Scaled to roughly 0-10.
+  return Math.round(
+    (rubricAvg * 1.5 + quizPct * 0.03 + letterBonus + verdictBonus) * 100
+  ) / 100;
 }
 
 async function callClaude(userPrompt: string): Promise<MemoJson> {
@@ -291,7 +390,29 @@ type CaseContentShape = {
     whatHappened: { title: string; body: string; date: string };
   }>;
   finalReveal: { identity: string; closer: string };
+  quiz: Array<{
+    id: string;
+    concept: string;
+    prompt: string;
+    correct: string;
+    why: string;
+  }>;
 };
+
+function verdictFor(total: number, avgConf: number | null, perRound: number[]) {
+  const positives = perRound.filter((d) => d > 0).length;
+  const negatives = perRound.filter((d) => d < 0).length;
+  const mixed = positives > 0 && negatives > 0 && Math.abs(total) <= 15;
+  if (mixed) {
+    return { label: "Mixed" as const, subtitle: "Some calls landed; some didn't." };
+  }
+  const good = total > 0;
+  const high = (avgConf ?? 0) >= 65;
+  if (good && high) return { label: "Calibrated" as const, subtitle: "Right call, right confidence." };
+  if (good && !high) return { label: "Right, but unsure" as const, subtitle: "The call held up; the hedge didn't need to." };
+  if (!good && high) return { label: "Overconfident" as const, subtitle: "Spirit's board was sure too." };
+  return { label: "Saw the risk" as const, subtitle: "The dissent you noted was the one that mattered." };
+}
 
 async function assembleFirmInputs(
   sessionId: string,
@@ -339,11 +460,13 @@ async function assembleFirmInputs(
     const myPlayers = (players as Array<{ id: string; firm_id: string }>)
       .filter((p) => p.firm_id === f.id)
       .map((p) => p.id);
+    const myPlayerIds = new Set(myPlayers);
     const myAnswers = (answersRaw as Array<{ player_id: string; test_key: string; value: string }>)
-      .filter((a) => myPlayers.includes(a.player_id) && a.test_key === "anchor")
+      .filter((a) => myPlayerIds.has(a.player_id) && a.test_key === "anchor")
       .map((a) => ({ value: a.value }));
 
     const flags = new Set<string>();
+    const perRoundDelta: number[] = [];
     const rounds = [1, 2, 3].map((round) => {
       const rc = content.rounds[round - 1];
       const sub = subs.find((s) => s.firm_id === f.id && s.round === round);
@@ -351,6 +474,8 @@ async function assembleFirmInputs(
       const override = opt?.conditional?.find((c) => flags.has(c.ifFlag));
       const cons = override ? override.consequenceOverride : opt?.consequence;
       opt?.setsFlags?.forEach((fl) => flags.add(fl));
+      const delta = cons ? cons.meters.cash + cons.meters.trust + cons.meters.fit : 0;
+      perRoundDelta.push(delta);
       return {
         round,
         option_label: opt?.label ?? "(no submission)",
@@ -368,6 +493,54 @@ async function assembleFirmInputs(
       };
     });
 
+    // Quiz aggregation for this firm
+    const quizAnswers = (answersRaw as Array<{ player_id: string; test_key: string; value: string }>)
+      .filter((a) => myPlayerIds.has(a.player_id) && a.test_key.startsWith("quiz_"));
+    const quizTotal = myPlayerIds.size * (content.quiz?.length ?? 0);
+    const answered = quizAnswers.length;
+    let correct = 0;
+    const perConceptMap = new Map<string, { correct: number; total: number }>();
+    for (const q of content.quiz ?? []) {
+      if (!perConceptMap.has(q.concept)) perConceptMap.set(q.concept, { correct: 0, total: 0 });
+    }
+    for (const a of quizAnswers) {
+      const qid = a.test_key.slice("quiz_".length);
+      const q = (content.quiz ?? []).find((x) => x.id === qid);
+      if (!q) continue;
+      const row = perConceptMap.get(q.concept)!;
+      row.total++;
+      if (a.value === q.correct) {
+        row.correct++;
+        correct++;
+      }
+    }
+    const perConcept = Array.from(perConceptMap.entries()).map(([concept, v]) => ({
+      concept,
+      correct: v.correct,
+      total: v.total,
+      pct: v.total ? Math.round((v.correct / v.total) * 100) : 0,
+    }));
+    const pct = answered > 0 ? Math.round((correct / answered) * 100) : null;
+    // Concepts the firm got wrong at least once — used for "explain correctly"
+    const missedConcepts = new Set<string>();
+    for (const a of quizAnswers) {
+      const qid = a.test_key.slice("quiz_".length);
+      const q = (content.quiz ?? []).find((x) => x.id === qid);
+      if (!q) continue;
+      if (a.value !== q.correct) missedConcepts.add(q.concept);
+    }
+    const missed = (content.quiz ?? [])
+      .filter((q) => missedConcepts.has(q.concept))
+      // one representative question per missed concept
+      .filter((q, i, arr) => arr.findIndex((x) => x.concept === q.concept) === i)
+      .map((q) => ({ concept: q.concept, prompt: q.prompt, why: q.why }));
+
+    // Verdict
+    const totalMeter = perRoundDelta.reduce((s, x) => s + x, 0);
+    const confs = subs.filter((s) => s.firm_id === f.id).map((s) => s.confidence).filter((c): c is number => typeof c === "number");
+    const avgConf = confs.length ? confs.reduce((s, x) => s + x, 0) / confs.length : null;
+    const verdict = verdictFor(totalMeter, avgConf, perRoundDelta);
+
     return {
       firm_id: f.id,
       firm_name: f.name,
@@ -377,6 +550,20 @@ async function assembleFirmInputs(
       valuation_answers: myAnswers,
       room_choice_distribution: roomDist,
       final_identity: content.finalReveal.identity,
+      quiz: {
+        pct,
+        answered,
+        total: quizTotal,
+        per_concept: perConcept,
+        missed,
+      },
+      verdict: {
+        label: verdict.label,
+        subtitle: verdict.subtitle,
+        total_meter: totalMeter,
+        avg_confidence: avgConf,
+        per_round_delta: perRoundDelta,
+      },
     };
   });
 }
@@ -414,6 +601,13 @@ Deno.serve(async (req: Request) => {
       try {
         const memo = await callClaudeWithRetry(buildUserPrompt(f));
         const grade = gradeFirm(f);
+        memo.overall_score = computeOverallScore(f, grade);
+        memo.verdict = {
+          label: f.verdict.label,
+          subtitle: f.verdict.subtitle,
+          total_meter: f.verdict.total_meter,
+          quiz_pct: f.quiz.pct,
+        };
         await sbRpc("insert_firm_memo", {
           p_session_id: sessionId,
           p_secret: opsSecret,
