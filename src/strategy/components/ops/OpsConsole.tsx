@@ -10,6 +10,7 @@ import { PredictionsPanel } from "./PredictionsPanel";
 import { InjectComposer } from "./InjectComposer";
 import { QABankTab } from "./QABankTab";
 import { AnswerCounts } from "./AnswerCounts";
+import { CaseStudiesPanel } from "./CaseStudiesPanel";
 import { advanceSession, setSessionMetadata, stepPhase } from "../../hooks/useOps";
 import { DEFAULT_TIMER, nextPhase, phaseRound, Phase } from "../../lib/phases";
 import { useAutoInject } from "../../hooks/useAutoInject";
@@ -300,6 +301,12 @@ export function OpsConsole({
               phaseStartedAt={session.phase_started_at}
               metadata={session.metadata}
               onPatched={() => bundle.refetch()}
+            />
+            <CaseStudiesPanel
+              sessionId={session.id}
+              opsSecret={secret}
+              phase={session.phase as Phase}
+              firms={bundle.firms}
             />
             <div className="rounded-xl border p-4 bg-card text-xs text-muted-foreground">
               <div className="font-semibold text-foreground mb-1">Up next</div>

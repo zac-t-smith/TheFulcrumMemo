@@ -88,6 +88,24 @@ export async function resetSession(sessionId: string, opsSecret: string): Promis
   if (error) throw error;
 }
 
+// Invokes the generate_firm_memos edge function. Off the live path — only
+// callable from the ops console at Final reveal / Debrief. Returns the
+// per-firm result list so the console can show progress.
+export async function generateFirmMemos(
+  sessionId: string,
+  opsSecret: string,
+  caseContent: unknown
+): Promise<Array<{ firm_id: string; ok: boolean; error?: string }>> {
+  const sb = getSupabase();
+  const { data, error } = await sb.functions.invoke("generate_firm_memos", {
+    body: { session_id: sessionId, ops_secret: opsSecret, case_content: caseContent },
+  });
+  if (error) throw error;
+  const payload = data as { memos?: Array<{ firm_id: string; ok: boolean; error?: string }>; error?: string };
+  if (payload?.error) throw new Error(payload.error);
+  return payload?.memos ?? [];
+}
+
 // Merge-updates game_sessions.metadata. Gated by ops PIN in the backing RPC.
 // If the RPC isn't deployed yet (fresh install vs. existing production DB),
 // the Supabase client returns a `function not found` error — surface it so

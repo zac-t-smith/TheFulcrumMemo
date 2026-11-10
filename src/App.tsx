@@ -33,6 +33,7 @@ import PlayerView from "./strategy/pages/PlayerView";
 import OpsView from "./strategy/pages/OpsView";
 import FalconOps from "./strategy/pages/FalconOps";
 import FalconJoin from "./strategy/pages/FalconJoin";
+import FirmMemo from "./strategy/pages/FirmMemo";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +78,7 @@ const App = () => (
             <Route path="/strategy" element={<BoardRoom />} />
             <Route path="/strategy/play" element={<PlayerView />} />
             <Route path="/strategy/ops" element={<OpsView />} />
+            <Route path="/strategy/memo/:firmId" element={<FirmMemo />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

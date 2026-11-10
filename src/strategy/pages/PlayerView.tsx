@@ -17,6 +17,7 @@ import { RoleIntelCard } from "../components/phone/RoleIntelCard";
 import { StrategyErrorBoundary } from "../components/shared/ErrorBoundary";
 import { supabaseConfigured } from "../lib/supabase";
 import { useAutoInject } from "../hooks/useAutoInject";
+import { useFirmMemoReady } from "../hooks/useFirmMemoReady";
 
 const content = caseContent as CaseContent;
 
@@ -145,6 +146,10 @@ function PlayerViewInner({ code }: { code: string }) {
     roundContent && r
       ? bundle.submissions.find((s) => s.firm_id === me.firmId && s.round === r)
       : undefined;
+  // Case study readiness — only queried near the end of the game.
+  const memoReady = useFirmMemoReady(
+    session.phase === "final_reveal" || session.phase === "done" ? myFirm.id : null
+  );
 
   return (
     <>
@@ -230,16 +235,18 @@ function PlayerViewInner({ code }: { code: string }) {
         {session.phase === "final_reveal" && (
           <div className="p-6 max-w-md mx-auto">
             <h1 className="text-2xl font-bold mb-2">The debrief</h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-4">
               Watch the projector. Your firm's choices are on screen.
             </p>
+            {memoReady && <MemoReadyLink firmId={myFirm.id} />}
           </div>
         )}
 
         {session.phase === "done" && (
           <div className="p-6 max-w-md mx-auto text-center">
             <h1 className="text-2xl font-bold mb-2">Thank you.</h1>
-            <p className="text-sm text-muted-foreground">Questions welcome.</p>
+            <p className="text-sm text-muted-foreground mb-4">Questions welcome.</p>
+            {memoReady && <MemoReadyLink firmId={myFirm.id} />}
           </div>
         )}
       </div>
@@ -249,6 +256,17 @@ function PlayerViewInner({ code }: { code: string }) {
 
 function Full({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen flex items-center justify-center p-6 text-center">{children}</div>;
+}
+
+function MemoReadyLink({ firmId }: { firmId: string }) {
+  return (
+    <a
+      href={`#/strategy/memo/${firmId}`}
+      className="block w-full max-w-sm mx-auto text-center py-4 bg-primary text-primary-foreground rounded-lg font-semibold shadow-sm"
+    >
+      Your firm's case study is ready →
+    </a>
+  );
 }
 
 function JoinWaiting({ onRetry }: { onRetry: () => void }) {
