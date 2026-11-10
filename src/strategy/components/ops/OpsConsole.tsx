@@ -9,10 +9,98 @@ import { FirmGrid } from "./FirmGrid";
 import { PredictionsPanel } from "./PredictionsPanel";
 import { InjectComposer } from "./InjectComposer";
 import { QABankTab } from "./QABankTab";
-import { advanceSession, stepPhase } from "../../hooks/useOps";
+import { AnswerCounts } from "./AnswerCounts";
+import { advanceSession, setSessionMetadata, stepPhase } from "../../hooks/useOps";
 import { DEFAULT_TIMER, nextPhase, phaseRound, Phase } from "../../lib/phases";
+import { useAutoInject } from "../../hooks/useAutoInject";
+import { autoEventsEnabled } from "../../content/autoInjects";
 
 const content = caseContent as CaseContent;
+
+function mmss(sec: number): string {
+  const s = Math.max(0, Math.round(sec));
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, "0");
+  return `${m}:${ss}`;
+}
+
+function AutoEventsPanel({
+  sessionId,
+  secret,
+  phase,
+  phaseStartedAt,
+  metadata,
+  onPatched,
+}: {
+  sessionId: string;
+  secret: string;
+  phase: Phase;
+  phaseStartedAt: string;
+  metadata: Record<string, unknown> | null;
+  onPatched: () => void;
+}) {
+  const enabled = autoEventsEnabled(metadata);
+  const auto = useAutoInject({ phase, phaseStartedAt, metadata });
+  const [busy, setBusy] = useState(false);
+
+  async function toggle() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await setSessionMetadata(sessionId, secret, { auto_events_enabled: !enabled });
+      toast.success(`Auto-events: ${!enabled ? "on" : "off"}`);
+      onPatched();
+    } catch (e) {
+      const msg = (e as Error).message;
+      // Common message when the RPC isn't deployed yet: "function ... does not exist".
+      if (/does not exist|function.*not found|PGRST202/i.test(msg)) {
+        toast.error("Toggle needs the set_session_metadata migration. Auto-events default to ON.");
+      } else {
+        toast.error(`Toggle failed: ${msg}`);
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rounded-xl border p-4 bg-card">
+      <div className="flex items-center justify-between gap-3 mb-2">
+        <div className="font-semibold text-sm">Auto-events</div>
+        <button
+          onClick={toggle}
+          disabled={busy}
+          className={`text-xs px-3 py-1 rounded-full border ${
+            enabled
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-muted text-muted-foreground"
+          } disabled:opacity-50`}
+          aria-pressed={enabled}
+        >
+          {enabled ? "On" : "Off"}
+        </button>
+      </div>
+      <div className="text-xs text-muted-foreground">
+        {enabled ? (
+          auto.upcoming ? (
+            <div>
+              Up next: <span className="text-foreground font-medium">{auto.upcoming.title}</span>{" "}
+              in <span className="font-mono">{mmss(auto.secondsUntilUpcoming)}</span>
+            </div>
+          ) : auto.active ? (
+            <div>
+              Firing now: <span className="text-foreground font-medium">{auto.active.title}</span>
+            </div>
+          ) : (
+            <div>No scheduled event for this phase.</div>
+          )
+        ) : (
+          <div>Off — manual Fire inject only.</div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function JoinLinkInfo({ playerCount }: { playerCount: number }) {
   const base = import.meta.env.BASE_URL;
@@ -205,6 +293,14 @@ export function OpsConsole({
               canned={injectBank}
               phoneCount={bundle.players.length}
             />
+            <AutoEventsPanel
+              sessionId={session.id}
+              secret={secret}
+              phase={session.phase as Phase}
+              phaseStartedAt={session.phase_started_at}
+              metadata={session.metadata}
+              onPatched={() => bundle.refetch()}
+            />
             <div className="rounded-xl border p-4 bg-card text-xs text-muted-foreground">
               <div className="font-semibold text-foreground mb-1">Up next</div>
               <div>
@@ -215,7 +311,16 @@ export function OpsConsole({
               </div>
             </div>
           </div>
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-4">
+            <AnswerCounts
+              round={session.round}
+              firms={bundle.firms}
+              players={bundle.players}
+              submissions={bundle.submissions}
+              answers={bundle.answers}
+              framingTest={content.splitTests.framing}
+              framingRound={content.splitTests.framing.round}
+            />
             <FirmGrid
               firms={bundle.firms}
               players={bundle.players}

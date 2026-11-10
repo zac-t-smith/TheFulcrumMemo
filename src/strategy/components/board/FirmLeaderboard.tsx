@@ -21,7 +21,9 @@ export function FirmLeaderboard({ firms, players }: { firms: FirmRow[]; players:
           >
             <div className="flex items-baseline justify-between mb-2">
               <div className="text-sm uppercase tracking-widest opacity-60">{f.code}</div>
-              <div className="text-sm opacity-70">{members.length} members</div>
+              <div className="text-sm opacity-70">
+                {members.length} member{members.length === 1 ? "" : "s"}
+              </div>
             </div>
             <div className="text-xl font-semibold truncate">{f.name}</div>
             {bigEnough && (

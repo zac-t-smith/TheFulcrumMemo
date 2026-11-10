@@ -10,6 +10,7 @@ import {
   RESUME_PDF,
   SITE_URL,
 } from '@/content/bio';
+import { useLiveFalconPhase, isFalconLive } from '@/strategy/hooks/useLiveFalconPhase';
 
 /**
  * /  Home — Phase 3 recruiting funnel.
@@ -79,13 +80,15 @@ const LENSES: Lens[] = [
     blurb:
       'Teaching + facilitating a live multi-firm restructuring simulation at the University of Mobile.',
     pieces: [
-      { to: '/strategy?demo=1', label: 'Falcon Airways — live sim' },
+      { to: '/join', label: 'Falcon Airways — live sim' },
       { to: '/memos', label: 'Asymmetric Restructuring Series' },
     ],
   },
 ];
 
 const Index = () => {
+  const livePhase = useLiveFalconPhase();
+  const falconLive = isFalconLive(livePhase);
   return (
     <PageLayout
       title="Zachary T. Smith"
@@ -94,6 +97,29 @@ const Index = () => {
       <Helmet>
         <link rel="canonical" href={SITE_URL} />
       </Helmet>
+
+      {falconLive && (
+        <section className="pt-5 pb-5" style={{ borderBottom: '1px solid var(--rule)' }}>
+          <div
+            className="flex flex-wrap items-center gap-4 rounded-lg px-5 py-4"
+            style={{ background: 'var(--red)', color: '#fff' }}
+          >
+            <div className="t-kicker" style={{ letterSpacing: '0.25em', opacity: 0.85 }}>
+              LIVE NOW · FALCON
+            </div>
+            <div className="flex-1 min-w-[200px] text-lg font-semibold">
+              A classroom session is underway.
+            </div>
+            <Link
+              to="/join"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-md font-semibold"
+              style={{ background: '#fff', color: 'var(--red)' }}
+            >
+              Join the live game →
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* ===============================================================
           Hero

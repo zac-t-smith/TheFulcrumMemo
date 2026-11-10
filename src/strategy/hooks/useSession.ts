@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getSupabase, supabaseConfigured } from "../lib/supabase";
-import { onReconnect, subscribeSession } from "../lib/realtime";
+import { onReconnect, onVisibleInterval, subscribeSession } from "../lib/realtime";
 import type { Phase } from "../lib/phases";
 
 export type SessionRow = {
@@ -151,9 +151,16 @@ export function useSession(sessionCodeOrId: string | null): SessionBundle {
       { table: "answers", filter: undefined, onChange: () => void refetch() },
     ]);
     const offReconnect = onReconnect(() => void refetch());
+    // Fallback poll: refetch every 2s while visible. Realtime should normally
+    // deliver phase / inject changes instantly, but on mobile Safari and on
+    // unreliable Wi-Fi the postgres_changes stream silently drops events.
+    // Two seconds keeps the board + phones in sync for a live classroom
+    // without hammering Supabase.
+    const offInterval = onVisibleInterval(() => void refetch(), 2000);
     return () => {
       sub.unsubscribe();
       offReconnect();
+      offInterval();
     };
   }, [bundle.session, refetch]);
 

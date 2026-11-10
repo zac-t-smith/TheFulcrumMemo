@@ -16,6 +16,7 @@ import { InjectBanner } from "../components/phone/InjectBanner";
 import { RoleIntelCard } from "../components/phone/RoleIntelCard";
 import { StrategyErrorBoundary } from "../components/shared/ErrorBoundary";
 import { supabaseConfigured } from "../lib/supabase";
+import { useAutoInject } from "../hooks/useAutoInject";
 
 const content = caseContent as CaseContent;
 
@@ -72,11 +73,37 @@ function PlayerViewInner({ code }: { code: string }) {
 
   const session = bundle.session;
   const myFirm = me && session ? bundle.firms.find((f) => f.id === me.firmId) ?? null : null;
+
+  // Scheduled auto-inject for the current phase (client-side timer).
+  const auto = useAutoInject({
+    phase: session?.phase ?? null,
+    phaseStartedAt: session?.phase_started_at,
+    metadata: session?.metadata,
+  });
+
   // Suppress the breaking-news banner in the pre-game lobby. Admins fire
   // injects on test runs; nothing should flash on a student's phone before
-  // the game starts.
-  const latestInject =
+  // the game starts. A manually fired inject within the current phase wins
+  // over the scheduled auto-inject so the facilitator's override is honored.
+  const latestInjectRow =
     session && session.phase !== "lobby" ? bundle.injects[0] ?? null : null;
+  const phaseStartMs = session ? Date.parse(session.phase_started_at) : 0;
+  const manualInPhase =
+    latestInjectRow && Date.parse(latestInjectRow.created_at) >= phaseStartMs
+      ? latestInjectRow
+      : null;
+  const latestInject =
+    manualInPhase ??
+    (session && session.phase !== "lobby" && auto.active
+      ? {
+          id: `auto:${session.phase}:${auto.active.atSeconds}`,
+          session_id: session.id,
+          round: 0,
+          title: auto.active.title,
+          body: auto.active.body,
+          created_at: new Date(phaseStartMs + auto.active.atSeconds * 1000).toISOString(),
+        }
+      : null);
 
   const r = session ? phaseRound(session.phase) : null;
   const myFirmId = myFirm?.id ?? null;
@@ -186,6 +213,7 @@ function PlayerViewInner({ code }: { code: string }) {
                 frameworks={content.frameworks}
                 me={me}
                 current={myCurrentSub}
+                firmName={myFirm.name}
               />
             </div>
           </div>

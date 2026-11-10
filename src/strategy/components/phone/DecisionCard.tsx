@@ -10,12 +10,14 @@ export function DecisionCard({
   frameworks,
   me,
   current,
+  firmName,
 }: {
   round: Round;
   roundIndex: number;              // 1-based for the submissions table
   frameworks: Framework[];
   me: PlayerIdentity;
   current: SubmissionRow | undefined;
+  firmName: string;
 }) {
   const [optionId, setOptionId] = useState<string>(current?.option_id ?? "");
   const [pitch, setPitch] = useState<string>(current?.pitch ?? "");
@@ -67,12 +69,41 @@ export function DecisionCard({
     }
   }
 
+  const submittedOption = current
+    ? round.options.find((o) => o.id === current.option_id) ?? null
+    : null;
+
   return (
     <div className="p-6 lg:p-5 max-w-md lg:max-w-none mx-auto lg:mx-0">
       <div className="text-xs uppercase tracking-[0.3em] text-primary mb-1">
         Round {roundIndex} · firm decision
       </div>
       <h2 className="text-xl font-bold mb-4">{round.question}</h2>
+
+      {submittedOption && (
+        <div
+          className={`mb-4 rounded-lg border-l-4 p-3 text-sm ${
+            locked
+              ? "bg-muted border-muted-foreground/60"
+              : "bg-emerald-50 border-emerald-500 text-emerald-900"
+          }`}
+          role="status"
+          aria-live="polite"
+        >
+          <div className="text-[10px] uppercase tracking-widest font-semibold mb-1">
+            {locked ? "Locked" : "Submitted"}
+          </div>
+          <div>
+            Submitted for <span className="font-semibold">{firmName}</span> —{" "}
+            <span className="font-semibold">{submittedOption.label}</span>.
+          </div>
+          {!locked && (
+            <div className="text-xs opacity-80 mt-1">
+              You can resubmit until the facilitator locks.
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="space-y-2 mb-4">
         {round.options.map((o) => (

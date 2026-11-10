@@ -88,6 +88,24 @@ export async function resetSession(sessionId: string, opsSecret: string): Promis
   if (error) throw error;
 }
 
+// Merge-updates game_sessions.metadata. Gated by ops PIN in the backing RPC.
+// If the RPC isn't deployed yet (fresh install vs. existing production DB),
+// the Supabase client returns a `function not found` error — surface it so
+// the caller can fall back to a UI message without breaking anything.
+export async function setSessionMetadata(
+  sessionId: string,
+  opsSecret: string,
+  patch: Record<string, unknown>
+): Promise<void> {
+  const sb = getSupabase();
+  const { error } = await sb.rpc("set_session_metadata", {
+    p_session_id: sessionId,
+    p_secret: opsSecret,
+    p_patch: patch,
+  });
+  if (error) throw error;
+}
+
 export function stepPhase(current: Phase, direction: 1 | -1): Phase | null {
   const i = PHASE_ORDER.indexOf(current);
   const j = i + direction;

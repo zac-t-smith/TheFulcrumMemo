@@ -8,14 +8,17 @@ import { supabaseConfigured } from "../lib/supabase";
 import { PHASE_LABEL, Phase, phaseRound } from "../lib/phases";
 import { PhaseBanner } from "../components/board/PhaseBanner";
 import { QRJoin } from "../components/board/QRJoin";
+import { JoinSteps } from "../components/board/JoinSteps";
 import { FirmLeaderboard } from "../components/board/FirmLeaderboard";
 import { ChoiceDistribution } from "../components/board/ChoiceDistribution";
 import { WhatHappenedCard } from "../components/board/RevealStage";
 import { SealedPredictionCard } from "../components/board/SealedPredictionCard";
+import { BoardBreakingBar } from "../components/board/BoardBreakingBar";
 import { StrategyErrorBoundary } from "../components/shared/ErrorBoundary";
 import { createDemoDriver, DemoDriver } from "../lib/demo";
 import type { AnswerRow, FirmRow, PlayerRow, SubmissionRow } from "../hooks/useSession";
 import { evaluatePrediction } from "../lib/predictions";
+import { useAutoInject } from "../hooks/useAutoInject";
 
 const content = caseContent as CaseContent;
 
@@ -92,6 +95,10 @@ function BoardRoomLive({ code }: { code: string }) {
       predictionHash={s.prediction_hash}
       predictionText={s.prediction_text}
       sessionCode={s.code}
+      metadata={s.metadata}
+      latestInjectTitle={bundle.injects[0]?.title ?? null}
+      latestInjectBody={bundle.injects[0]?.body ?? null}
+      latestInjectCreatedAt={bundle.injects[0]?.created_at ?? null}
     />
   );
 }
@@ -144,6 +151,10 @@ function BoardRoomDemo() {
         predictionHash={state.session.prediction_hash}
         predictionText={state.session.prediction_text}
         sessionCode="DEMO"
+        metadata={null}
+        latestInjectTitle={null}
+        latestInjectBody={null}
+        latestInjectCreatedAt={null}
       />
     </>
   );
@@ -172,6 +183,10 @@ type BoardInnerProps = {
   predictionHash: string | null;
   predictionText: string | null;
   sessionCode: string;
+  metadata: Record<string, unknown> | null;
+  latestInjectTitle: string | null;
+  latestInjectBody: string | null;
+  latestInjectCreatedAt: string | null;
 };
 
 function BoardRoomInner({
@@ -186,12 +201,36 @@ function BoardRoomInner({
   predictionHash,
   predictionText,
   sessionCode,
+  metadata,
+  latestInjectTitle,
+  latestInjectBody,
+  latestInjectCreatedAt,
 }: BoardInnerProps) {
   const r = phaseRound(phase);
   const roundContent = useMemo(() => (r ? content.rounds[r - 1] : null), [r]);
+  const auto = useAutoInject({ phase, phaseStartedAt: startedAt, metadata });
+
+  // Choose banner: whichever is most recent between the scheduled auto-inject
+  // (fires at phase_started_at + atSeconds) and the latest manually fired
+  // inject (created_at). Any manual inject in the current phase wins over
+  // an earlier auto-inject so the facilitator's override is honored.
+  const phaseStartMs = Date.parse(startedAt);
+  const manualInPhase =
+    latestInjectCreatedAt && Date.parse(latestInjectCreatedAt) >= phaseStartMs
+      ? { title: latestInjectTitle ?? "", body: latestInjectBody ?? "" }
+      : null;
+  const activeBanner =
+    phase === "lobby"
+      ? null
+      : manualInPhase ?? (auto.active ? { title: auto.active.title, body: auto.active.body } : null);
 
   return (
     <div className="p-10 md:p-16 min-h-screen">
+      <BoardBreakingBar
+        title={activeBanner?.title ?? null}
+        body={activeBanner?.body ?? null}
+        phaseKey={phase}
+      />
       <PhaseBanner phase={phase} round={round} startedAt={startedAt} timerSeconds={timerSeconds} />
       <AnimatePresence mode="wait">
         <motion.div
@@ -202,8 +241,8 @@ function BoardRoomInner({
           transition={{ duration: 0.4 }}
         >
           {phase === "lobby" && (
-            <div className="grid lg:grid-cols-2 gap-12 items-start">
-              {sessionCode === "DEMO" ? (
+            sessionCode === "DEMO" ? (
+              <div className="grid lg:grid-cols-2 gap-12 items-start">
                 <div className="rounded-xl border border-white/15 p-8">
                   <div className="text-xs uppercase tracking-[0.3em] opacity-60 mb-3">Rehearsal</div>
                   <div className="text-3xl font-semibold mb-3">Projector only</div>
@@ -212,16 +251,16 @@ function BoardRoomInner({
                     backup if the network drops.
                   </div>
                 </div>
-              ) : (
-                <QRJoin sessionCode={sessionCode} />
-              )}
-              <div>
-                <div className="text-xs uppercase tracking-[0.3em] opacity-60 mb-3">
-                  Firms assembling
+                <div>
+                  <div className="text-xs uppercase tracking-[0.3em] opacity-60 mb-3">
+                    Firms assembling
+                  </div>
+                  <FirmLeaderboard firms={firms} players={players} />
                 </div>
-                <FirmLeaderboard firms={firms} players={players} />
               </div>
-            </div>
+            ) : (
+              <JoinSteps sessionCode={sessionCode} firms={firms} players={players} />
+            )
           )}
 
           {phase === "kickoff" && (

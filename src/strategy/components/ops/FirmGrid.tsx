@@ -58,7 +58,8 @@ export function FirmGrid({
                   {f.name}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {members.length} members {sub?.locked ? "· locked" : ""}
+                  {members.length} member{members.length === 1 ? "" : "s"}{" "}
+                  {sub?.locked ? "· locked" : ""}
                 </div>
               </div>
               {sub ? (
