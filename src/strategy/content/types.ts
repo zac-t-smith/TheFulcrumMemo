@@ -164,6 +164,26 @@ export type SubmissionFieldSpec = Record<string, string>;
 
 export type Calibration = { note: string };
 
+export type ToolkitVisual =
+  | { type: "rows"; rows: Array<[string, string]> }
+  | { type: "matrix"; cols: [string, string]; rows: [string, string]; cells: [[string, string], [string, string]]; note?: string }
+  | { type: "formula"; text: string }
+  | { type: "waterfall"; steps: string[] };
+
+export type ToolkitEntry = {
+  id: string;             // reuses frameworks id
+  name: string;
+  oneLiner: string;
+  visual: ToolkitVisual;
+  example: string;
+  ask: string;
+};
+
+export type Toolkit = {
+  aliases: Record<string, string>;      // frameworks id → toolkit id
+  rounds: Record<"r1" | "r2" | "r3", ToolkitEntry[]>;
+};
+
 export type QuizQuestion = {
   id: string;
   concept: string;
@@ -184,6 +204,7 @@ export type CaseContent = {
   sources: Source[];
   submissionFields: SubmissionFieldSpec;
   calibration: Calibration;
+  toolkit: Toolkit;
   quiz: QuizQuestion[];
 };
 

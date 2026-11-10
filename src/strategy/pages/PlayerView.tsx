@@ -14,6 +14,7 @@ import { ConsequenceCard } from "../components/phone/ConsequenceCard";
 import { AnchorCard, FramingCard } from "../components/phone/SplitTestCard";
 import { InjectBanner } from "../components/phone/InjectBanner";
 import { QuizCard } from "../components/phone/QuizCard";
+import { ToolkitButton, ToolkitSheet, resolveToolkitId } from "../components/phone/ToolkitSheet";
 import { RoleIntelCard } from "../components/phone/RoleIntelCard";
 import { StrategyErrorBoundary } from "../components/shared/ErrorBoundary";
 import { supabaseConfigured } from "../lib/supabase";
@@ -152,6 +153,19 @@ function PlayerViewInner({ code }: { code: string }) {
     session.phase === "final_reveal" || session.phase === "done" ? myFirm.id : null
   );
 
+  // Toolkit — phone-only, decide_* phases only. Closed-book quiz => hidden.
+  const inDecide = phaseKind(session.phase) === "decide" && r != null;
+  const [toolkitOpen, setToolkitOpen] = useState(false);
+  const [toolkitTarget, setToolkitTarget] = useState<string | null>(null);
+  const openToolkit = (frameworkId?: string) => {
+    if (frameworkId) {
+      setToolkitTarget(resolveToolkitId(content.toolkit, frameworkId));
+    } else {
+      setToolkitTarget(null);
+    }
+    setToolkitOpen(true);
+  };
+
   return (
     <>
       <InjectBanner latest={latestInject} />
@@ -240,6 +254,7 @@ function PlayerViewInner({ code }: { code: string }) {
                 me={me}
                 current={myCurrentSub}
                 firmName={myFirm.name}
+                onOpenToolkit={(fwId) => openToolkit(fwId)}
               />
             </div>
           </div>
@@ -286,6 +301,18 @@ function PlayerViewInner({ code }: { code: string }) {
           </div>
         )}
       </div>
+      {inDecide && r && (
+        <>
+          <ToolkitButton onOpen={() => openToolkit()} />
+          <ToolkitSheet
+            open={toolkitOpen}
+            onClose={() => setToolkitOpen(false)}
+            toolkit={content.toolkit}
+            currentRound={r as 1 | 2 | 3}
+            scrollToId={toolkitTarget}
+          />
+        </>
+      )}
     </>
   );
 }

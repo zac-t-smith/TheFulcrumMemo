@@ -11,6 +11,7 @@ export function DecisionCard({
   me,
   current,
   firmName,
+  onOpenToolkit,
 }: {
   round: Round;
   roundIndex: number;              // 1-based for the submissions table
@@ -18,6 +19,7 @@ export function DecisionCard({
   me: PlayerIdentity;
   current: SubmissionRow | undefined;
   firmName: string;
+  onOpenToolkit?: (frameworkId: string) => void;
 }) {
   const [optionId, setOptionId] = useState<string>(current?.option_id ?? "");
   const [pitch, setPitch] = useState<string>(current?.pitch ?? "");
@@ -74,7 +76,8 @@ export function DecisionCard({
     : null;
 
   return (
-    <div className="p-6 lg:p-5 max-w-md lg:max-w-none mx-auto lg:mx-0">
+    // pb-24 on mobile leaves room for the fixed Toolkit pill without covering Submit.
+    <div className="p-6 pb-24 lg:pb-5 lg:p-5 max-w-md lg:max-w-none mx-auto lg:mx-0">
       <div className="text-xs uppercase tracking-[0.3em] text-primary mb-1">
         Round {roundIndex} · firm decision
       </div>
@@ -138,12 +141,21 @@ export function DecisionCard({
         value={frameworkTag}
         disabled={locked}
         onChange={(e) => setFrameworkTag(e.target.value)}
-        className="w-full px-3 py-2 border rounded-lg mb-4 text-sm"
+        className="w-full px-3 py-2 border rounded-lg mb-1 text-sm"
       >
         {frameworks.map((f) => (
           <option key={f.id} value={f.id}>{f.name}</option>
         ))}
       </select>
+      {onOpenToolkit && (
+        <button
+          type="button"
+          onClick={() => onOpenToolkit(frameworkTag)}
+          className="text-xs text-primary underline mb-4"
+        >
+          What's this?
+        </button>
+      )}
 
       <label className="block text-sm font-medium mb-1">{round.tradeoffPrompt}</label>
       <textarea

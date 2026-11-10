@@ -675,6 +675,162 @@
   "calibration": {
     "note": "At final reveal, show each firm's average confidence vs. its total meter change. Typical finding: confidence was high even on choices that went badly (overconfidence). Present it as an insight, not a prediction."
   },
+  "toolkit": {
+    "aliases": { "integration": "levels", "vrio": "generic", "value": "generic" },
+    "rounds": {
+      "r1": [
+        {
+          "id": "mvv",
+          "name": "Mission, vision, values",
+          "oneLiner": "Mission = why we exist today. Vision = where we're headed. Values = the rules we won't break.",
+          "visual": {
+            "type": "rows",
+            "rows": [
+              ["Mission", "Why we exist today"],
+              ["Vision", "Where we're going in 5–10 years"],
+              ["Values", "How we behave on the way"]
+            ]
+          },
+          "example": "A discount grocer whose mission is the lowest prices turns down a fancy deli counter that would raise its costs.",
+          "ask": "Does this option keep Falcon the cheapest seat in America?"
+        },
+        {
+          "id": "levels",
+          "name": "Corporate strategy & integration",
+          "oneLiner": "Corporate strategy = WHERE we compete. Business strategy = HOW we win there.",
+          "visual": {
+            "type": "rows",
+            "rows": [
+              ["Corporate", "Which businesses and markets (merge, sell, stay solo)"],
+              ["Business", "How we win in them (low cost or premium)"],
+              ["Horizontal", "Buy a competitor"],
+              ["Vertical", "Buy a supplier or a customer"]
+            ]
+          },
+          "example": "A coffee chain buying another coffee chain is horizontal. Buying a bean farm is vertical.",
+          "ask": "Does 1 + 1 > 2 here, and will regulators allow it?"
+        },
+        {
+          "id": "governance",
+          "name": "Governance & expected value",
+          "oneLiner": "The board owes owners its best judgment (fiduciary duty). A bigger price is worth less if the deal may never close.",
+          "visual": {
+            "type": "formula",
+            "text": "Expected value = Price × P(closes) + Fallback × P(blocked)"
+          },
+          "example": "$50 with a 90% chance of closing ≈ $45. $60 with a 50% chance (and $5 if blocked) ≈ $32.50.",
+          "ask": "What is each path worth once you price in the chance it never happens?"
+        }
+      ],
+      "r2": [
+        {
+          "id": "generic",
+          "name": "Porter's generic strategies + VRIO",
+          "oneLiner": "Pick ONE way to win. Try to be cheap and premium at once and you're stuck in the middle.",
+          "visual": {
+            "type": "matrix",
+            "cols": ["Lower cost", "Differentiation"],
+            "rows": ["Broad market", "Narrow niche"],
+            "cells": [
+              ["Cost leadership", "Differentiation"],
+              ["Cost focus", "Differentiation focus"]
+            ],
+            "note": "VRIO: an advantage lasts only if it's Valuable, Rare, hard to Imitate, and the firm is Organized to use it."
+          },
+          "example": "A dollar store that starts stocking premium brands raises its prices and loses the one thing customers came for.",
+          "ask": "Which box is Falcon in today? Which box does each path move it to?"
+        },
+        {
+          "id": "fiveforces",
+          "name": "Five Forces",
+          "oneLiner": "Five pressures decide how much profit an industry leaves on the table.",
+          "visual": {
+            "type": "rows",
+            "rows": [
+              ["Rivalry", "How hard competitors fight on price"],
+              ["New entrants", "How easy it is to start a rival"],
+              ["Substitutes", "Other ways to meet the same need"],
+              ["Buyer power", "How easily customers switch"],
+              ["Supplier power", "How much suppliers can squeeze you"]
+            ]
+          },
+          "example": "Ride-share apps: riders and drivers both switch apps in seconds, so profits stay thin.",
+          "ask": "Which force hurts Falcon most right now? Does your plan fix it or ignore it?"
+        },
+        {
+          "id": "ansoff",
+          "name": "Ansoff matrix",
+          "oneLiner": "Four ways to grow, from safest to riskiest.",
+          "visual": {
+            "type": "matrix",
+            "cols": ["Existing products", "New products"],
+            "rows": ["Existing markets", "New markets"],
+            "cells": [
+              ["Market penetration", "Product development"],
+              ["Market development", "Diversification"]
+            ]
+          },
+          "example": "A pizza chain: more deliveries (penetration), a new sandwich line (product development), opening in Canada (market development), frozen pizza in grocery stores (diversification).",
+          "ask": "Where would new revenue actually come from?"
+        },
+        {
+          "id": "retrench",
+          "name": "Turnaround & restructuring",
+          "oneLiner": "Financial restructuring fixes the balance sheet. Operational restructuring fixes the business.",
+          "visual": {
+            "type": "rows",
+            "rows": [
+              ["Financial", "Swap debt for ownership, refinance, push out deadlines"],
+              ["Operational", "Cut costs, drop routes, change what you sell"],
+              ["Prearranged Ch. 11", "Key creditors agree to terms before filing"]
+            ]
+          },
+          "example": "A retailer that refinances its debt but keeps losing customers to online rivals is back in trouble within two years.",
+          "ask": "Does your plan fix the debt, the business, or both?"
+        }
+      ],
+      "r3": [
+        {
+          "id": "scenario",
+          "name": "Scenario planning",
+          "oneLiner": "Test the plan in the base, bad, and worst case before it happens.",
+          "visual": {
+            "type": "rows",
+            "rows": [
+              ["Base case", "What you expect"],
+              ["Bad case", "What if a key assumption slips?"],
+              ["Worst case", "Can you survive it?"],
+              ["Watch out", "Escalation of commitment: throwing good money after bad because of what you've already spent"]
+            ]
+          },
+          "example": "A studio keeps funding a failing sequel because it already spent $100M on it.",
+          "ask": "What has to be true for your plan to work, and how likely is that in the next 60 days?"
+        },
+        {
+          "id": "stakeholders",
+          "name": "Stakeholders & who gets paid",
+          "oneLiner": "Shareholders own the company; stakeholders are affected by it. In bankruptcy, the law sets the order.",
+          "visual": {
+            "type": "waterfall",
+            "steps": ["Secured lenders", "Other creditors (recent wages get priority)", "Shareholders (usually nothing)"]
+          },
+          "example": "When a chain liquidates, the bank holding the mortgage on its stores is paid before its suppliers, and its shareholders last.",
+          "ask": "Who has to say yes to your plan, and why would they?"
+        },
+        {
+          "id": "goingconcern",
+          "name": "Going concern vs. liquidation",
+          "oneLiner": "Keep operating only if the business is worth more running than sold for parts.",
+          "visual": {
+            "type": "formula",
+            "text": "If Liquidation value > Going-concern value → orderly wind-down"
+          },
+          "example": "A struggling mall whose land is worth more as apartments than as a mall.",
+          "ask": "Add up what the parts would sell for. Is Falcon worth more open or closed?"
+        }
+      ]
+    }
+  },
   "quiz": [
     {
       "id": "q1",
