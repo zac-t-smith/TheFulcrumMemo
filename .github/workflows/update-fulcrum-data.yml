@@ -43,7 +43,8 @@ jobs:
       - name: Pull FRED data
         working-directory: quant
         env:
-          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          # Either secret name works; the README and deploy.yml disagree on it.
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY || secrets.VITE_FRED_API_KEY }}
         run: |
           LOOKBACK_DAYS=$(( ${{ github.event.inputs.long_lookback_years || '50' }} * 365 ))
           python scripts/fetch_fred_data.py \

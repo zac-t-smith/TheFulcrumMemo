@@ -483,8 +483,14 @@ def main() -> int:
         if info.get("status") != "ok"
     ]
     if failures:
-        print(f"\n❌ {len(failures)} series failed: {', '.join(failures)}", file=sys.stderr)
-        return 1
+        print(f"\n⚠ {len(failures)} series failed: {', '.join(failures)}", file=sys.stderr)
+        # One retired or rate-limited series (ICE BofA access on FRED has
+        # changed more than once) must not freeze the whole dataset. Only
+        # fail the job when the primary signal or every series failed, so
+        # the series that did update still get committed.
+        if "BAA10Y" in failures or len(failures) == len(summary["series"]):
+            return 1
+        return 0
 
     print(f"\n✓ All {len(summary['series'])} series pulled successfully.")
     return 0

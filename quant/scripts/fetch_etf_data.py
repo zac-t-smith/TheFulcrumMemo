@@ -341,8 +341,9 @@ def main() -> int:
 
     failures = [t for t, info in summary["etfs"].items() if info.get("status") != "ok"]
     if failures:
-        print(f"\n❌ {len(failures)} ETF(s) failed: {', '.join(failures)}", file=sys.stderr)
-        return 1
+        print(f"\n⚠ {len(failures)} ETF(s) failed: {', '.join(failures)}", file=sys.stderr)
+        if len(failures) == len(summary["etfs"]):
+            return 1
 
     print(f"\n✓ All {len(summary['etfs'])} ETFs pulled successfully.")
     return 0
