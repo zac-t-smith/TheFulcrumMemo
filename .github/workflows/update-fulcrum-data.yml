@@ -57,6 +57,20 @@ jobs:
         working-directory: quant
         run: cat fred_pull_summary.json
 
+      # EBP pipeline — stdlib only. Fed's FEDS Note CSV, monthly, 1973+.
+      # Partial-failure: exit 0 so one-off Fed outages don't stall the job.
+      - name: Pull EBP data
+        working-directory: quant
+        run: |
+          python scripts/fetch_ebp.py \
+            --ts-dir ../src/data \
+            --data-dir data \
+            --summary-out ebp_pull_summary.json
+
+      - name: Show EBP summary
+        working-directory: quant
+        run: cat ebp_pull_summary.json
+
       # ETF pipeline — uses yfinance from requirements.txt
       - name: Pull ETF data
         if: ${{ !inputs.skip_etfs }}
@@ -104,6 +118,7 @@ jobs:
           name: pull-summaries-${{ github.run_id }}
           path: |
             quant/fred_pull_summary.json
+            quant/ebp_pull_summary.json
             quant/etf_pull_summary.json
           retention-days: 30
           if-no-files-found: warn

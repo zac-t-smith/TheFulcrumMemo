@@ -34,6 +34,7 @@ src/data/_archive/
 # Pipeline artifacts (CSVs land here from quant/scripts/*.py;
 # committed selectively, but local pipeline runs may produce extras)
 quant/fred_pull_summary.json
+quant/ebp_pull_summary.json
 quant/etf_pull_summary.json
 
 REVAMP_PLAN.md
