@@ -282,15 +282,18 @@ export const BaaHistoricalScatter = () => {
     });
     ctx.setLineDash([]);
 
-    // Zone anchor labels (corner italics, in-plot).
+    // Zone anchor labels (corner italics, in-plot). Left-anchored so they
+    // don't fight the right-side cluster: event labels (CPI shock, Hormuz
+    // closure) dangle from the top edge on the right, and the "today" badge
+    // sits near the current dot which is also right-of-center.
     ctx.font = 'italic 10.5px Georgia, serif';
-    ctx.textAlign = 'right';
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillStyle = 'rgba(138, 24, 24, 0.55)';
-    ctx.fillText('exit zone · tight spreads', plotX + plotW - 8, plotY + 6);
+    ctx.fillText('exit zone · tight spreads', plotX + 8, plotY + 6);
     ctx.textBaseline = 'bottom';
     ctx.fillStyle = 'rgba(31, 107, 58, 0.55)';
-    ctx.fillText('buy zone · wide spreads', plotX + plotW - 8, plotY + plotH - 6);
+    ctx.fillText('buy zone · wide spreads', plotX + 8, plotY + plotH - 6);
 
     // The dots themselves. Render in source order (chronological); recent
     // dots paint over older ones, which is what we want — the latest-day

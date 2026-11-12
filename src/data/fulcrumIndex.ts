@@ -88,7 +88,7 @@ export const BAA_30YR_MEAN_BPS = Math.round(
 export const HY_OAS_3YR_MEAN_BPS = Math.round(meanOf(hyOasHistory));
 
 export const FULCRUM_INDEX_ATTRIBUTION =
-  'Sources: Moody’s Baa-Treasury spread (FRED, BAA10Y, 1986+); ' +
+  'Moody’s Baa-Treasury spread (FRED, BAA10Y, 1986+); ' +
   'ICE BofA US High Yield OAS (FRED, BAMLH0A0HYM2); ' +
   'U.S. Energy Information Administration via FRED DCOILBRENTEU (Brent crude); ' +
   'CBOE VIX (FRED, VIXCLS); 10Y Treasury (FRED, DGS10); author calculations.';
@@ -452,10 +452,12 @@ export function generateMDCallout(
   bbbOas?: number,
 ): string {
   const regime = getRiskRegime(idx);
-  const baaPctl = Math.round(baaPercentile(baa) * 100);
+  // True-historical percentile — the readout strip and the BaaHistoricalScatter
+  // use the same lookup, so the prose agrees with them. `baaPercentile` is
+  // the fixed-range composite input and is intentionally not surfaced here.
+  const baaPctl = Math.round(baaTrueHistoricalPercentile(baa) * 100);
   const baaDiff = Math.round(baa - BAA_30YR_MEAN_BPS);
   const baaRelation = baaDiff >= 0 ? 'above' : 'below';
-  const thresholdRelation = idx >= 70 ? 'above' : 'below';
 
   let regimeCommentary: string;
   switch (regime.regime) {
@@ -477,15 +479,16 @@ export function generateMDCallout(
       break;
     case 'Cycle Imminent':
       regimeCommentary =
-        'Each prior crossing of 70 has preceded a default-rate inflection within nine to fifteen months. ' +
         'Liquidity windows are closing for B3/CCC issuers. Execute mandates now.';
       break;
   }
 
-  // Lead with the long-history regime signal.
+  // Lead with the composite's current regime band — the band table on the
+  // page is the single source of truth for thresholds. Lead-time claims
+  // against default-rate inflections are deferred to the Phase 2 backtest.
   let callout =
-    `The Fulcrum Index stands at ${idx} — ${thresholdRelation} the 70 threshold that has ` +
-    `historically preceded default-rate inflections. The credit input is BAA10Y at ` +
+    `The Fulcrum Index stands at ${idx} — in the ${regime.regime} band (${regime.band}). ` +
+    `The credit input is BAA10Y at ` +
     `${Math.round(baa)} bps, sitting in the ${baaPctl}ᵗʰ percentile of the 1986–2026 distribution, ` +
     `${Math.abs(baaDiff)} bps ${baaRelation} the 30-year mean of ${BAA_30YR_MEAN_BPS} bps.`;
 

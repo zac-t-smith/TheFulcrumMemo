@@ -79,7 +79,10 @@ export const CccBbDispersionChart = () => {
     const h = cssH;
     ctx.clearRect(0, 0, w, h);
 
-    const PAD = { l: 56, r: 64, t: 36, b: 40 };
+    // Right padding holds the median/threshold tags that sit just outside
+    // the plot (anchored at plotX+plotW+6, textAlign 'left'). 'threshold 3.5×'
+    // at bold 10px Helvetica Neue is ~78px wide, so PAD.r needs ~90 of room.
+    const PAD = { l: 56, r: 92, t: 36, b: 40 };
     const plotX = PAD.l;
     const plotY = PAD.t;
     const plotW = w - PAD.l - PAD.r;
