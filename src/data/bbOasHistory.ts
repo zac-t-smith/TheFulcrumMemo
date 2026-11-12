@@ -2,7 +2,7 @@
 // Source: FRED series BAMLH0A1HYBB (ICE BofA BB OAS (highest HY tier))
 // Units: bps
 // Coverage: 2023-11-13 → 2026-11-11 (785 obs)
-// Generated: 2026-11-12T15:57:36.843257Z
+// Generated: 2026-11-12T16:46:19.986548Z
 
 import type { DailyDataPoint } from "./types";
 

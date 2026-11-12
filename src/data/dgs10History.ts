@@ -2,7 +2,7 @@
 // Source: FRED series DGS10 (10-Year Treasury Constant Maturity Rate)
 // Units: percent
 // Coverage: 1976-11-24 → 2026-11-09 (12486 obs)
-// Generated: 2026-11-12T15:57:32.534521Z
+// Generated: 2026-11-12T16:46:14.948622Z
 
 import type { DailyDataPoint } from "./types";
 
