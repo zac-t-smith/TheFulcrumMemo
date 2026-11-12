@@ -1,8 +1,8 @@
 """
-fetch_fred_data.py — Fulcrum Memo v4 data pipeline (FRED side)
+fetch_fred_data.py — Fulcrum Memo data pipeline (FRED side)
 ================================================================
 
-Pulls all FRED series needed for the v4 Fulcrum Index. Architecture:
+Pulls all FRED series needed for the Fulcrum Index. Architecture:
 
 LONG-HISTORY SERIES (full inception, 40-year regime detection):
   - BAA10Y    : Moody's Baa Corporate over 10Y Treasury    (1986+)
@@ -19,12 +19,27 @@ CURRENT-CYCLE SERIES (FRED restricted to 3-year window in April 2026):
   - BAMLH0A1HYBB  : ICE BofA BB OAS   (highest HY tier)
   - BAMLC0A4CBBB  : ICE BofA BBB OAS  (IG floor)
 
+LEADING-INDICATOR SERIES (v5 Phase 2 Cycle Probability model):
+  - DRTSCILM  : SLOOS C&I tightening, large/mid firms         (Q, 1990+)
+  - DRTSCIS   : SLOOS C&I tightening, small firms             (Q, 1990+)
+  - NFCI      : Chicago Fed National Financial Conditions     (W, 1971+)
+  - T10Y3M    : 10Y minus 3M Treasury (short-rate basis)      (D, 1982+)
+  - ICSA      : Initial Claims (Unemployment Insurance)       (W, 1967+)
+  - CORBLACBS : Charge-off rate on business loans             (Q, 1985+)
+  - DRBLACBS  : Delinquency rate on business loans            (Q, 1987+)
+  - USREC     : NBER-based Recession Indicator                (M, 1854+)
+
 The split is deliberate. The Moody's Baa-Treasury spread (BAA10Y) is the
 primary signal for the multi-decade rolling-percentile and regime-band logic.
 ICE BofA HY OAS is kept for current-cycle analysis (the 2026 Iran period,
 Kalshi positioning, RX desk-watch instruments) where the 3-year window is
 sufficient and the HY-vs-IG dispersion (HY_OAS - BAA10Y) becomes its own
 signal.
+
+Leading indicators are fed to the v5 Cycle Probability logistic regression
+(see FULCRUM_V5_SPEC.md Phase 2). All eight are Fed-produced (SLOOS, FRBC,
+Treasury Dept, DOL, Call Report, NBER) and are NOT subject to the April
+2026 ICE BofA 3-year window restriction — full history pulls cleanly.
 
 Why this works analytically:
   - Gilchrist-Zakrajšek (2012) used Baa spreads precisely because of the
@@ -129,6 +144,70 @@ LONG_HISTORY_SERIES: dict[str, dict[str, Any]] = {
         "site_file": "brentSpotHistory.ts",
         "inception": "1987-05-20",
         "role": "energy_signal",
+    },
+}
+
+# Leading-indicator series — v5 Phase 2 Cycle Probability inputs plus the
+# NBER target. All Fed-produced (not ICE-licensed), so full history pulls.
+# Frequencies vary — daily (T10Y3M), weekly (NFCI, ICSA), monthly (USREC),
+# quarterly (DRTSCI*, CORBLACBS, DRBLACBS). FRED emits one row per
+# observation date, which the downstream TS consumer handles generically.
+LEADING_INDICATOR_SERIES: dict[str, dict[str, Any]] = {
+    "DRTSCILM": {
+        "label": "SLOOS: Net % of banks tightening C&I standards (large & mid firms)",
+        "unit_transform": "raw",
+        "site_file": "cniTighteningLargeHistory.ts",
+        "inception": "1990-04-01",
+        "role": "leading_indicator",
+    },
+    "DRTSCIS": {
+        "label": "SLOOS: Net % of banks tightening C&I standards (small firms)",
+        "unit_transform": "raw",
+        "site_file": "cniTighteningSmallHistory.ts",
+        "inception": "1990-04-01",
+        "role": "leading_indicator",
+    },
+    "NFCI": {
+        "label": "Chicago Fed National Financial Conditions Index",
+        "unit_transform": "raw",
+        "site_file": "nfciHistory.ts",
+        "inception": "1971-01-08",
+        "role": "leading_indicator",
+    },
+    "T10Y3M": {
+        "label": "10Y minus 3M Treasury (yield curve, short-rate basis)",
+        "unit_transform": "raw",
+        "site_file": "yieldCurve3mHistory.ts",
+        "inception": "1982-01-04",
+        "role": "leading_indicator",
+    },
+    "ICSA": {
+        "label": "Initial Claims, Unemployment Insurance (weekly)",
+        "unit_transform": "raw",
+        "site_file": "initialClaimsHistory.ts",
+        "inception": "1967-01-07",
+        "role": "leading_indicator",
+    },
+    "CORBLACBS": {
+        "label": "Charge-off rate on business loans, all commercial banks (quarterly)",
+        "unit_transform": "raw",
+        "site_file": "chargeoffBusinessLoansHistory.ts",
+        "inception": "1985-01-01",
+        "role": "target_realized",
+    },
+    "DRBLACBS": {
+        "label": "Delinquency rate on business loans, all commercial banks (quarterly)",
+        "unit_transform": "raw",
+        "site_file": "delinquencyBusinessLoansHistory.ts",
+        "inception": "1987-01-01",
+        "role": "realized_distress",
+    },
+    "USREC": {
+        "label": "NBER-based Recession Indicator (US)",
+        "unit_transform": "raw",
+        "site_file": "nberRecessionHistory.ts",
+        "inception": "1854-12-01",
+        "role": "target_indicator",
     },
 }
 
@@ -339,10 +418,13 @@ def run_pipeline(
         "series": {},
     }
 
-    # Build a unified iteration plan combining long-history and current-cycle
+    # Build a unified iteration plan across long-history, leading-indicator,
+    # and current-cycle categories.
     all_series: dict[str, dict[str, Any]] = {}
     for sid, meta in LONG_HISTORY_SERIES.items():
         all_series[sid] = {**meta, "category": "long_history"}
+    for sid, meta in LEADING_INDICATOR_SERIES.items():
+        all_series[sid] = {**meta, "category": "leading_indicator"}
     for sid, meta in CURRENT_CYCLE_SERIES.items():
         all_series[sid] = {**meta, "category": "current_cycle"}
 
@@ -356,11 +438,12 @@ def run_pipeline(
         meta = all_series[series_id]
         category = meta["category"]
 
-        # Determine date range
-        if category == "long_history":
-            start = end - timedelta(days=long_lookback_days)
-        else:  # current_cycle
+        # Determine date range — leading indicators get the long lookback so
+        # the cycle-probability model sees every cycle since 1990.
+        if category == "current_cycle":
             start = end - timedelta(days=meta["lookback_days"])
+        else:  # long_history or leading_indicator
+            start = end - timedelta(days=long_lookback_days)
 
         print(f"  Fetching {series_id} ({meta['label']}, {category})...", flush=True)
 
