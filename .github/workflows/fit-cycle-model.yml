@@ -69,14 +69,21 @@ jobs:
             --data-dir quant/data \
             --out src/data/cycleModel.json
 
-      - name: Show chosen target + AUC
+      - name: Show primary target + AUC
         working-directory: ${{ github.workspace }}
         run: |
-          python -c "import json; m=json.load(open('src/data/cycleModel.json')); \
-            print('chosen:', m['chosen_target']); \
-            print('AUC:', m['all_targets_scored'][m['chosen_target']]['auc_oos']); \
-            print('n_oos:', m['all_targets_scored'][m['chosen_target']]['n_oos']); \
-            print('base_rate:', m['all_targets_scored'][m['chosen_target']]['base_rate_oos'])"
+          python - <<'PY'
+          import json
+          m = json.load(open("src/data/cycleModel.json"))
+          t = m["primary_target"]
+          print("primary target:", t)
+          for name, r in m["backtest"][t]["feature_sets"].items():
+              print(f"  {name:28s} AUC={r.get('auc')}  n_oos={r.get('n_oos')}  base_rate={r.get('base_rate')}")
+          snap = m["latest_snapshot"]
+          print("current:", snap["date"], "p =", snap["probability"],
+                "band", [snap["band_5pct"], snap["band_95pct"]],
+                "base rate", snap["base_rate_primary_target"])
+          PY
 
       - name: Check for changes
         id: git_check
