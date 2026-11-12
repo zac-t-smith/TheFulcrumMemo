@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "description": "Manually curated observations fed to the Hidden-Stress Gap (Phase 2C) and Sector Heat Map (Phase 3). Each row MUST carry a verified=true flag AND a non-empty HTTPS source_url to appear on the site. Any row missing either is filtered out at render time by src/data/manualInputs.ts.",
+  "render_guard": {
+    "rule": "verified === true && source_url starts with https://",
+    "consumers": [
+      "src/data/manualInputs.ts (filterVerified)",
+      "src/components/fulcrum/HiddenStressGap.tsx (via manualInputs loader)"
+    ],
+    "rationale": "Several numbers in the spec came through secondary reporting. Nothing goes on the page without a primary-source URL and an explicit human verification. The guard trips automatically — no manual review step needed."
+  },
+  "known_series": {
+    "fitch_pc_default_ttm_overall": {
+      "label": "Fitch US Private Credit Default Rate, trailing 12 months (overall)",
+      "unit": "percent",
+      "frequency": "monthly",
+      "used_by": "hidden_stress_gap"
+    },
+    "fitch_pc_default_ttm_by_sector": {
+      "label": "Fitch US Private Credit Default Rate, TTM, by sector",
+      "unit": "percent",
+      "frequency": "monthly",
+      "additional_fields": ["sector"],
+      "used_by": "sector_heat_map"
+    },
+    "sp_large_co_bankruptcies_monthly": {
+      "label": "S&P Global Market Intelligence — US large-company bankruptcy filings, monthly count",
+      "unit": "count",
+      "frequency": "monthly",
+      "used_by": "hidden_stress_gap"
+    },
+    "sp_large_co_bankruptcies_by_sector": {
+      "label": "S&P Global Market Intelligence — bankruptcy filings by sector, period total",
+      "unit": "count",
+      "frequency": "variable",
+      "additional_fields": ["sector", "period_label"],
+      "used_by": "sector_heat_map"
+    },
+    "moody_hy_default_ttm": {
+      "label": "Moody's US High Yield Default Rate (issuer-weighted TTM)",
+      "unit": "percent",
+      "frequency": "monthly",
+      "used_by": "hidden_stress_gap"
+    },
+    "moody_leveraged_loan_default_ttm": {
+      "label": "Moody's US Leveraged Loan Default Rate (issuer-weighted TTM)",
+      "unit": "percent",
+      "frequency": "monthly",
+      "used_by": "hidden_stress_gap"
+    },
+    "epiq_commercial_ch11_monthly": {
+      "label": "Epiq AACER — Commercial Chapter 11 filings, monthly count",
+      "unit": "count",
+      "frequency": "monthly",
+      "used_by": "hidden_stress_gap"
+    }
+  },
+  "observations": [
+    {
+      "series": "fitch_pc_default_ttm_overall",
+      "date": "YYYY-MM-DD",
+      "value": null,
+      "source_name": "",
+      "source_url": "",
+      "verified": false,
+      "notes": "Template row — populate with a primary-source observation, set verified: true, and the row will appear in the Hidden-Stress Gap. Leave this template row in place as a reference for future edits."
+    },
+    {
+      "series": "fitch_pc_default_ttm_by_sector",
+      "date": "YYYY-MM-DD",
+      "sector": "",
+      "value": null,
+      "source_name": "",
+      "source_url": "",
+      "verified": false,
+      "notes": "Template row. `sector` is a free-text label matched against the sector heat map rows (e.g., 'healthcare_providers', 'industrials_manufacturing', 'consumer_discretionary', 'software')."
+    },
+    {
+      "series": "sp_large_co_bankruptcies_monthly",
+      "date": "YYYY-MM-DD",
+      "value": null,
+      "source_name": "",
+      "source_url": "",
+      "verified": false,
+      "notes": "Template row. Monthly count of US large-company bankruptcy filings per S&P Global Market Intelligence."
+    },
+    {
+      "series": "sp_large_co_bankruptcies_by_sector",
+      "date": "YYYY-MM-DD",
+      "sector": "",
+      "period_label": "",
+      "value": null,
+      "source_name": "",
+      "source_url": "",
+      "verified": false,
+      "notes": "Template row. `period_label` labels the aggregation window (e.g., 'H1 2026', 'FY 2026')."
+    },
+    {
+      "series": "moody_hy_default_ttm",
+      "date": "YYYY-MM-DD",
+      "value": null,
+      "source_name": "",
+      "source_url": "",
+      "verified": false,
+      "notes": "Template row."
+    },
+    {
+      "series": "moody_leveraged_loan_default_ttm",
+      "date": "YYYY-MM-DD",
+      "value": null,
+      "source_name": "",
+      "source_url": "",
+      "verified": false,
+      "notes": "Template row."
+    },
+    {
+      "series": "epiq_commercial_ch11_monthly",
+      "date": "YYYY-MM-DD",
+      "value": null,
+      "source_name": "",
+      "source_url": "",
+      "verified": false,
+      "notes": "Template row."
+    }
+  ]
+}
