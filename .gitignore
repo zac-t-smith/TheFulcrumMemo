@@ -39,3 +39,7 @@ quant/etf_pull_summary.json
 
 REVAMP_PLAN.md
 public/pdfs/
+
+# Python bytecode
+__pycache__/
+*.pyc
