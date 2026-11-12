@@ -2,7 +2,7 @@
 // Source: FRED series BAMLH0A3HYC (ICE BofA CCC & Lower OAS (canary tier))
 // Units: bps
 // Coverage: 2023-11-13 → 2026-11-11 (785 obs)
-// Generated: 2026-11-12T14:47:14.126486Z
+// Generated: 2026-11-12T15:57:36.607607Z
 
 import type { DailyDataPoint } from "./types";
 

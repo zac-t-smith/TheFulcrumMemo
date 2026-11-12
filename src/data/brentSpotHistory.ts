@@ -2,7 +2,7 @@
 // Source: FRED series DCOILBRENTEU (Brent Crude Spot Price (Europe))
 // Units: percent
 // Coverage: 1987-05-20 → 2026-11-03 (9122 obs)
-// Generated: 2026-11-12T14:47:13.335496Z
+// Generated: 2026-11-12T15:57:33.723572Z
 
 import type { DailyDataPoint } from "./types";
 

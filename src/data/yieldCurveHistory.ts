@@ -2,7 +2,7 @@
 // Source: FRED series T10Y2Y (10Y-2Y Treasury Spread (yield curve))
 // Units: percent
 // Coverage: 1976-11-24 → 2026-11-10 (12487 obs)
-// Generated: 2026-11-12T14:47:12.246431Z
+// Generated: 2026-11-12T15:57:33.033383Z
 
 import type { DailyDataPoint } from "./types";
 
