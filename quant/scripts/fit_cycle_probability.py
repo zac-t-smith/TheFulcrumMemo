@@ -2,56 +2,39 @@
 fit_cycle_probability.py — Fulcrum v5 Phase 2B
 ================================================================
 
-Fits the Cycle Probability (12-month) logistic regression model
-described in FULCRUM_V5_SPEC.md and writes src/data/cycleModel.json.
+Fits the Cycle Probability (12-month) logistic regression and writes
+src/data/cycleModel.json. Mirrors the reference implementation at
+quant/scripts/research/cycle_model_leakcheck.py and MUST produce the
+same OOS numbers: feature publication lags, training label lags in
+calendar months, full-horizon label guard, and onset targets.
 
-Design
-------
-Walk-forward with an expanding window, out of sample from 2000-01.
-For each OOS month we retrain on everything available up to that point
-(minus the 12-month label horizon) and record the resulting probability
-against the eventual realized label. We score the two target definitions
-the spec names (CORBLACBS +≥0.25pp over the next four quarters, or NBER
-recession starting within 12 months) and pick the one with the better
-OOS AUC subject to a reasonable base rate.
+Pre-registered primary target: corblacbs_rise_onset (CORBLACBS rising
+≥ 0.25pp over the next 4Q, dropping months already in a rising run).
+NBER onset is reported as a robustness row only. There is no
+select-by-test-AUC logic here — the primary target is fixed.
 
-L2-regularized logistic regression (sklearn) with a conservative C.
-Bootstrap the final-window training set N_BOOT times to get coefficient
-draws; those give the probability band in the UI.
+Primary feature set: ebp_level + t10y3m_min_18m (2 features). The 7-feature
+and yield-curve-only sets are reported in the backtest table as
+comparison rows but are not shipped as the operational model.
 
-Inputs (CSVs expected under quant/data/)
-----------------------------------------
-    fred_BAA10Y.csv         (daily, 1986+)   true-hist percentile
-    ebp.csv                 (monthly, 1973+) ebp, gz_spread
-    fred_DRTSCILM.csv       (quarterly, 1990+)
-    fred_DRTSCIS.csv        (quarterly, 1990+)
-    fred_NFCI.csv           (weekly, 1971+)
-    fred_T10Y3M.csv         (daily, 1982+)   18m rolling min
-    fred_ICSA.csv           (weekly, 1967+)  4w/52w ratio
-    fred_CORBLACBS.csv      (quarterly, 1985+) target input
-    fred_USREC.csv          (monthly)          target input
+L2-regularized logistic regression (sklearn). Bootstrap draws for the
+probability band use a 12-month block bootstrap to respect the serial
+correlation of monthly features.
 
-If any FRED CSV is missing the script prints which ones and exits non-zero
-with guidance to run .github/workflows/update-fulcrum-data.yml first.
-
-Outputs
--------
-    src/data/cycleModel.json
-
-Run
----
-    pip install -r quant/requirements-model.txt
-    python quant/scripts/fit_cycle_probability.py
+Inputs: CSVs under quant/data/ produced by fetch_fred_data.py and
+fetch_ebp.py. See fit-cycle-model.yml for the CI wiring.
 """
 
 from __future__ import annotations
 
 import argparse
+import bisect
 import csv
 import json
 import sys
-from dataclasses import dataclass, field
-from datetime import date, datetime
+import warnings
+from dataclasses import dataclass
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Callable
 
@@ -63,11 +46,23 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
     sys.stderr.reconfigure(encoding="utf-8")
 
+# sklearn 1.8 deprecated the penalty/solver keyword pair we rely on in favor
+# of l1_ratio. The call still works — mirror the leakcheck's noise suppression.
+warnings.filterwarnings("ignore", category=FutureWarning, module="sklearn")
+
 # =============================================================================
-# CONFIG
+# CONFIG — see leakcheck.py for the empirical basis of each number.
 # =============================================================================
 
-FEATURE_NAMES = [
+# Pre-registered primary target. Not selected by AUC.
+PRIMARY_TARGET = "corblacbs_rise_onset"
+ROBUSTNESS_TARGETS = ["nber_onset_12m"]
+
+# Primary operational model.
+PRIMARY_FEATURES = ["ebp_level", "t10y3m_min_18m"]
+
+# Reported-only comparison rows.
+ALL_FEATURES = [
     "ebp_level",
     "ebp_change_6m",
     "sloos_cni_large",
@@ -76,13 +71,32 @@ FEATURE_NAMES = [
     "claims_4w_over_52w_min",
     "baa_pctl",
 ]
+YC_ONLY_FEATURES = ["t10y3m_min_18m"]  # Estrella-Mishkin benchmark
 
-TARGET_DEFINITIONS = ["corblacbs_delta_025pp", "nber_recession_within_12m"]
+# Publication lags (days) — a feature value at month-end d can only use
+# observations actually released by d. EBP posts the 4th biz day of m+1
+# (~1 month). SLOOS posts ~5 weeks after quarter start. NFCI/claims lag ~1 week.
+EBP_LAG_DAYS = 31
+SLOOS_LAG_DAYS = 45
+WEEKLY_LAG_DAYS = 7
 
-WALK_FORWARD_START = "2000-01-01"
-LABEL_HORIZON_MONTHS = 12
+# Training label lags (calendar months) — at scoring month i, only use
+# labels whose value was actually knowable by i given the forward horizon
+# AND the realized-data publication delay.
+#   CORBLACBS: 12m horizon + ~5m quarterly release lag = 17m
+#   NBER     : 12m horizon + NBER's typical 12m dating lag      = 24m
+TRAINING_LAG_MONTHS = {
+    "corblacbs_rise_onset": 17,
+    "nber_onset_12m": 24,
+}
+
+# Walk-forward and bootstrap config.
+WALK_FORWARD_START = date(2000, 1, 31)
+LABEL_HORIZON_DAYS = 366       # 12 months, ±
+LABEL_HORIZON_TOLERANCE = 92   # a future observation must be within one quarter of d+12m
 N_BOOTSTRAP = 500
-RIDGE_C = 0.5      # Smaller C → more L2 shrinkage; appropriate for ~5 cycles.
+BOOTSTRAP_BLOCK_MONTHS = 12
+RIDGE_C = 0.5
 RANDOM_SEED = 42
 
 # =============================================================================
@@ -116,8 +130,7 @@ def _load_date_value_csv(path: Path, value_col: str) -> list[tuple[date, float]]
     return out
 
 
-def _load_ebp_csv(path: Path) -> list[tuple[date, float]]:
-    """Return monthly (date, ebp) pairs; the CSV has gz_spread/ebp/est_prob too."""
+def _load_ebp_csv(path: Path, column: str = "ebp") -> list[tuple[date, float]]:
     out: list[tuple[date, float]] = []
     with path.open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -125,7 +138,7 @@ def _load_ebp_csv(path: Path) -> list[tuple[date, float]]:
             d = _parse_date(row.get("date", ""))
             if d is None:
                 continue
-            raw = row.get("ebp", "")
+            raw = row.get(column, "")
             try:
                 out.append((d, float(raw)))
             except (ValueError, TypeError):
@@ -135,12 +148,10 @@ def _load_ebp_csv(path: Path) -> list[tuple[date, float]]:
 
 
 # =============================================================================
-# MONTHLY ALIGNMENT
+# MONTHLY ALIGNMENT HELPERS
 # =============================================================================
 
 def _month_ends(start: date, end: date) -> list[date]:
-    """Return a list of last-of-month dates in [start, end]."""
-    from datetime import timedelta
     out: list[date] = []
     y, m = start.year, start.month
     while True:
@@ -154,8 +165,7 @@ def _month_ends(start: date, end: date) -> list[date]:
 
 
 def _last_on_or_before(series: list[tuple[date, float]], d: date) -> float | None:
-    """Return the value from `series` with the most recent date ≤ d."""
-    # series is sorted ascending by date; bisect_right by date.
+    """Value with the most recent date ≤ d (binary search)."""
     lo, hi = 0, len(series)
     while lo < hi:
         mid = (lo + hi) // 2
@@ -168,8 +178,12 @@ def _last_on_or_before(series: list[tuple[date, float]], d: date) -> float | Non
     return series[lo - 1][1]
 
 
+def _months_between(a: date, b: date) -> int:
+    return (b.year - a.year) * 12 + (b.month - a.month)
+
+
 # =============================================================================
-# FEATURE ENGINEERING
+# FEATURE ENGINEERING — all applied at month-end d with publication lags.
 # =============================================================================
 
 @dataclass
@@ -186,38 +200,24 @@ class SeriesBundle:
 
 
 def _baa_true_pctl(series: list[tuple[date, float]], d: date) -> float | None:
-    """True-historical percentile of BAA10Y as of date d against all observations ≤ d."""
+    """True-historical percentile of BAA10Y as of d against all observations ≤ d."""
     vals = [v for (dt, v) in series if dt <= d]
     if not vals:
         return None
     val_today = vals[-1]
     sorted_vals = sorted(vals)
-    import bisect
     lo = bisect.bisect_left(sorted_vals, val_today)
     hi = bisect.bisect_right(sorted_vals, val_today)
     return (lo + hi) / 2 / len(sorted_vals)
 
 
-def _ebp_change_6m(series: list[tuple[date, float]], d: date) -> float | None:
-    now = _last_on_or_before(series, d)
-    six_mo_ago = date(d.year if d.month > 6 else d.year - 1,
-                      d.month - 6 if d.month > 6 else d.month + 6, 1)
-    prior = _last_on_or_before(series, six_mo_ago)
-    if now is None or prior is None:
-        return None
-    return now - prior
-
-
 def _t10y3m_min_18m(series: list[tuple[date, float]], d: date) -> float | None:
-    from datetime import timedelta
     cutoff = d - timedelta(days=int(18 * 30.44))
     window = [v for (dt, v) in series if cutoff <= dt <= d]
     return min(window) if window else None
 
 
 def _claims_ratio(series: list[tuple[date, float]], d: date) -> float | None:
-    """ICSA 4-week trailing average divided by 52-week trailing minimum, minus 1."""
-    from datetime import timedelta
     four_wk = [v for (dt, v) in series if (d - timedelta(days=28)) <= dt <= d]
     one_yr = [v for (dt, v) in series if (d - timedelta(days=365)) <= dt <= d]
     if not four_wk or not one_yr:
@@ -230,44 +230,72 @@ def _claims_ratio(series: list[tuple[date, float]], d: date) -> float | None:
 
 
 def compute_features(d: date, s: SeriesBundle) -> dict[str, float | None]:
-    """All candidate features for month-end d. Returns None for any that can't be computed."""
-    ebp_level = _last_on_or_before(s.ebp, d)
+    """All candidate features at month-end d, respecting publication lags."""
+    ebp_now = _last_on_or_before(s.ebp, d - timedelta(days=EBP_LAG_DAYS))
+    ebp_6 = _last_on_or_before(s.ebp, d - timedelta(days=EBP_LAG_DAYS + 183))
     return {
-        "ebp_level": ebp_level,
-        "ebp_change_6m": _ebp_change_6m(s.ebp, d),
-        "sloos_cni_large": _last_on_or_before(s.drtsci_large, d),
-        "sloos_cni_small": _last_on_or_before(s.drtsci_small, d),
+        "ebp_level": ebp_now,
+        "ebp_change_6m": None if (ebp_now is None or ebp_6 is None) else (ebp_now - ebp_6),
+        "sloos_cni_large": _last_on_or_before(s.drtsci_large, d - timedelta(days=SLOOS_LAG_DAYS)),
         "t10y3m_min_18m": _t10y3m_min_18m(s.t10y3m, d),
-        "nfci": _last_on_or_before(s.nfci, d),
-        "claims_4w_over_52w_min": _claims_ratio(s.icsa, d),
+        "nfci": _last_on_or_before(s.nfci, d - timedelta(days=WEEKLY_LAG_DAYS)),
+        "claims_4w_over_52w_min": _claims_ratio(s.icsa, d - timedelta(days=WEEKLY_LAG_DAYS)),
         "baa_pctl": _baa_true_pctl(s.baa, d),
     }
 
 
 # =============================================================================
-# TARGET CONSTRUCTION
+# TARGETS — onset-style, with full-horizon guards.
 # =============================================================================
 
-def target_corblacbs_delta(d: date, s: SeriesBundle, delta_pp: float = 0.25) -> int | None:
-    """1 if CORBLACBS[d+12m] − CORBLACBS[d] ≥ delta_pp, else 0. None if either side missing."""
-    from datetime import timedelta
-    future = d + timedelta(days=int(LABEL_HORIZON_MONTHS * 30.44))
+def target_corblacbs_rise_onset(
+    d: date,
+    s: SeriesBundle,
+    delta_pp: float = 0.25,
+    horizon_days: int = LABEL_HORIZON_DAYS,
+    horizon_tol_days: int = LABEL_HORIZON_TOLERANCE,
+    onset: bool = True,
+) -> int | None:
+    """
+    1 if CORBLACBS rises ≥ delta_pp over the next 12 months.
+    Returns None if (a) the forward observation isn't within `horizon_tol_days`
+    of d+12m (horizon not closed), or (b) in onset mode, the prior 12m already
+    rose ≥ delta_pp (drop months already in a rising run).
+    """
+    fut = d + timedelta(days=horizon_days)
     now_val = _last_on_or_before(s.corblacbs, d)
-    future_val = _last_on_or_before(s.corblacbs, future)
-    if now_val is None or future_val is None:
+    fut_val = _last_on_or_before(s.corblacbs, fut)
+    if now_val is None or fut_val is None:
         return None
-    # Guard: future_val must come from a date actually at or after future-30d
-    # to avoid the forward-fill illusion.
-    future_date = max(dt for (dt, _) in s.corblacbs if dt <= future)
-    if future_date < d:  # no quarterly release after d yet
+    corb_dates_leq_fut = [dt for (dt, _) in s.corblacbs if dt <= fut]
+    if not corb_dates_leq_fut:
         return None
-    return int((future_val - now_val) >= delta_pp)
+    fdate = max(corb_dates_leq_fut)
+    if fdate < fut - timedelta(days=horizon_tol_days):
+        return None  # horizon window not actually observed
+    if onset:
+        past_val = _last_on_or_before(s.corblacbs, d - timedelta(days=horizon_days))
+        if past_val is not None and (now_val - past_val) >= delta_pp:
+            return None  # already rising → not an onset
+    return int((fut_val - now_val) >= delta_pp)
 
 
-def target_nber_12m(d: date, s: SeriesBundle) -> int | None:
-    """1 if USREC = 1 for any month in (d, d+12m]."""
-    from datetime import timedelta
-    end = d + timedelta(days=int(LABEL_HORIZON_MONTHS * 30.44))
+def target_nber_onset_12m(
+    d: date,
+    s: SeriesBundle,
+    horizon_days: int = LABEL_HORIZON_DAYS,
+) -> int | None:
+    """
+    1 if a new NBER recession starts in (d, d+12m]. Drops months already in
+    a recession at d, and requires the USREC series to cover the full forward
+    window (horizon closed).
+    """
+    now_val = _last_on_or_before(s.usrec, d)
+    if now_val is None or now_val >= 0.5:
+        return None
+    end = d + timedelta(days=horizon_days)
+    if not s.usrec or max(dt for (dt, _) in s.usrec) < end:
+        return None
     window = [v for (dt, v) in s.usrec if d < dt <= end]
     if not window:
         return None
@@ -275,260 +303,283 @@ def target_nber_12m(d: date, s: SeriesBundle) -> int | None:
 
 
 # =============================================================================
-# ASSEMBLE MONTHLY TABLE
+# TABLE BUILD
 # =============================================================================
 
-def build_monthly_table(s: SeriesBundle) -> tuple[list[date], dict[str, np.ndarray], dict[str, np.ndarray]]:
-    """Build monthly feature matrix + target vectors (both target definitions)."""
-    data_start = date(1990, 7, 31)  # SLOOS modern questionnaire starts Q2 1990
-    data_end = max(dt for (dt, _) in s.ebp)  # EBP is the slowest-updating input
+def build_monthly_table(s: SeriesBundle) -> tuple[list[date], np.ndarray, dict[str, np.ndarray]]:
+    """
+    Build the monthly design matrix over ALL candidate features and both
+    target definitions. Drop rows where any candidate feature is unknown
+    (so the primary, YC-only, and full-7 feature sets all draw from the
+    same sample — apples-to-apples in the backtest table).
+    """
+    data_start = date(1990, 7, 31)
+    data_end = max(dt for (dt, _) in s.ebp)
 
     months = _month_ends(data_start, data_end)
 
-    feat_cols = {name: [] for name in FEATURE_NAMES}
-    tgt_corb: list[float] = []
+    cols: dict[str, list[float]] = {name: [] for name in ALL_FEATURES}
+    tgt_primary: list[float] = []
     tgt_nber: list[float] = []
     kept: list[date] = []
 
     for d in months:
         feats = compute_features(d, s)
-        # FEATURE_NAMES contains sloos_cni_large but not sloos_cni_small — the
-        # two SLOOS tightening series are highly collinear (r ≈ 0.9), so we
-        # drop small to stay inside the 4-6 feature cap the spec imposes.
-        row = {k: feats[k] for k in FEATURE_NAMES}
-        if any(v is None for v in row.values()):
+        if any(feats[k] is None for k in ALL_FEATURES):
             continue
-        t_corb = target_corblacbs_delta(d, s)
-        t_nber = target_nber_12m(d, s)
-        if t_corb is None and t_nber is None:
-            continue
-
+        # Keep the row whenever features are observable. Labels may still be
+        # NaN for recent months (12-month forward window not yet closed);
+        # the walk-forward skips NaN labels for training and scoring but we
+        # need these rows for the latest-snapshot prediction.
+        t_primary = target_corblacbs_rise_onset(d, s)
+        t_nber = target_nber_onset_12m(d, s)
         kept.append(d)
-        for k, v in row.items():
-            feat_cols[k].append(v)
-        tgt_corb.append(np.nan if t_corb is None else t_corb)
-        tgt_nber.append(np.nan if t_nber is None else t_nber)
+        for k in ALL_FEATURES:
+            cols[k].append(feats[k])  # type: ignore[arg-type]
+        tgt_primary.append(np.nan if t_primary is None else float(t_primary))
+        tgt_nber.append(np.nan if t_nber is None else float(t_nber))
 
-    X = {k: np.array(v, dtype=float) for k, v in feat_cols.items()}
+    X = np.column_stack([np.array(cols[k], dtype=float) for k in ALL_FEATURES])
     y = {
-        "corblacbs_delta_025pp": np.array(tgt_corb, dtype=float),
-        "nber_recession_within_12m": np.array(tgt_nber, dtype=float),
+        PRIMARY_TARGET: np.array(tgt_primary, dtype=float),
+        "nber_onset_12m": np.array(tgt_nber, dtype=float),
     }
     return kept, X, y
 
 
 # =============================================================================
-# WALK-FORWARD BACKTEST
+# WALK-FORWARD (calendar-month training-lag mask + feature subset)
 # =============================================================================
 
 def walk_forward(
     dates: list[date],
-    X_dict: dict[str, np.ndarray],
+    X: np.ndarray,
     y: np.ndarray,
-    start_oos: date,
+    lag_months: int,
+    feature_idx: list[int],
+    start_oos: date = WALK_FORWARD_START,
     C: float = RIDGE_C,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Expanding-window OOS predictions. Returns (oos_pred_probs, oos_actual, oos_dates_idx)."""
-    feat_names = list(X_dict.keys())
-    X = np.column_stack([X_dict[n] for n in feat_names])  # shape (T, F)
-
+) -> tuple[np.ndarray, np.ndarray, list[date]]:
+    Xc = X[:, feature_idx]
     preds: list[float] = []
     actuals: list[float] = []
-    kept_idx: list[int] = []
-
+    out_dates: list[date] = []
     for i, d in enumerate(dates):
         if d < start_oos:
             continue
-        # Train set: only months whose 12-month label window has fully closed
-        # by month i. Using `< i` instead would leak labels whose horizon
-        # extends beyond the scoring date into the training set.
-        train_mask = np.arange(len(dates)) <= i - LABEL_HORIZON_MONTHS
-        y_train = y[train_mask]
-        X_train = X[train_mask]
-        if y_train.size == 0:
+        # Training mask: label was known as of month i (calendar-month lag)
+        # AND the label itself is not NaN.
+        train_mask = np.array(
+            [_months_between(dj, d) >= lag_months for dj in dates]
+        ) & ~np.isnan(y)
+        if train_mask.sum() < 50:
             continue
-        valid = ~np.isnan(y_train)
-        if valid.sum() < 50:  # too thin
+        y_tr = y[train_mask].astype(int)
+        if len(np.unique(y_tr)) < 2:
             continue
-        y_tr = y_train[valid].astype(int)
-        X_tr = X_train[valid]
-        # Standardize using TRAINING-only moments (prevents leakage).
+        X_tr = Xc[train_mask]
         mu = X_tr.mean(axis=0)
         sd = X_tr.std(axis=0)
         sd[sd == 0] = 1.0
         X_tr_std = (X_tr - mu) / sd
-        X_pred_std = (X[i] - mu) / sd
-
-        if len(np.unique(y_tr)) < 2:
-            # Degenerate — all one class. Skip.
-            continue
-
+        X_i_std = (Xc[i] - mu) / sd
         clf = LogisticRegression(
-            penalty="l2", C=C, solver="lbfgs", max_iter=1000, random_state=RANDOM_SEED
+            penalty="l2", C=C, solver="lbfgs", max_iter=2000, random_state=RANDOM_SEED
         )
         clf.fit(X_tr_std, y_tr)
-        p = clf.predict_proba(X_pred_std.reshape(1, -1))[0, 1]
-
+        p = clf.predict_proba(X_i_std.reshape(1, -1))[0, 1]
         preds.append(p)
         actuals.append(y[i])
-        kept_idx.append(i)
-
-    return np.array(preds), np.array(actuals), np.array(kept_idx)
+        out_dates.append(d)
+    return np.array(preds), np.array(actuals), out_dates
 
 
 # =============================================================================
-# METRICS
+# METRICS — onset events, max-prior-6m, false alarms, TP/FA at 2× base rate.
 # =============================================================================
 
-def score_target(
-    dates: list[date],
-    X_dict: dict[str, np.ndarray],
-    y: np.ndarray,
-    start_oos: date,
+def _onset_indices(actuals: np.ndarray) -> list[int]:
+    """Indices where a positive label starts (first 1 after a 0 or start)."""
+    out: list[int] = []
+    for k in range(len(actuals)):
+        if actuals[k] == 1 and (k == 0 or actuals[k - 1] != 1):
+            out.append(k)
+    return out
+
+
+def score_run(
+    preds: np.ndarray,
+    actuals: np.ndarray,
+    out_dates: list[date],
 ) -> dict:
-    """Walk-forward, metrics, and events."""
-    preds, actuals, idx = walk_forward(dates, X_dict, y, start_oos)
-    # Where target is nan (recent months), drop for AUC.
     valid = ~np.isnan(actuals)
     if valid.sum() < 2 or len(np.unique(actuals[valid].astype(int))) < 2:
-        return {"auc_oos": None, "n_oos": 0, "note": "insufficient OOS labels"}
+        return {"auc": None, "n_oos": 0, "note": "insufficient OOS labels"}
     auc = float(roc_auc_score(actuals[valid].astype(int), preds[valid]))
+    base_rate = float(actuals[valid].mean())
+    threshold = float(max(0.3, 2 * base_rate))
 
-    # Hits: for each contiguous run of target==1, the prediction crossed 0.5
-    # at some lead.
-    threshold = 0.5
-    runs: list[tuple[int, int]] = []
-    in_run = False
-    start = 0
-    arr = actuals.astype(float)
-    for i, v in enumerate(arr):
-        if np.isnan(v):
-            if in_run:
-                runs.append((start, i - 1))
-                in_run = False
-            continue
-        if v >= 0.5 and not in_run:
-            start = i
-            in_run = True
-        elif v < 0.5 and in_run:
-            runs.append((start, i - 1))
-            in_run = False
-    if in_run:
-        runs.append((start, len(arr) - 1))
-
-    hits: list[dict] = []
-    for s, e in runs:
-        # Find lead: first prediction above threshold in a window prior to s.
-        lead_months = None
-        for j in range(s, max(-1, s - 24) - 1, -1):
-            if preds[j] >= threshold:
-                lead_months = s - j
-                continue
-            else:
-                break
-        hits.append({
-            "event_start": dates[idx[s]].isoformat(),
-            "event_end": dates[idx[e]].isoformat(),
-            "prob_at_start": float(preds[s]),
-            "lead_months": lead_months,
+    events_idx = _onset_indices(actuals)
+    events = []
+    for k in events_idx:
+        prior_max = float(preds[max(0, k - 6):k + 1].max())
+        events.append({
+            "date": out_dates[k].isoformat()[:7],
+            "p_at_onset": round(float(preds[k]), 3),
+            "p_max_prior_6m": round(prior_max, 3),
         })
 
-    # False alarms: contiguous stretches of preds≥threshold with NO actual event
-    # within the following 12 months.
-    alarms: list[dict] = []
-    in_alarm = False
-    a_start = 0
-    for i, p in enumerate(preds):
-        if p >= threshold and not in_alarm:
-            a_start = i
-            in_alarm = True
-        elif p < threshold and in_alarm:
-            a_end = i - 1
-            # Any true positive in [a_start, a_end+12]?
-            tail = actuals[a_start:min(len(arr), a_end + 13)]
-            tail_valid = tail[~np.isnan(tail)]
-            if tail_valid.size and (tail_valid >= 0.5).any():
-                pass  # it was an early warning, not a false alarm
-            else:
-                alarms.append({
-                    "date_crossed": dates[idx[a_start]].isoformat(),
-                    "date_fell_below": dates[idx[a_end]].isoformat(),
-                    "peak_prob": float(preds[a_start:a_end + 1].max()),
+    # False-alarm stretches: contiguous P≥threshold spans with no onset inside.
+    false_alarms: list[dict] = []
+    in_fa = False
+    fa_start = 0
+    for i in range(len(preds)):
+        above = preds[i] >= threshold
+        if above and not in_fa:
+            fa_start = i
+            in_fa = True
+        elif (not above) and in_fa:
+            fa_end = i - 1
+            if not any(fa_start <= e <= fa_end for e in events_idx):
+                false_alarms.append({
+                    "start": out_dates[fa_start].isoformat()[:7],
+                    "end": out_dates[fa_end].isoformat()[:7],
+                    "peak_prob": round(float(preds[fa_start:fa_end + 1].max()), 3),
                 })
-            in_alarm = False
+            in_fa = False
+    if in_fa:
+        fa_end = len(preds) - 1
+        if not any(fa_start <= e <= fa_end for e in events_idx):
+            false_alarms.append({
+                "start": out_dates[fa_start].isoformat()[:7],
+                "end": out_dates[fa_end].isoformat()[:7],
+                "peak_prob": round(float(preds[fa_start:fa_end + 1].max()), 3),
+                "ongoing": True,
+            })
+
+    tp_months = int(((preds >= threshold) & (actuals == 1)).sum())
+    fa_months = int(((preds >= threshold) & (actuals == 0)).sum())
 
     return {
-        "auc_oos": auc,
+        "auc": round(auc, 3),
         "n_oos": int(valid.sum()),
-        "base_rate_oos": float(actuals[valid].mean()),
-        "hits": hits,
-        "false_alarms": alarms,
+        "base_rate": round(base_rate, 3),
+        "threshold": round(threshold, 3),
+        "tp_months": tp_months,
+        "fa_months": fa_months,
+        "events": events,
+        "false_alarms": false_alarms,
     }
 
 
 # =============================================================================
-# FINAL FIT + BOOTSTRAP
+# FINAL FIT + 12-MONTH BLOCK BOOTSTRAP
 # =============================================================================
 
-def fit_final_and_bootstrap(
-    X_dict: dict[str, np.ndarray],
+def fit_final(
+    X: np.ndarray,
     y: np.ndarray,
+    feature_idx: list[int],
+    feature_names: list[str],
     C: float = RIDGE_C,
-    n_boot: int = N_BOOTSTRAP,
-    seed: int = RANDOM_SEED,
 ) -> dict:
-    """Fit on all labeled data; bootstrap to get coefficient draws."""
-    feat_names = list(X_dict.keys())
-    X = np.column_stack([X_dict[n] for n in feat_names])
+    """Fit on all labeled rows for the chosen target and feature set."""
+    Xc = X[:, feature_idx]
     valid = ~np.isnan(y)
-    X_fit = X[valid]
+    X_fit = Xc[valid]
     y_fit = y[valid].astype(int)
-
     mu = X_fit.mean(axis=0)
     sd = X_fit.std(axis=0)
     sd[sd == 0] = 1.0
     X_std = (X_fit - mu) / sd
-
     clf = LogisticRegression(
-        penalty="l2", C=C, solver="lbfgs", max_iter=1000, random_state=seed
+        penalty="l2", C=C, solver="lbfgs", max_iter=2000, random_state=RANDOM_SEED
     )
     clf.fit(X_std, y_fit)
-    coefs = {name: float(c) for name, c in zip(feat_names, clf.coef_[0])}
-    intercept = float(clf.intercept_[0])
+    return {
+        "coefficients": {
+            "intercept": float(clf.intercept_[0]),
+            **{name: float(c) for name, c in zip(feature_names, clf.coef_[0])},
+        },
+        "standardization": {
+            name: {"mean": float(mu[i]), "std": float(sd[i])}
+            for i, name in enumerate(feature_names)
+        },
+        "n_training_obs": int(valid.sum()),
+        "feature_set": feature_names,
+    }
 
+
+def block_bootstrap_coefs(
+    X: np.ndarray,
+    y: np.ndarray,
+    feature_idx: list[int],
+    feature_names: list[str],
+    standardization: dict,
+    n_boot: int = N_BOOTSTRAP,
+    block_size: int = BOOTSTRAP_BLOCK_MONTHS,
+    C: float = RIDGE_C,
+    seed: int = RANDOM_SEED,
+) -> list[dict[str, float]]:
+    """
+    12-month block bootstrap on the labeled rows. Standardization is held
+    fixed at the training-sample moments (passed in) so bootstrap coefficients
+    are comparable to the final-fit coefficients.
+    """
+    Xc = X[:, feature_idx]
+    valid = ~np.isnan(y)
+    X_fit = Xc[valid]
+    y_fit = y[valid].astype(int)
+    mu = np.array([standardization[n]["mean"] for n in feature_names])
+    sd = np.array([standardization[n]["std"] for n in feature_names])
+    X_std = (X_fit - mu) / sd
+    N = len(y_fit)
     rng = np.random.default_rng(seed)
-    boot_coefs: list[dict[str, float]] = []
+    n_blocks = (N + block_size - 1) // block_size
+    boot: list[dict[str, float]] = []
+    # Maximum valid starting index so that start + block_size ≤ N.
+    max_start = max(1, N - block_size + 1)
     for _ in range(n_boot):
-        idx = rng.integers(0, len(y_fit), size=len(y_fit))
+        starts = rng.integers(0, max_start, size=n_blocks)
+        idx = np.concatenate([np.arange(s, s + block_size) for s in starts])[:N]
         X_b, y_b = X_std[idx], y_fit[idx]
         if len(np.unique(y_b)) < 2:
             continue
-        clf_b = LogisticRegression(
-            penalty="l2", C=C, solver="lbfgs", max_iter=1000
-        )
-        clf_b.fit(X_b, y_b)
-        row = {"intercept": float(clf_b.intercept_[0])}
-        for name, c in zip(feat_names, clf_b.coef_[0]):
+        clf = LogisticRegression(penalty="l2", C=C, solver="lbfgs", max_iter=2000)
+        clf.fit(X_b, y_b)
+        row = {"intercept": float(clf.intercept_[0])}
+        for name, c in zip(feature_names, clf.coef_[0]):
             row[name] = float(c)
-        boot_coefs.append(row)
+        boot.append(row)
+    return boot
 
-    return {
-        "features": feat_names,
-        "standardization": {
-            name: {"mean": float(mu[i]), "std": float(sd[i])}
-            for i, name in enumerate(feat_names)
-        },
-        "coefficients": {"intercept": intercept, **coefs},
-        "bootstrap_coefficients": boot_coefs,
-        "n_training_obs": int(valid.sum()),
-    }
+
+# =============================================================================
+# BENCHMARK: Fed's own est_prob column from ebp.csv — in-sample reference.
+# =============================================================================
+
+def fed_estprob_benchmark(
+    dates: list[date],
+    s_ebp_est: list[tuple[date, float]],
+    y: np.ndarray,
+    start_oos: date,
+) -> dict:
+    preds = np.array([
+        _last_on_or_before(s_ebp_est, d - timedelta(days=EBP_LAG_DAYS))
+        for d in dates
+    ], dtype=float)
+    mask = np.array([d >= start_oos for d in dates]) & ~np.isnan(y) & ~np.isnan(preds)
+    if mask.sum() < 2 or len(np.unique(y[mask].astype(int))) < 2:
+        return {"auc": None, "n": 0, "note": "insufficient overlap"}
+    auc = float(roc_auc_score(y[mask].astype(int), preds[mask]))
+    return {"auc": round(auc, 3), "n": int(mask.sum()), "note": "in-sample (Fed-estimated)"}
 
 
 # =============================================================================
 # DRIVER
 # =============================================================================
 
-def load_all(data_dir: Path) -> SeriesBundle:
+def load_all(data_dir: Path) -> tuple[SeriesBundle, list[tuple[date, float]]]:
     required = {
         "baa": (data_dir / "fred_BAA10Y.csv", "BAA10Y"),
         "ebp": (data_dir / "ebp.csv", None),
@@ -544,99 +595,153 @@ def load_all(data_dir: Path) -> SeriesBundle:
     if missing:
         print("❌ Missing CSVs: " + ", ".join(missing), file=sys.stderr)
         print(
-            "   Run .github/workflows/update-fulcrum-data.yml first (or locally:\n"
+            "   Run update-fulcrum-data.yml first (or locally:\n"
             "   python quant/scripts/fetch_fred_data.py --ts-dir ../src/data --data-dir data).",
             file=sys.stderr,
         )
         sys.exit(2)
 
-    loaders: dict[str, Callable[[], list[tuple[date, float]]]] = {
-        "ebp": lambda: _load_ebp_csv(required["ebp"][0]),
-    }
-    series = {}
+    bundle_kwargs = {}
     for name, (p, col) in required.items():
-        if name in loaders:
-            series[name] = loaders[name]()
+        if name == "ebp":
+            bundle_kwargs[name] = _load_ebp_csv(p, "ebp")
         else:
-            series[name] = _load_date_value_csv(p, col)  # type: ignore[arg-type]
-    return SeriesBundle(**series)
+            bundle_kwargs[name] = _load_date_value_csv(p, col)  # type: ignore[arg-type]
+    bundle = SeriesBundle(**bundle_kwargs)
+    ebp_est = _load_ebp_csv(data_dir / "ebp.csv", "est_prob")
+    return bundle, ebp_est
 
 
-def pick_better_target(scored: dict[str, dict]) -> str:
-    """Pick target definition with better OOS AUC, requiring at least 10 positive labels."""
-    best_name = None
-    best_auc = -1.0
-    for name, s in scored.items():
-        if s.get("auc_oos") is None:
-            continue
-        # Reasonable base rate check — avoid picking a target that never fires.
-        if s.get("base_rate_oos", 0) < 0.03:
-            continue
-        if s["auc_oos"] > best_auc:
-            best_auc = s["auc_oos"]
-            best_name = name
-    return best_name or TARGET_DEFINITIONS[0]
+def feature_idx(names: list[str]) -> list[int]:
+    return [ALL_FEATURES.index(n) for n in names]
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Fulcrum v5 Cycle Probability model fit")
-    parser.add_argument("--data-dir", default="quant/data", help="FRED/EBP CSVs root")
-    parser.add_argument("--out", default="src/data/cycleModel.json", help="Output JSON")
-    parser.add_argument("--start-oos", default=WALK_FORWARD_START)
+    parser.add_argument("--data-dir", default="quant/data")
+    parser.add_argument("--out", default="src/data/cycleModel.json")
+    parser.add_argument(
+        "--start-oos",
+        default=WALK_FORWARD_START.isoformat(),
+        help="ISO date for walk-forward OOS start",
+    )
     args = parser.parse_args()
 
     print("  Loading series …", flush=True)
-    s = load_all(Path(args.data_dir))
+    s, ebp_est = load_all(Path(args.data_dir))
 
-    print("  Building monthly feature table …", flush=True)
+    print("  Building monthly feature table (with publication lags) …", flush=True)
     dates, X, ys = build_monthly_table(s)
     print(f"  ✓ {len(dates)} monthly rows ({dates[0]} → {dates[-1]})", flush=True)
 
     start_oos = datetime.strptime(args.start_oos, "%Y-%m-%d").date()
 
-    print("  Walk-forward scoring both target definitions …", flush=True)
-    scored = {name: score_target(dates, X, ys[name], start_oos) for name in TARGET_DEFINITIONS}
-    for name, s_ in scored.items():
-        print(f"    {name}: AUC={s_.get('auc_oos')}  base_rate={s_.get('base_rate_oos')}")
+    # Backtest grid: {target} × {feature set} → metrics.
+    FEATURE_SETS = [
+        ("primary (EBP + YC)", PRIMARY_FEATURES),
+        ("yield_curve_only", YC_ONLY_FEATURES),
+        ("full_7", ALL_FEATURES),
+    ]
 
-    chosen = pick_better_target(scored)
-    print(f"  ✓ Chosen target: {chosen}", flush=True)
+    print("  Walk-forward backtest …", flush=True)
+    backtest: dict[str, dict] = {}
+    for target_name in [PRIMARY_TARGET] + ROBUSTNESS_TARGETS:
+        y = ys[target_name]
+        lag = TRAINING_LAG_MONTHS[target_name]
+        rows: dict[str, dict] = {}
+        for set_label, feat_names in FEATURE_SETS:
+            preds, actuals, out_dates = walk_forward(
+                dates, X, y, lag_months=lag, feature_idx=feature_idx(feat_names), start_oos=start_oos
+            )
+            rows[set_label] = score_run(preds, actuals, out_dates)
+            auc = rows[set_label].get("auc")
+            print(f"    {target_name:28s} / {set_label:22s}  AUC={auc}  n={rows[set_label].get('n_oos')}")
+        rows["fed_est_prob_in_sample"] = fed_estprob_benchmark(dates, ebp_est, y, start_oos)
+        backtest[target_name] = {"train_label_lag_months": lag, "feature_sets": rows}
 
-    print(f"  Fitting final model + {N_BOOTSTRAP} bootstrap draws …", flush=True)
-    final = fit_final_and_bootstrap(X, ys[chosen])
+    # Final fit on the pre-registered primary target + primary feature set.
+    print("  Fitting final model (primary target + primary features) …", flush=True)
+    primary_idx = feature_idx(PRIMARY_FEATURES)
+    final = fit_final(X, ys[PRIMARY_TARGET], primary_idx, PRIMARY_FEATURES)
 
-    # Latest-features snapshot for the UI (ebpHistory etc. are updated daily,
-    # so the UI can re-score as needed; this snapshot is a fallback).
+    print(f"  Running {N_BOOTSTRAP}-draw block bootstrap (block={BOOTSTRAP_BLOCK_MONTHS}m) …", flush=True)
+    boot = block_bootstrap_coefs(
+        X,
+        ys[PRIMARY_TARGET],
+        primary_idx,
+        PRIMARY_FEATURES,
+        final["standardization"],
+    )
+    print(f"  ✓ {len(boot)} valid bootstrap fits", flush=True)
+
+    # Latest reading — applies the same publication lags as training.
     latest_date = dates[-1]
-    latest_features = {
-        name: float(X[name][-1]) for name in FEATURE_NAMES
-    }
+    latest_features_full = compute_features(latest_date, s)
+    # Turn into an ordered vector aligned to PRIMARY_FEATURES.
+    mu = np.array([final["standardization"][n]["mean"] for n in PRIMARY_FEATURES])
+    sd = np.array([final["standardization"][n]["std"] for n in PRIMARY_FEATURES])
+    x_latest = np.array([latest_features_full[n] for n in PRIMARY_FEATURES], dtype=float)
+    x_std = (x_latest - mu) / sd
+    intercept = final["coefficients"]["intercept"]
+    beta = np.array([final["coefficients"][n] for n in PRIMARY_FEATURES])
+    logit = intercept + float(np.dot(beta, x_std))
+    p_point = float(1.0 / (1.0 + np.exp(-logit)))
+
+    # Bootstrap probability draws for the band.
+    if boot:
+        draws = []
+        for row in boot:
+            b = np.array([row[n] for n in PRIMARY_FEATURES])
+            lg = row["intercept"] + float(np.dot(b, x_std))
+            draws.append(1.0 / (1.0 + np.exp(-lg)))
+        p_lo, p_hi = float(np.percentile(draws, 5)), float(np.percentile(draws, 95))
+    else:
+        p_lo = p_hi = None
+
+    base_rate_primary = backtest[PRIMARY_TARGET]["feature_sets"]["primary (EBP + YC)"]["base_rate"]
 
     out = {
         "schema_version": 1,
         "fit_date": date.today().isoformat(),
-        "chosen_target": chosen,
-        "all_targets_scored": scored,
+        "primary_target": PRIMARY_TARGET,
+        "robustness_targets": ROBUSTNESS_TARGETS,
+        "primary_features": PRIMARY_FEATURES,
         "feature_definitions": {
-            "ebp_level":              "Excess Bond Premium (monthly, Fed FEDS Note), level in percent.",
-            "ebp_change_6m":          "6-month change in EBP.",
-            "sloos_cni_large":        "SLOOS DRTSCILM: net % of banks tightening C&I lending standards, large/mid firms.",
+            "ebp_level":              "Excess Bond Premium (Fed FEDS Note, monthly). Publication lag: 31 days.",
+            "ebp_change_6m":          "6-month change in EBP (both terms publication-lagged).",
+            "sloos_cni_large":        "SLOOS DRTSCILM: net % of banks tightening C&I lending standards, large & mid firms. Publication lag: 45 days.",
             "t10y3m_min_18m":         "Minimum of daily T10Y3M (10Y minus 3M) over the prior 18 months.",
-            "nfci":                   "Chicago Fed NFCI: National Financial Conditions Index.",
-            "claims_4w_over_52w_min": "ICSA: 4-week trailing avg of initial claims divided by 52-week trailing minimum, minus 1.",
+            "nfci":                   "Chicago Fed NFCI. Publication lag: 7 days.",
+            "claims_4w_over_52w_min": "ICSA: 4-week trailing avg / 52-week trailing minimum, minus 1. Publication lag: 7 days.",
             "baa_pctl":               "True-historical percentile of BAA10Y against all observations ≤ as-of date.",
-        },
-        **final,
-        "latest_snapshot": {
-            "date": latest_date.isoformat(),
-            "features": latest_features,
         },
         "config": {
             "ridge_C": RIDGE_C,
             "n_bootstrap": N_BOOTSTRAP,
+            "bootstrap_block_months": BOOTSTRAP_BLOCK_MONTHS,
             "walk_forward_start": start_oos.isoformat(),
-            "label_horizon_months": LABEL_HORIZON_MONTHS,
+            "label_horizon_days": LABEL_HORIZON_DAYS,
+            "label_horizon_tol_days": LABEL_HORIZON_TOLERANCE,
+            "ebp_publication_lag_days": EBP_LAG_DAYS,
+            "sloos_publication_lag_days": SLOOS_LAG_DAYS,
+            "weekly_publication_lag_days": WEEKLY_LAG_DAYS,
+            "training_lag_months": TRAINING_LAG_MONTHS,
             "random_seed": RANDOM_SEED,
+        },
+        "coefficients": final["coefficients"],
+        "standardization": final["standardization"],
+        "bootstrap_coefficients": boot,
+        "n_training_obs": final["n_training_obs"],
+        "backtest": backtest,
+        "latest_snapshot": {
+            "date": latest_date.isoformat(),
+            "features_raw": {k: (None if v is None else float(v)) for k, v in latest_features_full.items()},
+            "features_primary_standardized": {n: float((latest_features_full[n] - final["standardization"][n]["mean"]) / final["standardization"][n]["std"]) for n in PRIMARY_FEATURES},
+            "logit": logit,
+            "probability": round(p_point, 4),
+            "band_5pct": None if p_lo is None else round(p_lo, 4),
+            "band_95pct": None if p_hi is None else round(p_hi, 4),
+            "base_rate_primary_target": base_rate_primary,
         },
     }
 
@@ -644,6 +749,14 @@ def main() -> int:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(out, indent=2))
     print(f"  ✓ Wrote {out_path}", flush=True)
+
+    # Console summary mirroring the leakcheck output for easy comparison.
+    prim = backtest[PRIMARY_TARGET]["feature_sets"]["primary (EBP + YC)"]
+    print(f"\n  Current reading ({latest_date}):")
+    print(f"    probability: {p_point:.3f}   "
+          f"band_5-95: [{p_lo:.3f}, {p_hi:.3f}]   "
+          f"base rate: {base_rate_primary:.3f}")
+    print(f"    AUC(OOS, primary target, primary features): {prim['auc']}")
     return 0
 
 
