@@ -16,7 +16,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import ArchiveBanner from '@/components/ArchiveBanner';
+import DataFreshnessBadge from '@/components/fulcrum/DataFreshnessBadge';
 import { baaSpreadHistory } from '@/data/baaSpreadHistory';
 import { hyOasHistory } from '@/data/hyOasHistory';
 import { vixHistory } from '@/data/vixHistory';
@@ -1031,8 +1031,8 @@ const FulcrumIndexPage = () => {
       {/* Economist-style light theme page */}
       <div className="min-h-screen flex flex-col" style={{ background: 'var(--paper)', color: 'var(--ink)' }}>
         <Navbar />
-        <header className="pt-[64px]" aria-label="Archive notice">
-          <ArchiveBanner />
+        <header className="pt-[64px]" aria-label="Data freshness">
+          <DataFreshnessBadge />
         </header>
 
         <main className="max-w-[1080px] mx-auto px-7 pb-12 pt-6 w-full">
