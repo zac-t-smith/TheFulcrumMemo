@@ -1156,7 +1156,7 @@ The Fulcrum Index
                     className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold"
                     style={{ fontFamily: 'var(--font-sans)' }}
                   >
-                    As of
+                    Index as of
                   </div>
                   <div
                     className="text-[16px] font-bold text-[#1a1a1a] tracking-tight"
