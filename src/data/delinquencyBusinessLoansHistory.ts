@@ -2,7 +2,7 @@
 // Source: FRED series DRBLACBS (Delinquency rate on business loans, all commercial banks (quarterly))
 // Units: percent
 // Coverage: 1987-01-01 → 2026-04-01 (158 obs)
-// Generated: 2026-11-12T16:46:18.681725Z
+// Generated: 2026-11-13T18:38:14.580029Z
 
 import type { DailyDataPoint } from "./types";
 
