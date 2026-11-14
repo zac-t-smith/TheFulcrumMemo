@@ -69,11 +69,31 @@ UNIVERSE_DEBT_FLOOR = 250_000_000      # $250m
 NET_LEVERAGE_THRESHOLD = 4.0           # net debt / EBITDA
 COVERAGE_THRESHOLD = 2.0               # EBIT / interest
 
-# SIC exclusions: 6000-6799 = financials, holding companies, insurance, REITs.
-FINANCIAL_SIC_LOW = 6000
-FINANCIAL_SIC_HIGH = 6799
+# SIC exclusions. v2 excluded the entire 6000-6799 band, which incorrectly
+# blocked WeWork (6512), Core Scientific (6199 is excluded, this one is OK
+# to flag), American Apparel (6770 blank-check), and all real-estate
+# operators. v3 keeps 6500-6599 real estate operators in, keeps blank-check
+# 6770 in (operating companies pre-merger), and keeps only the real
+# financials and REITs out: 6000-6499 and 6798.
+EXCLUDE_SIC_LOW_NEW = 6000
+EXCLUDE_SIC_HIGH_NEW = 6499
+EXCLUDE_SIC_REIT_NEW = 6798
+# v2 exclusion kept for reporting both ways.
+EXCLUDE_SIC_LOW_OLD = 6000
+EXCLUDE_SIC_HIGH_OLD = 6799
 
-# Longest tag-for-tag fallback chains for XBRL variability. First match wins.
+
+def is_excluded_sic(sic: int | None, rule: str = "v3") -> bool:
+    if sic is None:
+        return False
+    if rule == "v3":
+        return EXCLUDE_SIC_LOW_NEW <= sic <= EXCLUDE_SIC_HIGH_NEW or sic == EXCLUDE_SIC_REIT_NEW
+    return EXCLUDE_SIC_LOW_OLD <= sic <= EXCLUDE_SIC_HIGH_OLD
+
+
+# -----------------------------------------------------------------------------
+# XBRL tag fallbacks
+# -----------------------------------------------------------------------------
 TAG_FALLBACKS: dict[str, list[str]] = {
     "assets": ["Assets"],
     "assets_current": ["AssetsCurrent"],
@@ -84,37 +104,48 @@ TAG_FALLBACKS: dict[str, list[str]] = {
         "Cash",
         "CashCashEquivalentsAndShortTermInvestments",
     ],
-    "long_term_debt_noncurrent": [
-        "LongTermDebtNoncurrent",
+    # Debt: total-LTD-first preferred tags.
+    "ltd_total_single_tag": [
         "LongTermDebt",
+        "LongTermDebtAndCapitalLeaseObligations",
+        "DebtAndCapitalLeaseObligations",             # Weatherford, others
+        "DebtLongtermAndShorttermCombinedAmount",     # Weatherford, others — includes ST
     ],
-    "long_term_debt_current": [
+    # Debt: noncurrent-only variants.
+    "ltd_noncurrent_only": [
+        "LongTermDebtNoncurrent",
+        "LongTermDebtAndCapitalLeaseObligationsNoncurrent",
+    ],
+    # Debt: current-portion-only variants.
+    "ltd_current_only": [
         "LongTermDebtCurrent",
         "LongTermDebtAndCapitalLeaseObligationsCurrent",
     ],
-    "short_term_borrowings": [
+    # Short-term borrowings variants.
+    "st_debt": [
         "ShortTermBorrowings",
         "DebtCurrent",
         "CommercialPaper",
+        "LinesOfCreditCurrent",
     ],
-    "retained_earnings": [
-        "RetainedEarningsAccumulatedDeficit",
-    ],
+    # Instrument-level tags — used only when none of the above resolve.
+    # These are totals-across-instruments for the registrant (XBRL default
+    # dimension); we sum across them to approximate total debt.
+    "instr_senior_notes": ["SeniorNotes"],
+    "instr_convertible_notes": ["ConvertibleNotesPayable"],
+    "instr_secured_debt": ["SecuredDebt"],
+    "instr_other_ltd_noncurrent": ["OtherLongTermDebtNoncurrent"],
+    "instr_notes_payable": ["NotesPayable"],
+    "instr_debt_instrument_carrying": ["DebtInstrumentCarryingAmount"],
+
+    "retained_earnings": ["RetainedEarningsAccumulatedDeficit"],
     "stockholders_equity": [
         "StockholdersEquity",
         "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
     ],
-    "net_income": [
-        "NetIncomeLoss",
-        "ProfitLoss",
-    ],
-    "operating_income": [
-        "OperatingIncomeLoss",
-    ],
-    "interest_expense": [
-        "InterestExpense",
-        "InterestAndDebtExpense",
-    ],
+    "net_income": ["NetIncomeLoss", "ProfitLoss"],
+    "operating_income": ["OperatingIncomeLoss"],
+    "interest_expense": ["InterestExpense", "InterestAndDebtExpense"],
     "depreciation_amortization": [
         "DepreciationDepletionAndAmortization",
         "DepreciationAmortizationAndAccretionNet",
@@ -129,25 +160,29 @@ TAG_FALLBACKS: dict[str, list[str]] = {
         "PaymentsToAcquirePropertyPlantAndEquipment",
         "PaymentsToAcquireProductiveAssets",
     ],
-    "maturities_12m": [
-        "LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths",
-    ],
-    "maturities_13_24m": [
-        "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo",
-    ],
+    "maturities_12m": ["LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths"],
+    "maturities_13_24m": ["LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo"],
 }
 
 STOCK_KEYS = {
     "assets", "assets_current", "liabilities", "liabilities_current",
-    "cash", "long_term_debt_noncurrent", "long_term_debt_current",
-    "short_term_borrowings", "retained_earnings", "stockholders_equity",
+    "cash",
+    "ltd_total_single_tag", "ltd_noncurrent_only", "ltd_current_only", "st_debt",
+    "instr_senior_notes", "instr_convertible_notes", "instr_secured_debt",
+    "instr_other_ltd_noncurrent", "instr_notes_payable", "instr_debt_instrument_carrying",
+    "retained_earnings", "stockholders_equity",
     "maturities_12m", "maturities_13_24m",
 }
-# Flow keys use FY observations for LTM approximation.
 FLOW_KEYS = {
     "net_income", "operating_income", "interest_expense",
     "depreciation_amortization", "cfo", "capex",
 }
+
+INSTRUMENT_DEBT_KEYS = [
+    "instr_senior_notes", "instr_convertible_notes", "instr_secured_debt",
+    "instr_other_ltd_noncurrent", "instr_notes_payable",
+    "instr_debt_instrument_carrying",
+]
 
 
 # =============================================================================
@@ -161,6 +196,8 @@ class Fact:
     filed: date
     fp: str
     form: str
+    start: date | None = None
+    span_days: int | None = None
 
 
 def _parse_date(s: str) -> date | None:
@@ -175,13 +212,13 @@ def _facts_for_tag(cf_facts: dict, taxonomy: str, tag: str) -> list[Fact]:
     tx = cf_facts.get(taxonomy, {})
     node = tx.get(tag, {})
     units = node.get("units", {})
-    # Most companies report in USD; prefer that unit.
     observations = units.get("USD") or units.get("USD/shares") or []
     out: list[Fact] = []
     for obs in observations:
         val = obs.get("val")
         end = _parse_date(obs.get("end", ""))
         filed = _parse_date(obs.get("filed", ""))
+        start = _parse_date(obs.get("start", ""))
         fp = obs.get("fp") or ""
         form = obs.get("form") or ""
         if val is None or end is None or filed is None:
@@ -190,7 +227,11 @@ def _facts_for_tag(cf_facts: dict, taxonomy: str, tag: str) -> list[Fact]:
             fval = float(val)
         except (TypeError, ValueError):
             continue
-        out.append(Fact(value=fval, end=end, filed=filed, fp=fp, form=form))
+        span = (end - start).days if start is not None else None
+        out.append(Fact(
+            value=fval, end=end, filed=filed, fp=fp, form=form,
+            start=start, span_days=span,
+        ))
     return out
 
 
@@ -207,16 +248,55 @@ def _select_pit_stock(facts: Iterable[Fact], as_of: date) -> float | None:
 
 
 def _select_pit_flow(facts: Iterable[Fact], as_of: date) -> float | None:
-    """Most-recent FY (annual) observation with filed ≤ as_of and end ≤ as_of."""
-    best: Fact | None = None
+    """
+    LTM selection with quarterly aggregation.
+
+    Preference 1: most-recent FY (fp=FY) observation ending within the last
+                  12 months of as_of. Standard annual-report path.
+    Preference 2: sum of the four most recent pure-quarterly observations
+                  (span 60-110 days) whose combined end dates cover a
+                  360±60 day window ending at or before as_of.
+
+    The quarterly path lifts LTM freshness from stale-up-to-12-months (v2)
+    to roughly stale-up-to-the-last-10-Q-filing. XBRL YTD-span observations
+    (span 150-290 days) are intentionally ignored because summing them
+    with pure-quarterly values double-counts.
+    """
+    best_fy: Fact | None = None
+    quarterly: list[Fact] = []
     for f in facts:
-        if f.fp != "FY":
-            continue
         if f.filed > as_of or f.end > as_of:
             continue
-        if best is None or (f.end, f.filed) > (best.end, best.filed):
-            best = f
-    return best.value if best else None
+        if f.fp == "FY":
+            # Prefer FY observations whose end is within 400 days of as_of
+            # so an old 10-K doesn't bury a newer 10-Q set.
+            if (as_of - f.end).days > 400:
+                continue
+            if best_fy is None or (f.end, f.filed) > (best_fy.end, best_fy.filed):
+                best_fy = f
+        elif f.fp in ("Q1", "Q2", "Q3", "Q4"):
+            if f.span_days is not None and 60 <= f.span_days <= 110:
+                quarterly.append(f)
+
+    if best_fy is not None:
+        return best_fy.value
+
+    if len(quarterly) < 4:
+        return None
+    # Dedup by `end` keeping latest-filed version, then take the most recent four.
+    by_end: dict[date, Fact] = {}
+    for f in quarterly:
+        prev = by_end.get(f.end)
+        if prev is None or f.filed > prev.filed:
+            by_end[f.end] = f
+    unique = sorted(by_end.values(), key=lambda f: f.end, reverse=True)
+    if len(unique) < 4:
+        return None
+    last_four = unique[:4]
+    span = (last_four[0].end - last_four[-1].end).days
+    if not (240 <= span <= 400):
+        return None
+    return sum(f.value for f in last_four)
 
 
 def prepack_cik_facts(cf_facts: dict) -> dict[str, list[Fact]]:
@@ -250,6 +330,74 @@ def extract_pit(packed: dict[str, list[Fact]], key: str, as_of: date) -> float |
     if key in STOCK_KEYS:
         return _select_pit_stock(facts, as_of)
     return _select_pit_flow(facts, as_of)
+
+
+# -----------------------------------------------------------------------------
+# Tiered total-debt computation (v3)
+# -----------------------------------------------------------------------------
+
+def compute_total_debt(
+    packed: dict[str, list[Fact]], as_of: date,
+) -> tuple[float | None, str | None]:
+    """
+    Return (total_debt_usd, source_tier).
+
+    Companies tag debt inconsistently — some use a clean single "LongTermDebt"
+    total, some only tag the current portion, some rely on instrument-level
+    tags (SeniorNotes, DebtInstrumentCarryingAmount, etc.). Rather than stop
+    at the first tier that produces any value, we compute every tier and
+    take the LARGEST. That protects against (for example) Weatherford's
+    pre-2022 filings where only LongTermDebtCurrent was tagged ($0.4B)
+    while instrument-level DebtInstrumentCarryingAmount tagged $1.5B+.
+    Short-term borrowings are added once, outside the max.
+
+      Tier 1 ("total"): single-tag LTD total (LongTermDebt,
+          LongTermDebtAndCapitalLeaseObligations, DebtAndCapitalLeaseObligations,
+          DebtLongtermAndShorttermCombinedAmount).
+      Tier 2 ("split"): LongTermDebtNoncurrent + LongTermDebtCurrent.
+      Tier 3 ("instruments"): sum of SeniorNotes + ConvertibleNotes +
+          SecuredDebt + OtherLongTermDebtNoncurrent + NotesPayable +
+          DebtInstrumentCarryingAmount.
+
+    Returns (None, None) if every tier is empty.
+    """
+    candidates: list[tuple[float, str]] = []
+
+    total_ltd = extract_pit(packed, "ltd_total_single_tag", as_of)
+    if total_ltd is not None and total_ltd > 0:
+        candidates.append((total_ltd, "total"))
+
+    nc = extract_pit(packed, "ltd_noncurrent_only", as_of)
+    cur = extract_pit(packed, "ltd_current_only", as_of)
+    if nc is not None and cur is not None:
+        candidates.append((nc + cur, "split"))
+    elif nc is not None:
+        candidates.append((nc, "split(nc_only)"))
+    elif cur is not None:
+        candidates.append((cur, "split(cur_only)"))
+
+    inst_total = 0.0
+    inst_used: list[str] = []
+    for key in INSTRUMENT_DEBT_KEYS:
+        v = extract_pit(packed, key, as_of)
+        if v is not None and v > 0:
+            inst_total += v
+            inst_used.append(key.replace("instr_", ""))
+    if inst_used:
+        candidates.append((inst_total, "instruments(" + "+".join(inst_used) + ")"))
+
+    st = extract_pit(packed, "st_debt", as_of)
+
+    if candidates:
+        candidates.sort(key=lambda t: t[0], reverse=True)
+        best_val, best_tier = candidates[0]
+        if st is not None:
+            return best_val + st, best_tier + "+st"
+        return best_val, best_tier
+
+    if st is not None:
+        return st, "st_only"
+    return None, None
 
 
 # =============================================================================
@@ -301,6 +449,8 @@ class PanelRow:
     sic: int | None
     name: str
     total_debt: float | None
+    total_debt_source: str | None   # v3: which debt-tag tier supplied the figure
+    liabilities: float | None       # v3: last reported total liabilities (coverage-check input)
     cash: float | None
     ebit: float | None
     ebitda: float | None
@@ -319,6 +469,9 @@ class PanelRow:
     lev_test_pass: bool
     cov_test_pass: bool
     universe_pass: bool
+    # v3: SIC-exclusion flags for both-ways reporting.
+    sic_excluded_old: bool          # v2 rule: 6000-6799
+    sic_excluded_new: bool          # v3 rule: 6000-6499 or 6798
 
 
 def _safe_div(num: float | None, den: float | None) -> float | None:
@@ -343,27 +496,29 @@ def compute_row(
     """
     Return a PanelRow if the CIK passes universe filters as of `as_of`, else None.
     `packed` is produced once per CIK by `prepack_cik_facts`.
+
+    v3 changes:
+      - Debt via tiered compute_total_debt, with a source tier recorded.
+      - Flow quantities via quarterly-LTM selection (FY first, then
+        sum-of-last-four-quarterly).
+      - No early SIC reject; SIC is carried on the row so the backtest
+        can apply either exclusion rule for both-ways reporting.
+      - Liabilities captured on the row so the backtest's coverage check
+        doesn't have to re-open companyfacts.zip.
     """
-    # SIC filter first — fast reject.
-    if sic is not None and FINANCIAL_SIC_LOW <= sic <= FINANCIAL_SIC_HIGH:
-        return None
-
     cash = extract_pit(packed, "cash", as_of)
-    ltd_nc = extract_pit(packed, "long_term_debt_noncurrent", as_of)
-    ltd_cur = extract_pit(packed, "long_term_debt_current", as_of)
-    std = extract_pit(packed, "short_term_borrowings", as_of)
-    total_debt = _add(ltd_nc, ltd_cur, std)
-    if total_debt is None:
-        return None
+    total_debt, total_debt_source = compute_total_debt(packed, as_of)
+    liab = extract_pit(packed, "liabilities", as_of)
 
-    debt_gt_250m = total_debt > UNIVERSE_DEBT_FLOOR
+    debt_gt_250m = (total_debt is not None) and (total_debt > UNIVERSE_DEBT_FLOOR)
 
     ebit = extract_pit(packed, "operating_income", as_of)
     da = extract_pit(packed, "depreciation_amortization", as_of)
-    ebitda = _add(ebit, da)
+    # EBITDA requires BOTH ebit and D&A — using one alone is a mislabel.
+    ebitda = (ebit + da) if (ebit is not None and da is not None) else None
 
     interest = extract_pit(packed, "interest_expense", as_of)
-    net_debt = total_debt - (cash or 0.0)
+    net_debt = (total_debt or 0.0) - (cash or 0.0)
 
     coverage = _safe_div(ebit, interest)
     net_leverage = _safe_div(net_debt, ebitda) if (ebitda is not None and ebitda > 0) else None
@@ -372,13 +527,24 @@ def compute_row(
     cov_test_pass = coverage is not None and coverage < COVERAGE_THRESHOLD
     universe_pass = debt_gt_250m and (lev_test_pass or cov_test_pass)
 
-    if not universe_pass:
+    sic_excluded_old = is_excluded_sic(sic, rule="v2")
+    sic_excluded_new = is_excluded_sic(sic, rule="v3")
+
+    # Keep the row if EITHER universe-pass OR the CIK has >=$250m liabilities
+    # OR >=$250m debt. The second keeps non-universe-pass companies in the
+    # output so backtest coverage analysis can see them. Rows with neither
+    # tag resolved get dropped entirely (nothing to analyze).
+    keep = universe_pass or (
+        liab is not None and liab >= UNIVERSE_DEBT_FLOOR
+    ) or (
+        total_debt is not None and total_debt >= UNIVERSE_DEBT_FLOOR
+    )
+    if not keep:
         return None
 
     # Altman Z″ (non-manufacturer): 6.56*WC/TA + 3.26*RE/TA + 6.72*EBIT/TA + 1.05*E/TL
     assets = extract_pit(packed, "assets", as_of)
     assets_cur = extract_pit(packed, "assets_current", as_of)
-    liab = extract_pit(packed, "liabilities", as_of)
     liab_cur = extract_pit(packed, "liabilities_current", as_of)
     retained = extract_pit(packed, "retained_earnings", as_of)
     equity = extract_pit(packed, "stockholders_equity", as_of)
@@ -430,6 +596,8 @@ def compute_row(
         sic=sic,
         name=name,
         total_debt=total_debt,
+        total_debt_source=total_debt_source,
+        liabilities=liab,
         cash=cash,
         ebit=ebit,
         ebitda=ebitda,
@@ -447,7 +615,9 @@ def compute_row(
         debt_gt_250m=debt_gt_250m,
         lev_test_pass=lev_test_pass,
         cov_test_pass=cov_test_pass,
-        universe_pass=True,
+        universe_pass=universe_pass,
+        sic_excluded_old=sic_excluded_old,
+        sic_excluded_new=sic_excluded_new,
     )
 
 
@@ -522,11 +692,13 @@ def main() -> int:
 
     fieldnames = [
         "as_of_date", "cik", "sic", "name",
-        "total_debt", "cash", "ebit", "ebitda", "interest",
+        "total_debt", "total_debt_source", "liabilities",
+        "cash", "ebit", "ebitda", "interest",
         "coverage", "net_leverage", "altman_z_double_prime",
         "cfo_ltm", "capex_ltm", "fcf_ltm", "runway_months",
         "maturities_12m", "maturities_13_24m", "maturity_pressure_24m",
         "debt_gt_250m", "lev_test_pass", "cov_test_pass", "universe_pass",
+        "sic_excluded_old", "sic_excluded_new",
     ]
 
     rows_written = 0
@@ -542,8 +714,7 @@ def main() -> int:
             if args.limit and ciks_seen > args.limit:
                 break
             sic, name = sic_map.get(cik, (None, ""))
-            if sic is not None and FINANCIAL_SIC_LOW <= sic <= FINANCIAL_SIC_HIGH:
-                continue
+            # v3: no early SIC reject — the SIC flag is on the row.
             packed = prepack_cik_facts(facts)
             if not packed:
                 continue

@@ -39,6 +39,8 @@ quant/etf_pull_summary.json
 quant/sector_heatmap_summary.json
 quant/sec_bulk_summary.json
 quant/ch11_summary.json
+quant/ch11_2012_2014_summary.json
+quant/ch11_classification_summary.json
 quant/distress_panel_summary.json
 
 # Phase 4 SEC bulk-data cache. Companyfacts + submissions zips are
