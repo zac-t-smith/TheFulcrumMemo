@@ -32,6 +32,7 @@ import { BaaHistoricalScatter } from '@/components/fulcrum/BaaHistoricalScatter'
 import { HiddenStressGap } from '@/components/fulcrum/HiddenStressGap';
 import { CycleRiskVsNormalTile } from '@/components/fulcrum/CycleRiskVsNormalTile';
 import { CycleBacktestTable } from '@/components/fulcrum/CycleBacktestTable';
+import { SectorHeatMap } from '@/components/fulcrum/SectorHeatMap';
 import {
   buildIndexTimeSeries,
   calculate30DayTrend,
@@ -1312,6 +1313,30 @@ The Fulcrum Index
                   the case for the sector and company layers below.
                 </p>
               </div>
+
+              {/* v5 Phase 3: Sector heat map. Follows the Reading callout
+                  directly because the callout promises "sector layers
+                  below" — this is them. Methodology (CycleBacktestTable)
+                  follows the sector view so the narrative flow is
+                  thesis -> sector read -> methodology for the macro call. */}
+              <div className="mt-6 mb-3">
+                <div
+                  className="text-[10px] tracking-[0.18em] uppercase text-[#4a4a4a] font-semibold"
+                  style={{ fontFamily: 'var(--font-sans)' }}
+                >
+                  Where is the stress concentrated?
+                </div>
+                <div
+                  className="text-[12.5px] text-[#4a4a4a] italic mt-1"
+                  style={{ fontFamily: 'var(--font-serif)' }}
+                >
+                  Sector heat map &mdash; percentiles against each sector&rsquo;s own
+                  history, plus a static shock-exposure score for how the oil/freight
+                  channel transmits.
+                </div>
+              </div>
+
+              <SectorHeatMap />
 
               <div className="mb-6">
                 <CycleBacktestTable />

@@ -117,7 +117,7 @@ ETFS: dict[str, dict[str, Any]] = {
     },
     "XLE": {
         "label": "Energy Select Sector SPDR Fund",
-        "site_file": None,
+        "site_file": "xleHistory.ts",
         "inception": "1998-12-22",
         "role": "energy_producer_proxy",
     },
