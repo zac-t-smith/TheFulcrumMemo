@@ -1,33 +1,27 @@
 """
-backtest_distress.py — Fulcrum v5 Phase 4 (backtest + report), v3
+backtest_distress.py — Fulcrum v5 Phase 4 (backtest + report), v4
 ================================================================
 
-v3 adds (on top of v2):
-  - Expanded debt-tag coverage (consumed from the v3 panel's
-    `total_debt_source` column for the audit trail).
-  - Cases built from 2012-2026 Item 1.03 filings (not 2015-2026), so
-    cases that started pre-2015 correctly exclude their post-petition
-    panel rows.
-  - Chapter + registrant-is-debtor classification from the enriched
-    `ch11_filings_classified.csv`. Parent-about-subsidiary filings
-    (registrant_is_debtor == False) are dropped.
-  - Two SIC exclusion rules reported side by side:
-        v2 rule — exclude 6000-6799 (financials and all REIT-adjacent).
-        v3 rule — exclude 6000-6499 + 6798 (banks, insurers, broker-
-                   dealers, lenders + listed REITs; keep 6500-6599 real
-                   estate operators and 6770 blank-check back in).
-  - Common-subset score comparison on the four stable scores
-    (Altman, coverage, net leverage, 24m maturity pressure); runway
-    is kept in the full-sample table but dropped from the common
-    subset since it only exists for cash-burners.
-  - Tier rules (Distressed / Stressed / Watch) scored for precision
-    and recall. Tier definitions use only the signals this backtest
-    has access to; Merton PD and EDGAR event flags come later as
-    live-only adds.
-  - A simple combined score: year-by-year logistic regression on
-    (Altman, coverage, net leverage). Trained strictly on prior years,
-    OOS-predicted for each scoring year. Reported alongside Altman
-    alone so the comparison is honest.
+v4 fixes on top of v3:
+  - Combined-score bug. v3 reported 0.541 OOS AUC because
+    (a) raw features carry heavy outliers (coverage ratios of 1e5+,
+        etc.) which z-score standardization doesn't tame,
+    (b) training rows used labels merely "closed by the panel's last
+        date," pulling in training targets with still-open horizons,
+    (c) the sample compared against Altman wasn't the same rows/years.
+    The fix: within-quarter percentile-rank transforms for the three
+    inputs (so the logistic sees well-conditioned features), training
+    rows must have their 12-month window closed by January 1 of the
+    prediction year, and the comparison against Altman alone and a
+    plain percentile-rank average runs on the identical rows.
+  - Tiers. Watch dropped (its 0.72% precision sat below the base
+    rate, so it was anti-signal). Stressed re-based as "top 5% by
+    Altman percentile rank per quarter, excluding Distressed" —
+    floating threshold, auto-targets the intended share. Distressed
+    unchanged. Each tier gets precision, lift, recall-by-company,
+    median lead time, and average rows per quarter.
+  - Framing. AUC changes v2→v3 are partly a universe change (more
+    rows with the expanded debt tags) so the text leads with lift.
 """
 
 from __future__ import annotations
@@ -535,45 +529,92 @@ def is_distressed(r: PanelRow) -> bool:
     )
 
 
-def is_stressed(r: PanelRow) -> bool:
-    if r.altman is None or r.altman >= 1.1:
-        return False
-    cov_bad = r.coverage is not None and r.coverage < 1.5
-    mat_bad = r.maturity_pressure is not None and r.maturity_pressure > 1.0
-    return cov_bad or mat_bad
-
-
-def is_watch(r: PanelRow) -> bool:
-    if r.altman is None or r.altman < 1.1 or r.altman > 2.6:
-        return False
-    return r.net_leverage is not None and r.net_leverage > 6.0
-
-
-def tier_name(r: PanelRow) -> str | None:
-    """Priority Distressed > Stressed > Watch; return None if clean."""
-    if is_distressed(r):
-        return "distressed"
-    if is_stressed(r):
-        return "stressed"
-    if is_watch(r):
-        return "watch"
-    return None
-
-
-def tier_metrics(
-    panel: list[PanelRow], cases: list[BankruptcyCase],
-) -> list[TierResult]:
+def rank_within_quarter_01(
+    rows: list[PanelRow], key: str, higher_is_riskier: bool,
+) -> dict[tuple[date, str], float]:
     """
-    For each tier:
-      - count rows it fires on
-      - share of fired rows whose company files bankruptcy within 6 / 12m
-      - share of distinct fired companies / distinct bankrupt companies present
-        in the panel's 24m pre-petition windows (company-level recall)
+    Return {(as_of, cik): percentile_rank in [0, 1]}, within each quarter.
+    Rank-average on ties. Percentile semantics: 0 = calmest, 1 = riskiest.
+    """
+    by_date: dict[date, list[tuple[float, str]]] = defaultdict(list)
+    for r in rows:
+        v = r.score(key)
+        if v is None or (isinstance(v, float) and (math.isnan(v) or math.isinf(v))):
+            continue
+        rs = v if higher_is_riskier else -v
+        by_date[r.as_of_date].append((rs, r.cik))
+    out: dict[tuple[date, str], float] = {}
+    for d, items in by_date.items():
+        items.sort(key=lambda t: t[0])  # ascending by raw risk = calmest first
+        n = len(items)
+        i = 0
+        while i < n:
+            j = i
+            while j + 1 < n and items[j + 1][0] == items[i][0]:
+                j += 1
+            avg_rank = (i + j) / 2
+            pctl = (avg_rank + 0.5) / n
+            for k in range(i, j + 1):
+                out[(d, items[k][1])] = pctl
+            i = j + 1
+    return out
+
+
+@dataclass
+class V4Tier:
+    name: str
+    rule: str
+    rows_fired: int
+    avg_rows_per_quarter: float
+    tp12: int
+    tp6: int
+    precision_12m: float | None
+    precision_6m: float | None
+    lift_12m: float | None
+    lift_6m: float | None
+    companies_flagged: int
+    companies_catchable: int
+    recall_companies: float | None
+    median_lead_months: float | None
+    base_rate_12m: float
+
+
+def tier_metrics_v4(
+    panel: list[PanelRow],
+    cases: list[BankruptcyCase],
+    stressed_pctl_threshold: float = 0.95,
+) -> list[V4Tier]:
+    """
+    v4 tiers:
+      Distressed: coverage < 1.0 AND runway_months < 12  (unchanged).
+      Stressed:  top 5% by Altman Z'' percentile rank per quarter,
+                 excluding rows already in Distressed. Floating
+                 threshold automatically targets ~5% of universe rows.
+      Watch:     DROPPED (v3 Watch had 0.72% precision versus ~0.8%
+                 base rate — anti-signal).
+
+    Reports precision, lift, recall by company, median lead time, and
+    average rows per quarter.
     """
     cik_cases = build_cik_case_dates(cases)
 
-    # Companies present in the panel at any quarter-end in the 24m before
-    # any case start, i.e., the set of "catchable" bankrupt names.
+    # Base rate 12m across the panel (denominator for lift).
+    total_rows = 0
+    labeled_12 = 0
+    for r in panel:
+        total_rows += 1
+        if label_within(cik_cases, r.cik, r.as_of_date, 12):
+            labeled_12 += 1
+    base_rate_12 = (labeled_12 / total_rows) if total_rows else 0.0
+    total_rows_6 = 0
+    labeled_6 = 0
+    for r in panel:
+        total_rows_6 += 1
+        if label_within(cik_cases, r.cik, r.as_of_date, 6):
+            labeled_6 += 1
+    base_rate_6 = (labeled_6 / total_rows_6) if total_rows_6 else 0.0
+
+    # Companies catchable = any bankrupt CIK with a panel row in 24m pre-petition.
     catchable: set[str] = set()
     for c in cases:
         lookback_start = c.petition_date - timedelta(days=int(30.44 * COMPANY_LOOKBACK_MONTHS))
@@ -583,59 +624,94 @@ def tier_metrics(
                 break
     total_catchable = len(catchable)
 
-    def eval_tier(name: str, rule_text: str, pred) -> TierResult:
-        n_fired = 0
+    # Count distinct quarters in the panel.
+    quarters = {r.as_of_date for r in panel}
+    n_quarters = max(1, len(quarters))
+
+    altman_pctl = rank_within_quarter_01(panel, "altman", higher_is_riskier=False)
+
+    def _eval(name: str, rule_text: str, is_hit) -> V4Tier:
+        rows_fired = 0
         tp12 = 0
         tp6 = 0
         companies_fired: set[str] = set()
+        first_hit: dict[str, date] = {}
         for r in panel:
-            if not pred(r):
+            if not is_hit(r):
                 continue
-            n_fired += 1
+            rows_fired += 1
             lab12 = label_within(cik_cases, r.cik, r.as_of_date, 12)
             lab6 = label_within(cik_cases, r.cik, r.as_of_date, 6)
             if lab12:
                 tp12 += 1
                 companies_fired.add(r.cik)
+                if r.cik not in first_hit or r.as_of_date < first_hit[r.cik]:
+                    first_hit[r.cik] = r.as_of_date
             if lab6:
                 tp6 += 1
-        companies_recall = (
+        # Lead time per company
+        leads: list[float] = []
+        for cik, first_date in first_hit.items():
+            nxt = next_case_after(cik_cases, cik, first_date)
+            if nxt is None:
+                continue
+            leads.append((nxt - first_date).days / 30.44)
+        prec_12 = (tp12 / rows_fired) if rows_fired else None
+        prec_6 = (tp6 / rows_fired) if rows_fired else None
+        lift_12 = (prec_12 / base_rate_12) if (prec_12 is not None and base_rate_12 > 0) else None
+        lift_6 = (prec_6 / base_rate_6) if (prec_6 is not None and base_rate_6 > 0) else None
+        recall = (
             len(companies_fired & catchable) / total_catchable
             if total_catchable else None
         )
-        return TierResult(
+        return V4Tier(
             name=name,
             rule=rule_text,
-            n_flagged_rows=n_fired,
-            tp_rows_12m=tp12,
-            precision_12m=(tp12 / n_fired) if n_fired else None,
-            tp_rows_6m=tp6,
-            precision_6m=(tp6 / n_fired) if n_fired else None,
+            rows_fired=rows_fired,
+            avg_rows_per_quarter=rows_fired / n_quarters,
+            tp12=tp12,
+            tp6=tp6,
+            precision_12m=prec_12,
+            precision_6m=prec_6,
+            lift_12m=lift_12,
+            lift_6m=lift_6,
             companies_flagged=len(companies_fired),
-            companies_covered_total=total_catchable,
-            recall_companies=companies_recall,
+            companies_catchable=total_catchable,
+            recall_companies=recall,
+            median_lead_months=median_of(leads),
+            base_rate_12m=base_rate_12,
         )
 
+    def _is_distressed(r: PanelRow) -> bool:
+        return (
+            r.coverage is not None and r.coverage < 1.0
+            and r.runway is not None and r.runway < 12.0
+        )
+
+    def _is_stressed(r: PanelRow) -> bool:
+        if _is_distressed(r):
+            return False  # keep Stressed and Distressed disjoint in counts
+        p = altman_pctl.get((r.as_of_date, r.cik))
+        return p is not None and p >= stressed_pctl_threshold
+
+    def _is_any(r: PanelRow) -> bool:
+        return _is_distressed(r) or _is_stressed(r)
+
     return [
-        eval_tier(
+        _eval(
             "distressed",
             "coverage < 1.0 AND runway < 12m",
-            is_distressed,
+            _is_distressed,
         ),
-        eval_tier(
-            "stressed",
-            "Altman Z'' < 1.1 AND (coverage < 1.5 OR maturity_pressure > 1.0)",
-            is_stressed,
+        _eval(
+            f"stressed",
+            f"Altman Z'' top {int((1 - stressed_pctl_threshold) * 100)}% within quarter, excluding Distressed",
+            _is_stressed,
         ),
-        eval_tier(
-            "watch",
-            "1.1 <= Altman Z'' <= 2.6 AND net_leverage > 6.0",
-            is_watch,
-        ),
-        eval_tier(
+        _eval(
             "any_tier",
-            "Distressed OR Stressed OR Watch",
-            lambda r: tier_name(r) is not None,
+            "Distressed OR Stressed",
+            _is_any,
         ),
     ]
 
@@ -645,126 +721,188 @@ def tier_metrics(
 # =============================================================================
 
 @dataclass
-class CombinedScoreResult:
-    n_train_years: int
-    n_scored_rows: int
-    auc_12m: float | None
-    auc_6m: float | None
-    top_decile_precision_12m: float | None
-    top_decile_precision_6m: float | None
-    lift_12m: float | None
-    lift_6m: float | None
+class ComparisonMetric:
+    name: str
+    n_rows: int
     base_rate_12m: float
     base_rate_6m: float
+    auc_12m: float | None
+    auc_6m: float | None
+    prec_12m: float | None
+    prec_6m: float | None
+    lift_12m: float | None
+    lift_6m: float | None
 
 
-def logistic_combined(
-    panel: list[PanelRow], cases: list[BankruptcyCase], start_year: int = 2017,
-) -> CombinedScoreResult | None:
+@dataclass
+class CombinedScoreFairResult:
+    n_scored: int
+    years_scored: list[int]
+    altman_only: ComparisonMetric
+    avg_rank: ComparisonMetric
+    logistic: ComparisonMetric | None
+
+
+def combined_score_fair(
+    panel: list[PanelRow],
+    cases: list[BankruptcyCase],
+    start_year: int = 2017,
+) -> CombinedScoreFairResult:
     """
-    Walk-forward combined score: for each year Y starting at `start_year`,
-    train on all prior-year panel rows where altman/coverage/net_leverage
-    are all present and the 12m label is known, then predict rows in year Y.
-    AUC and lift computed across the concatenated OOS predictions.
+    Three models on the SAME rows (all three features present, year >=
+    start_year), for an apples-to-apples comparison:
+
+      1. Altman alone (as its within-quarter percentile rank, for a
+         fair comparison to the other rank-based models).
+      2. Plain average of three percentile ranks (Altman, Coverage,
+         Net leverage). No fit — a baseline the logistic has to beat.
+      3. Year-by-year L2 logistic regression on the three percentile
+         ranks, with a strict training rule: a training row's 12-month
+         label window must close by January 1 of the prediction year.
+
+    v3's logistic hit AUC 0.541 because (a) raw features have severe
+    outliers, (b) training-closure was relative to the panel's last
+    date which pulled in open-horizon rows as implicit negatives, and
+    (c) the comparison wasn't on the same rows. v4 fixes all three.
     """
-    if not SKLEARN_OK:
-        return None
     cik_cases = build_cik_case_dates(cases)
-    years = sorted({r.as_of_date.year for r in panel})
-    if not years:
-        return None
 
-    rows_with_features: list[PanelRow] = []
-    for r in panel:
-        if any(r.score(k) is None for k in ("altman", "coverage", "net_leverage")):
-            continue
-        rows_with_features.append(r)
+    # Percentile ranks within quarter for all three features. Each
+    # dict spans the full panel (per key); rows missing the feature
+    # simply aren't in the dict.
+    rk_a = rank_within_quarter_01(panel, "altman", higher_is_riskier=False)
+    rk_c = rank_within_quarter_01(panel, "coverage", higher_is_riskier=False)
+    rk_l = rank_within_quarter_01(panel, "net_leverage", higher_is_riskier=True)
 
-    oos_probs: list[float] = []
-    oos_labels_12: list[int] = []
-    oos_labels_6: list[int] = []
-    oos_rows: list[PanelRow] = []
-    n_train_years = 0
+    def _has_all(r: PanelRow) -> bool:
+        k = (r.as_of_date, r.cik)
+        return k in rk_a and k in rk_c and k in rk_l
 
-    for year in years:
-        if year < start_year:
-            continue
-        train = [r for r in rows_with_features if r.as_of_date.year < year]
-        # Labels at training time must have a closed 12m horizon.
-        train_labeled: list[tuple[PanelRow, int]] = []
-        today = max(r.as_of_date for r in panel)
-        for r in train:
-            horizon_end = r.as_of_date + timedelta(days=365)
-            if horizon_end > today:
+    # Scoring set: rows in year >= start_year with all three features.
+    scored_rows = [r for r in panel if r.as_of_date.year >= start_year and _has_all(r)]
+    if not scored_rows:
+        empty = ComparisonMetric(
+            name="(no rows)", n_rows=0,
+            base_rate_12m=0.0, base_rate_6m=0.0,
+            auc_12m=None, auc_6m=None,
+            prec_12m=None, prec_6m=None, lift_12m=None, lift_6m=None,
+        )
+        return CombinedScoreFairResult(
+            n_scored=0, years_scored=[],
+            altman_only=empty, avg_rank=empty, logistic=None,
+        )
+
+    labels_12 = [int(label_within(cik_cases, r.cik, r.as_of_date, 12)) for r in scored_rows]
+    labels_6 = [int(label_within(cik_cases, r.cik, r.as_of_date, 6)) for r in scored_rows]
+
+    def _feature_vec(r: PanelRow) -> tuple[float, float, float]:
+        k = (r.as_of_date, r.cik)
+        return rk_a[k], rk_c[k], rk_l[k]
+
+    altman_scores = [rk_a[(r.as_of_date, r.cik)] for r in scored_rows]
+    avg_scores = [
+        sum(_feature_vec(r)) / 3.0 for r in scored_rows
+    ]
+
+    # Year-by-year logistic. Training rule: a training row at as_of
+    # date `d` must have (d + 12 months) <= Jan 1 of the prediction
+    # year. Equivalently d <= (Y - 1)-01-01.
+    logistic_scores: list[float] | None = None
+    years_scored: list[int] = []
+    if SKLEARN_OK:
+        logistic_scores = [math.nan] * len(scored_rows)
+        panel_with_three = [r for r in panel if _has_all(r)]
+
+        for year in sorted({r.as_of_date.year for r in scored_rows}):
+            closure_cutoff = date(year, 1, 1) - timedelta(days=365)
+            train_rows = [r for r in panel_with_three if r.as_of_date <= closure_cutoff]
+            if len(train_rows) < 100:
                 continue
-            y = 1 if label_within(cik_cases, r.cik, r.as_of_date, 12) else 0
-            train_labeled.append((r, y))
-        if len(train_labeled) < 100 or len({t[1] for t in train_labeled}) < 2:
-            continue
-        X_tr = np.array([
-            [t[0].altman, t[0].coverage, t[0].net_leverage] for t in train_labeled
-        ], dtype=float)
-        y_tr = np.array([t[1] for t in train_labeled], dtype=int)
-        mu = X_tr.mean(axis=0)
-        sd = X_tr.std(axis=0)
-        sd[sd == 0] = 1.0
-        X_tr_s = (X_tr - mu) / sd
-        clf = LogisticRegression(penalty="l2", C=1.0, solver="lbfgs", max_iter=2000)
-        clf.fit(X_tr_s, y_tr)
+            X_tr = np.array([list(_feature_vec(r)) for r in train_rows], dtype=float)
+            y_tr = np.array([
+                int(label_within(cik_cases, r.cik, r.as_of_date, 12))
+                for r in train_rows
+            ], dtype=int)
+            if len(set(y_tr)) < 2:
+                continue
+            clf = LogisticRegression(
+                penalty="l2", C=1.0, solver="lbfgs", max_iter=2000,
+                class_weight="balanced",
+            )
+            clf.fit(X_tr, y_tr)
 
-        test = [r for r in rows_with_features if r.as_of_date.year == year]
-        if not test:
-            continue
-        X_te = np.array([
-            [r.altman, r.coverage, r.net_leverage] for r in test
-        ], dtype=float)
-        X_te_s = (X_te - mu) / sd
-        probs = clf.predict_proba(X_te_s)[:, 1]
-        for r, p in zip(test, probs):
-            oos_rows.append(r)
-            oos_probs.append(float(p))
-            oos_labels_12.append(int(label_within(cik_cases, r.cik, r.as_of_date, 12)))
-            oos_labels_6.append(int(label_within(cik_cases, r.cik, r.as_of_date, 6)))
-        n_train_years += 1
+            test_indices = [
+                i for i, r in enumerate(scored_rows) if r.as_of_date.year == year
+            ]
+            if not test_indices:
+                continue
+            X_te = np.array([list(_feature_vec(scored_rows[i])) for i in test_indices])
+            p = clf.predict_proba(X_te)[:, 1]
+            for i, pi in zip(test_indices, p):
+                logistic_scores[i] = float(pi)
+            years_scored.append(year)
 
-    if len(oos_probs) < 10 or len(set(oos_labels_12)) < 2:
-        return None
+        # Drop any rows that didn't get a logistic prediction.
+        finite_mask = [i for i, s in enumerate(logistic_scores) if math.isfinite(s)]
+        logistic_scores = [logistic_scores[i] for i in finite_mask]
+        # Align ground truth to the same rows.
+        altman_scores_l = [altman_scores[i] for i in finite_mask]
+        avg_scores_l = [avg_scores[i] for i in finite_mask]
+        labels_12_l = [labels_12[i] for i in finite_mask]
+        labels_6_l = [labels_6[i] for i in finite_mask]
+    else:
+        altman_scores_l = altman_scores
+        avg_scores_l = avg_scores
+        labels_12_l = labels_12
+        labels_6_l = labels_6
 
-    def _auc(pred: list[float], lab: list[int]) -> float | None:
-        if len(set(lab)) < 2:
-            return None
-        try:
-            return float(sk_auc(lab, pred))
-        except ValueError:
-            return None
+    def _comparison_metric(name: str, scores: list[float], l12: list[int], l6: list[int]) -> ComparisonMetric:
+        if not scores:
+            return ComparisonMetric(
+                name=name, n_rows=0, base_rate_12m=0.0, base_rate_6m=0.0,
+                auc_12m=None, auc_6m=None,
+                prec_12m=None, prec_6m=None, lift_12m=None, lift_6m=None,
+            )
+        base12 = sum(l12) / len(l12)
+        base6 = sum(l6) / len(l6)
 
-    auc12 = _auc(oos_probs, oos_labels_12)
-    auc6 = _auc(oos_probs, oos_labels_6)
-    base12 = sum(oos_labels_12) / len(oos_labels_12)
-    base6 = sum(oos_labels_6) / len(oos_labels_6)
+        def _auc(s: list[float], l: list[int]) -> float | None:
+            pos = [sc for sc, lb in zip(s, l) if lb == 1]
+            neg = [sc for sc, lb in zip(s, l) if lb == 0]
+            return roc_auc(pos, neg)
 
-    # Top-decile precision
-    sorted_pairs = sorted(zip(oos_probs, oos_labels_12, oos_labels_6), reverse=True)
-    top_n = max(1, len(sorted_pairs) // 10)
-    top = sorted_pairs[:top_n]
-    tp12 = sum(t[1] for t in top)
-    tp6 = sum(t[2] for t in top)
-    prec12 = tp12 / top_n
-    prec6 = tp6 / top_n
-    lift12 = prec12 / base12 if base12 > 0 else None
-    lift6 = prec6 / base6 if base6 > 0 else None
+        auc12 = _auc(scores, l12)
+        auc6 = _auc(scores, l6)
+        pairs_12 = sorted(zip(scores, l12), reverse=True)
+        pairs_6 = sorted(zip(scores, l6), reverse=True)
+        top_n = max(1, len(pairs_12) // 10)
+        tp12 = sum(t[1] for t in pairs_12[:top_n])
+        tp6 = sum(t[1] for t in pairs_6[:top_n])
+        prec12 = tp12 / top_n
+        prec6 = tp6 / top_n
+        lift12 = prec12 / base12 if base12 > 0 else None
+        lift6 = prec6 / base6 if base6 > 0 else None
+        return ComparisonMetric(
+            name=name, n_rows=len(scores),
+            base_rate_12m=base12, base_rate_6m=base6,
+            auc_12m=auc12, auc_6m=auc6,
+            prec_12m=prec12, prec_6m=prec6,
+            lift_12m=lift12, lift_6m=lift6,
+        )
 
-    return CombinedScoreResult(
-        n_train_years=n_train_years,
-        n_scored_rows=len(oos_probs),
-        auc_12m=auc12,
-        auc_6m=auc6,
-        top_decile_precision_12m=prec12,
-        top_decile_precision_6m=prec6,
-        lift_12m=lift12,
-        lift_6m=lift6,
-        base_rate_12m=base12,
-        base_rate_6m=base6,
+    altman_cm = _comparison_metric("Altman Z'' (pctl rank)", altman_scores_l, labels_12_l, labels_6_l)
+    avg_cm = _comparison_metric("Avg of 3 pctl ranks (no-fit)", avg_scores_l, labels_12_l, labels_6_l)
+    log_cm = (
+        _comparison_metric("Logistic (3 pctl ranks)", logistic_scores, labels_12_l, labels_6_l)
+        if logistic_scores else None
+    )
+
+    return CombinedScoreFairResult(
+        n_scored=len(altman_scores_l),
+        years_scored=sorted(years_scored),
+        altman_only=altman_cm,
+        avg_rank=avg_cm,
+        logistic=log_cm,
     )
 
 
@@ -919,13 +1057,13 @@ def render_markdown(
     full_metrics_v2: list[ScoreMetrics],
     coverage_v3: list[CoverageRecord],
     coverage_v2: list[CoverageRecord],
-    tier_results: list[TierResult],
-    combined: CombinedScoreResult | None,
+    tier_results: list[V4Tier],
+    combined_fair: CombinedScoreFairResult,
     altman_full: ScoreMetrics,
 ) -> str:
     out: list[str] = []
     gen_at = datetime.now(timezone.utc).isoformat()
-    out.append(f"# Fulcrum v5 Phase 4 — Distress Radar backtest (v3)\n")
+    out.append(f"# Fulcrum v5 Phase 4 — Distress Radar backtest (v4)\n")
     out.append(
         f"_Generated {gen_at}. Panel (before SIC filter): {len(panel_all):,} rows; "
         f"v2 SIC rule: {len(panel_v2):,} rows; v3 SIC rule: {len(panel_v3):,} rows "
@@ -1031,74 +1169,90 @@ def render_markdown(
     out.extend(_score_table_rows(full_metrics_v2))
     out.append("")
 
-    # Tiers
-    out.append("## Tier rules (v3 SIC rule, full sample)\n")
+    # Tiers — v4
+    out.append("## Tier rules — v4 (v3 SIC rule, full sample)\n")
     out.append(
-        "Filing-only signals the backtest has access to. "
-        "Merton PD and EDGAR event flags stay as live-only adds.\n"
+        "Watch tier dropped from v3 — its 0.72% precision was below the base "
+        "rate, so it was anti-signal. Stressed rebuilt on Altman Z'' percentile "
+        "rank per quarter (top 5%, excluding Distressed) — floating threshold "
+        "auto-targets the intended share of universe rows. Distressed unchanged.\n"
     )
-    out.append("| Tier | Rule | Rows fired | Prec 12m | Prec 6m | Co. flagged | Co. in universe | Recall (companies) |")
-    out.append("|---|---|---:|---:|---:|---:|---:|---:|")
+    out.append(
+        "| Tier | Rule | Avg rows/qtr | Prec 12m | Lift 12m | Prec 6m | Lift 6m | Co. flagged | Co. in universe | Recall | Median lead (mo) |"
+    )
+    out.append(
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
+    )
     for t in tier_results:
         out.append(
-            f"| {t.name} | `{t.rule}` | {t.n_flagged_rows:,} | "
-            f"{_fmt_pct(t.precision_12m)} | {_fmt_pct(t.precision_6m)} | "
-            f"{t.companies_flagged:,} | {t.companies_covered_total:,} | "
-            f"{_fmt_pct(t.recall_companies)} |"
+            f"| {t.name} | `{t.rule}` | {t.avg_rows_per_quarter:,.0f} | "
+            f"{_fmt_pct(t.precision_12m)} | {_fmt(t.lift_12m, 2)}× | "
+            f"{_fmt_pct(t.precision_6m)} | {_fmt(t.lift_6m, 2)}× | "
+            f"{t.companies_flagged:,} | {t.companies_catchable:,} | "
+            f"{_fmt_pct(t.recall_companies)} | {_fmt(t.median_lead_months, 1)} |"
         )
     out.append("")
 
-    # Combined score
-    out.append("## Combined score — year-by-year logistic regression\n")
+    # Combined score — v4 fair comparison
+    out.append("## Combined score — fair v4 comparison\n")
     out.append(
-        "Features: Altman Z'', Coverage, Net leverage. Trained strictly on "
-        "prior-year rows with closed 12m labels; predicted OOS for each "
-        "scoring year. Compared with Altman Z'' alone on the full sample.\n"
+        "Three models evaluated on the IDENTICAL rows "
+        f"({combined_fair.n_scored:,} rows from scoring years "
+        f"{combined_fair.years_scored[0] if combined_fair.years_scored else '—'}+ "
+        "with Altman + Coverage + Net Leverage all present). Features are "
+        "within-quarter percentile ranks, which handles the heavy outliers "
+        "in raw coverage/leverage ratios. The logistic's training rule is "
+        "strict: a training row's 12-month label window must close by "
+        "January 1 of the prediction year.\n"
     )
-    out.append("| Score | n scored | AUC 12m | AUC 6m | Top-10% prec 12m | Lift 12m | Base rate 12m |")
+    out.append(
+        "| Model | AUC 12m | Lift 12m | AUC 6m | Lift 6m | Top-10% prec 12m | Base rate 12m |"
+    )
     out.append("|---|---:|---:|---:|---:|---:|---:|")
-    out.append(
-        f"| Altman Z'' alone (full sample) | {altman_full.n_rows:,} | "
-        f"{_fmt(altman_full.auc_12m)} | {_fmt(altman_full.auc_6m)} | "
-        f"{_fmt_pct(altman_full.top_decile_precision_12m)} | "
-        f"{_fmt(altman_full.lift_12m, 2)}× | {_fmt_pct(altman_full.base_rate_12m)} |"
-    )
-    if combined is not None:
-        out.append(
-            f"| Logistic (Altman + Cov + Lev) | {combined.n_scored_rows:,} | "
-            f"{_fmt(combined.auc_12m)} | {_fmt(combined.auc_6m)} | "
-            f"{_fmt_pct(combined.top_decile_precision_12m)} | "
-            f"{_fmt(combined.lift_12m, 2)}× | {_fmt_pct(combined.base_rate_12m)} |"
+
+    def _row(c: ComparisonMetric | None) -> str:
+        if c is None:
+            return "| — | — | — | — | — | — | — |"
+        return (
+            f"| {c.name} | {_fmt(c.auc_12m)} | {_fmt(c.lift_12m, 2)}× | "
+            f"{_fmt(c.auc_6m)} | {_fmt(c.lift_6m, 2)}× | "
+            f"{_fmt_pct(c.prec_12m)} | {_fmt_pct(c.base_rate_12m)} |"
         )
-        verdict = (
-            "beats Altman"
-            if (combined.auc_12m or 0) > (altman_full.auc_12m or 0)
-            else "does not beat Altman"
-        )
-        out.append(f"\n**Verdict:** combined score {verdict} on OOS AUC (12m).\n")
-    else:
-        out.append(
-            "\n**Note:** scikit-learn not available, combined score skipped.\n"
-        )
+
+    out.append(_row(combined_fair.altman_only))
+    out.append(_row(combined_fair.avg_rank))
+    out.append(_row(combined_fair.logistic))
+    out.append("")
+
+    best_name = None
+    best_lift = -math.inf
+    for c in (combined_fair.altman_only, combined_fair.avg_rank, combined_fair.logistic):
+        if c is not None and c.lift_12m is not None and c.lift_12m > best_lift:
+            best_lift = c.lift_12m
+            best_name = c.name
+    if best_name:
+        out.append(f"**Best on 12m lift:** {best_name} ({best_lift:.2f}×).\n")
 
     out.append("### Read conventions / caveats\n")
     out.append(
+        "- Lead with **lift**. AUC changes from v2 → v3 are partly a universe "
+        "change: expanded debt-tag coverage pulled many large-debt names into "
+        "the panel, including some that were high-signal (Hertz, EFH, Peabody, "
+        "Caesars Operating). That shifts the base rate and inflates AUC. Lift "
+        "is base-rate-normalized and travels with the same meaning across "
+        "panel changes.\n"
         "- Sign on net leverage and maturity-pressure is flipped so \"top decile\" "
         "always means riskiest.\n"
-        "- `Base 12m/6m` = share of panel rows for the score whose CIK files a "
-        "bankruptcy within the forward window.\n"
+        "- `Base 12m/6m` = share of rows in scope whose CIK files a bankruptcy "
+        "within the forward window.\n"
         "- `Lift` = top-decile precision ÷ base rate. 1× is random.\n"
-        "- `Recall (companies)` = fraction of distinct bankrupt companies present "
-        "in the panel's 24m pre-petition windows whose score crossed the tier "
-        "rule at any quarter-end there.\n"
-        "- Tier rules include only signals the backtest has. Merton PD (>20% "
-        "→ Distressed, 5-20% → Stressed) and EDGAR event flags (Item 1.03 / "
+        "- `Recall` (tier table) = fraction of distinct bankrupt companies "
+        "present in the panel's 24m pre-petition windows whose rows crossed "
+        "the tier rule.\n"
+        "- `Avg rows/qtr` divides tier rows fired by the 48 quarters in sample.\n"
+        "- Tier rules use only signals the backtest has. Merton PD (>20% → "
+        "Distressed, 5-20% → Stressed) and EDGAR event flags (Item 1.03 / "
         "2.04 / going concern / RSA / T-3) go on the live radar, not here.\n"
-        "- Debt coverage was improved by expanding the tag chain — Hertz, "
-        "Peabody, Caesars Operating, Diebold Nixdorf, Enviva, EFH and others "
-        "are now captured. Weatherford and Wolfspeed stay partial (their "
-        "pre-petition filings tagged debt only under atypical tags that aren't "
-        "in the chain).\n"
     )
 
     return "\n".join(out)
@@ -1182,14 +1336,14 @@ def main() -> int:
         for key, label, higher in SCORE_SPEC
     ]
 
-    # Tier rules — v3.
-    print("  Scoring tier rules …", flush=True)
-    tiers = tier_metrics(panel_v3_after_drop, cases)
+    # Tier rules — v4 (percentile-rank Stressed; Watch dropped).
+    print("  Scoring v4 tier rules …", flush=True)
+    tiers = tier_metrics_v4(panel_v3_after_drop, cases)
 
-    # Combined logistic score.
-    print("  Fitting combined logistic score (year-by-year) …", flush=True)
-    combined = logistic_combined(panel_v3_after_drop, cases)
-    altman_full = full_v3[0]  # Altman row for direct comparison.
+    # Combined score — fair v4 comparison.
+    print("  Running fair combined-score comparison …", flush=True)
+    combined_fair = combined_score_fair(panel_v3_after_drop, cases)
+    altman_full = full_v3[0]  # Altman row for context.
 
     # Coverage (both SIC rules).
     print("  Building coverage tables …", flush=True)
@@ -1213,7 +1367,7 @@ def main() -> int:
         coverage_v3=coverage_v3,
         coverage_v2=coverage_v2,
         tier_results=tiers,
-        combined=combined,
+        combined_fair=combined_fair,
         altman_full=altman_full,
     )
     out_path = Path(args.out)

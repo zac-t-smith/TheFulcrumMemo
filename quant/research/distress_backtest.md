@@ -1,6 +1,6 @@
-# Fulcrum v5 Phase 4 — Distress Radar backtest (v3)
+# Fulcrum v5 Phase 4 — Distress Radar backtest (v4)
 
-_Generated 2026-11-14T16:14:53.830602+00:00. Panel (before SIC filter): 232,994 rows; v2 SIC rule: 153,936 rows; v3 SIC rule: 160,440 rows (after in-case drop: 158,184; 2,256 dropped). Filings (2012-2026): 1,592 raw → after registrant-is-debtor filter and case-start collapse: **880 cases** (24 Chapter 22)._
+_Generated 2026-11-14T16:33:21.707518+00:00. Panel (before SIC filter): 232,994 rows; v2 SIC rule: 153,936 rows; v3 SIC rule: 160,440 rows (after in-case drop: 158,184; 2,256 dropped). Filings (2012-2026): 1,592 raw → after registrant-is-debtor filter and case-start collapse: **880 cases** (24 Chapter 22)._
 
 ## Label-set composition
 
@@ -96,33 +96,34 @@ Runway excluded from the common subset per spec — it only exists for cash-burn
 | Liquidity runway (months) | 18,862 | 2.61% | 0.578 | 0.579 | 2.90% | 1.11× | 1.50% | 1.16× | 31 | 14.2 | 77.42% |
 | 24m maturity pressure | 95,663 | 0.72% | 0.581 | 0.596 | 1.18% | 1.63× | 0.62% | 1.65× | 54 | 14.3 | 77.78% |
 
-## Tier rules (v3 SIC rule, full sample)
+## Tier rules — v4 (v3 SIC rule, full sample)
 
-Filing-only signals the backtest has access to. Merton PD and EDGAR event flags stay as live-only adds.
+Watch tier dropped from v3 — its 0.72% precision was below the base rate, so it was anti-signal. Stressed rebuilt on Altman Z'' percentile rank per quarter (top 5%, excluding Distressed) — floating threshold auto-targets the intended share of universe rows. Distressed unchanged.
 
-| Tier | Rule | Rows fired | Prec 12m | Prec 6m | Co. flagged | Co. in universe | Recall (companies) |
-|---|---|---:|---:|---:|---:|---:|---:|
-| distressed | `coverage < 1.0 AND runway < 12m` | 3,383 | 6.00% | 3.16% | 81 | 287 | 28.22% |
-| stressed | `Altman Z'' < 1.1 AND (coverage < 1.5 OR maturity_pressure > 1.0)` | 24,197 | 2.18% | 1.19% | 156 | 287 | 54.36% |
-| watch | `1.1 <= Altman Z'' <= 2.6 AND net_leverage > 6.0` | 2,904 | 0.72% | 0.31% | 10 | 287 | 3.48% |
-| any_tier | `Distressed OR Stressed OR Watch` | 28,077 | 2.13% | 1.16% | 182 | 287 | 63.41% |
+| Tier | Rule | Avg rows/qtr | Prec 12m | Lift 12m | Prec 6m | Lift 6m | Co. flagged | Co. in universe | Recall | Median lead (mo) |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| distressed | `coverage < 1.0 AND runway < 12m` | 70 | 6.00% | 8.88× | 3.16% | 9.01× | 81 | 287 | 28.22% | 9.5 |
+| stressed | `Altman Z'' top 5% within quarter, excluding Distressed` | 82 | 2.72% | 4.03× | 1.68% | 4.79× | 46 | 287 | 16.03% | 7.7 |
+| any_tier | `Distressed OR Stressed` | 152 | 4.24% | 6.27× | 2.37% | 6.74× | 123 | 287 | 42.86% | 9.2 |
 
-## Combined score — year-by-year logistic regression
+## Combined score — fair v4 comparison
 
-Features: Altman Z'', Coverage, Net leverage. Trained strictly on prior-year rows with closed 12m labels; predicted OOS for each scoring year. Compared with Altman Z'' alone on the full sample.
+Three models evaluated on the IDENTICAL rows (35,994 rows from scoring years 2017+ with Altman + Coverage + Net Leverage all present). Features are within-quarter percentile ranks, which handles the heavy outliers in raw coverage/leverage ratios. The logistic's training rule is strict: a training row's 12-month label window must close by January 1 of the prediction year.
 
-| Score | n scored | AUC 12m | AUC 6m | Top-10% prec 12m | Lift 12m | Base rate 12m |
+| Model | AUC 12m | Lift 12m | AUC 6m | Lift 6m | Top-10% prec 12m | Base rate 12m |
 |---|---:|---:|---:|---:|---:|---:|
-| Altman Z'' alone (full sample) | 92,222 | 0.807 | 0.827 | 3.22% | 3.93× | 0.82% |
-| Logistic (Altman + Cov + Lev) | 35,994 | 0.541 | 0.610 | 0.56% | 1.25× | 0.44% |
+| Altman Z'' (pctl rank) | 0.829 | 4.19× | 0.847 | 4.87× | 1.86% | 0.44% |
+| Avg of 3 pctl ranks (no-fit) | 0.866 | 5.94× | 0.896 | 6.58× | 2.64% | 0.44% |
+| Logistic (3 pctl ranks) | 0.851 | 5.13× | 0.875 | 5.92× | 2.28% | 0.44% |
 
-**Verdict:** combined score does not beat Altman on OOS AUC (12m).
+**Best on 12m lift:** Avg of 3 pctl ranks (no-fit) (5.94×).
 
 ### Read conventions / caveats
 
+- Lead with **lift**. AUC changes from v2 → v3 are partly a universe change: expanded debt-tag coverage pulled many large-debt names into the panel, including some that were high-signal (Hertz, EFH, Peabody, Caesars Operating). That shifts the base rate and inflates AUC. Lift is base-rate-normalized and travels with the same meaning across panel changes.
 - Sign on net leverage and maturity-pressure is flipped so "top decile" always means riskiest.
-- `Base 12m/6m` = share of panel rows for the score whose CIK files a bankruptcy within the forward window.
+- `Base 12m/6m` = share of rows in scope whose CIK files a bankruptcy within the forward window.
 - `Lift` = top-decile precision ÷ base rate. 1× is random.
-- `Recall (companies)` = fraction of distinct bankrupt companies present in the panel's 24m pre-petition windows whose score crossed the tier rule at any quarter-end there.
-- Tier rules include only signals the backtest has. Merton PD (>20% → Distressed, 5-20% → Stressed) and EDGAR event flags (Item 1.03 / 2.04 / going concern / RSA / T-3) go on the live radar, not here.
-- Debt coverage was improved by expanding the tag chain — Hertz, Peabody, Caesars Operating, Diebold Nixdorf, Enviva, EFH and others are now captured. Weatherford and Wolfspeed stay partial (their pre-petition filings tagged debt only under atypical tags that aren't in the chain).
+- `Recall` (tier table) = fraction of distinct bankrupt companies present in the panel's 24m pre-petition windows whose rows crossed the tier rule.
+- `Avg rows/qtr` divides tier rows fired by the 48 quarters in sample.
+- Tier rules use only signals the backtest has. Merton PD (>20% → Distressed, 5-20% → Stressed) and EDGAR event flags (Item 1.03 / 2.04 / going concern / RSA / T-3) go on the live radar, not here.
