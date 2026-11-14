@@ -127,6 +127,81 @@ ETFS: dict[str, dict[str, Any]] = {
         "inception": "2021-05-10",
         "role": "long_vol_proxy",
     },
+    # Sector ETFs for the v5 Phase 3 sector heat map. site_file set so each
+    # lands in src/data/ for the React consumer. Inception dates are the
+    # ETF's actual first trading date; yfinance returns the full history.
+    "XLV": {
+        "label": "Health Care Select Sector SPDR Fund",
+        "site_file": "xlvHistory.ts",
+        "inception": "1998-12-16",
+        "role": "sector_proxy_healthcare",
+    },
+    "XLI": {
+        "label": "Industrial Select Sector SPDR Fund",
+        "site_file": "xliHistory.ts",
+        "inception": "1998-12-16",
+        "role": "sector_proxy_industrials",
+    },
+    "XLY": {
+        "label": "Consumer Discretionary Select Sector SPDR Fund",
+        "site_file": "xlyHistory.ts",
+        "inception": "1998-12-16",
+        "role": "sector_proxy_consumer_discretionary",
+    },
+    "XRT": {
+        "label": "SPDR S&P Retail ETF",
+        "site_file": "xrtHistory.ts",
+        "inception": "2006-06-19",
+        "role": "sector_proxy_retail",
+    },
+    "XLB": {
+        "label": "Materials Select Sector SPDR Fund",
+        "site_file": "xlbHistory.ts",
+        "inception": "1998-12-16",
+        "role": "sector_proxy_chemicals_materials",
+    },
+    "IGV": {
+        "label": "iShares Expanded Tech-Software Sector ETF",
+        "site_file": "igvHistory.ts",
+        "inception": "2001-07-10",
+        "role": "sector_proxy_software",
+    },
+    "XLC": {
+        "label": "Communication Services Select Sector SPDR Fund",
+        "site_file": "xlcHistory.ts",
+        "inception": "2018-06-18",
+        "role": "sector_proxy_telecom_media",
+    },
+    "CARZ": {
+        "label": "First Trust NASDAQ Global Auto Index Fund",
+        "site_file": "carzHistory.ts",
+        "inception": "2011-05-10",
+        "role": "sector_proxy_autos",
+    },
+    "IYT": {
+        "label": "iShares U.S. Transportation ETF",
+        "site_file": "iytHistory.ts",
+        "inception": "2003-10-06",
+        "role": "sector_proxy_transportation",
+    },
+    "XHB": {
+        "label": "SPDR S&P Homebuilders ETF",
+        "site_file": "xhbHistory.ts",
+        "inception": "2006-01-31",
+        "role": "sector_proxy_homebuilders",
+    },
+    "CRAK": {
+        "label": "VanEck Oil Refiners ETF",
+        "site_file": "crakHistory.ts",
+        "inception": "2015-07-30",
+        "role": "sector_proxy_refiners",
+    },
+    "VNQ": {
+        "label": "Vanguard Real Estate ETF",
+        "site_file": "vnqHistory.ts",
+        "inception": "2004-09-23",
+        "role": "sector_proxy_reits",
+    },
 }
 
 
