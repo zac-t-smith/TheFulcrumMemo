@@ -37,6 +37,20 @@ quant/fred_pull_summary.json
 quant/ebp_pull_summary.json
 quant/etf_pull_summary.json
 quant/sector_heatmap_summary.json
+quant/sec_bulk_summary.json
+quant/ch11_summary.json
+quant/distress_panel_summary.json
+
+# Phase 4 SEC bulk-data cache. Companyfacts + submissions zips are
+# ~1.4 GB and ~1.5 GB respectively; never commit them. Every fact
+# carries a `filed` date so point-in-time analysis from a newer zip
+# gives the same answer for past dates.
+quant/.cache/
+
+# Phase 4 panel CSV: the full panel ships at ~13 MB (48 quarter-ends x
+# ~1100 universe-eligible CIKs/quarter). The workflow commits it when
+# it's under 5 MB; otherwise it stays as a workflow artifact only.
+quant/research/distress_panel.csv
 
 REVAMP_PLAN.md
 public/pdfs/

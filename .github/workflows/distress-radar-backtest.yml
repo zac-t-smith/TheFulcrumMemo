@@ -1,0 +1,151 @@
+name: Distress Radar Backtest
+
+# Phase 4 vertical slice: pull the SEC bulk zips (companyfacts + submissions),
+# refresh the Chapter 11 label set from EDGAR Item 1.03 filings, build the
+# point-in-time distress panel, and emit the backtest markdown report.
+#
+# Manual trigger only until the results are reviewed. No UI publishes from
+# this workflow; everything it writes lives under quant/research/.
+#
+# Required repo configuration:
+#   Settings → Variables → Actions → `SEC_USER_AGENT`
+#   Format:  "Your Name your.email@example.com"
+#
+# SEC requires a contact User-Agent on every request; the variable keeps
+# the email out of the repo. If you prefer a secret, swap `vars` for
+# `secrets` below.
+on:
+  workflow_dispatch:
+    inputs:
+      ch11_start:
+        description: "Chapter 11 label-set start date (YYYY-MM-DD)"
+        required: false
+        default: "2015-01-01"
+      ch11_end:
+        description: "Chapter 11 label-set end date (YYYY-MM-DD; blank = today)"
+        required: false
+        default: ""
+      panel_start:
+        description: "Panel-build start date (YYYY-MM-DD)"
+        required: false
+        default: "2014-12-31"
+
+permissions:
+  contents: write
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: quant/requirements.txt
+
+      - name: Install pipeline deps
+        working-directory: quant
+        run: pip install -r requirements.txt
+
+      - name: Resolve dates
+        id: dates
+        run: |
+          echo "ch11_end=${{ inputs.ch11_end || github.event.inputs.ch11_end || '' }}" >> $GITHUB_OUTPUT
+          if [[ -z "${{ inputs.ch11_end || github.event.inputs.ch11_end || '' }}" ]]; then
+            echo "effective_ch11_end=$(date -u +%Y-%m-%d)" >> $GITHUB_OUTPUT
+          else
+            echo "effective_ch11_end=${{ inputs.ch11_end || github.event.inputs.ch11_end }}" >> $GITHUB_OUTPUT
+          fi
+
+      # SEC bulk cache under quant/.cache/sec/. Keyed by day so a rerun on the
+      # same day avoids the ~3 GB re-download; the cache IS the fetch strategy.
+      - name: Restore SEC bulk cache
+        id: sec_cache
+        uses: actions/cache@v4
+        with:
+          path: quant/.cache/sec
+          key: sec-bulk-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            sec-bulk-${{ runner.os }}-
+
+      - name: Fetch SEC bulk zips
+        env:
+          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+        run: |
+          if [[ -z "$SEC_USER_AGENT" ]]; then
+            echo "::error::SEC_USER_AGENT repo variable is empty. Set it at Settings → Variables → Actions."
+            exit 1
+          fi
+          python quant/scripts/fetch_sec_bulk.py \
+            --cache-dir quant/.cache/sec \
+            --summary-out quant/sec_bulk_summary.json
+          cat quant/sec_bulk_summary.json
+
+      - name: Refresh Chapter 11 label set
+        env:
+          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+        run: |
+          python quant/scripts/fetch_ch11_filings.py \
+            --start "${{ inputs.ch11_start || '2015-01-01' }}" \
+            --end "${{ steps.dates.outputs.effective_ch11_end }}" \
+            --out quant/research/ch11_filings.csv \
+            --summary-out quant/ch11_summary.json
+          cat quant/ch11_summary.json
+
+      - name: Build distress panel
+        run: |
+          python quant/scripts/build_distress_panel.py \
+            --cache-dir quant/.cache/sec \
+            --start "${{ inputs.panel_start || '2014-12-31' }}" \
+            --end "${{ steps.dates.outputs.effective_ch11_end }}" \
+            --out quant/research/distress_panel.csv \
+            --summary-out quant/distress_panel_summary.json
+          cat quant/distress_panel_summary.json
+
+      - name: Backtest + render markdown report
+        run: |
+          python quant/scripts/backtest_distress.py \
+            --panel quant/research/distress_panel.csv \
+            --ch11 quant/research/ch11_filings.csv \
+            --out quant/research/distress_backtest.md
+          head -60 quant/research/distress_backtest.md
+
+      - name: Commit research artifacts (if changed)
+        run: |
+          git config user.name "fulcrum-data-bot"
+          git config user.email "fulcrum-data-bot@users.noreply.github.com"
+          # Panel CSV: commit when it's small enough; otherwise it stays as an artifact.
+          PANEL_SIZE=$(stat -c%s quant/research/distress_panel.csv 2>/dev/null || echo 0)
+          if [[ "$PANEL_SIZE" -gt 5242880 ]]; then
+            echo "Panel is ${PANEL_SIZE} bytes (>5 MB) — leaving unversioned."
+            git checkout -- quant/research/distress_panel.csv 2>/dev/null || true
+          fi
+          if [[ -n "$(git status --porcelain quant/research/)" ]]; then
+            git add quant/research/
+            git commit -m "distress radar backtest refit $(date -u +%Y-%m-%d)
+
+          Auto-generated by distress-radar-backtest.yml. Ch11 label count
+          and panel-row count are in the step summaries above."
+            git push
+          else
+            echo "No research changes to commit."
+          fi
+
+      - name: Upload backtest artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: distress-radar-${{ github.run_id }}
+          path: |
+            quant/research/distress_backtest.md
+            quant/research/distress_panel.csv
+            quant/research/ch11_filings.csv
+            quant/sec_bulk_summary.json
+            quant/ch11_summary.json
+            quant/distress_panel_summary.json
+          retention-days: 90
+          if-no-files-found: warn
