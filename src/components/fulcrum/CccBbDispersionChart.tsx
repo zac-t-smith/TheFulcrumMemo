@@ -16,6 +16,7 @@
 import { useEffect, useMemo, useRef, useCallback } from 'react';
 import { cccOasHistory } from '@/data/cccOasHistory';
 import { bbOasHistory } from '@/data/bbOasHistory';
+import { useCanvasSize, FONT_SANS, FONT_SERIF } from './chartUtils';
 
 // Canary threshold: above 3.5× CCC is breaking ahead of BB. Below 3.5×
 // the cross-tier relationship is within historic norms. The number is
@@ -52,6 +53,7 @@ function computeMedian(values: number[]): number {
 export const CccBbDispersionChart = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dims = useCanvasSize(containerRef, { aspectRatio: 340 / 1040, minHeightPx: 240 });
 
   const series = useMemo(() => buildRatioSeries(), []);
   const median = useMemo(() => computeMedian(series.map(p => p.ratio)), [series]);
@@ -59,16 +61,12 @@ export const CccBbDispersionChart = () => {
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (!canvas || !container || series.length === 0) return;
+    if (!canvas || series.length === 0 || dims.cssW === 0) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const DPR = Math.max(1, window.devicePixelRatio || 1);
-    const cssW = container.clientWidth;
-    const cssH = Math.round(cssW * (340 / 1040));
-
+    const { cssW, cssH, dpr: DPR, isNarrow } = dims;
     canvas.style.width = `${cssW}px`;
     canvas.style.height = `${cssH}px`;
     canvas.width = Math.round(cssW * DPR);
@@ -107,14 +105,14 @@ export const CccBbDispersionChart = () => {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText('CCC-BB Dispersion (the canary)', plotX, 8);
-    ctx.font = 'italic 10.5px Georgia, serif';
+    ctx.font = 'italic 11px Georgia, serif';
     ctx.fillStyle = '#4a4a4a';
     ctx.fillText('CCC OAS ÷ BB OAS — junk-of-junk breaking ahead of the rest of HY', plotX, 22);
 
     // Grid (half-step ticks).
     ctx.strokeStyle = 'rgba(26,26,26,0.06)';
     ctx.lineWidth = 1;
-    ctx.font = 'bold 10px Georgia, serif';
+    ctx.font = 'bold 11px Georgia, serif';
     ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
@@ -134,13 +132,13 @@ export const CccBbDispersionChart = () => {
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
     ctx.fillStyle = '#1a1a1a';
-    ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+    ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
     ctx.fillText('Ratio (CCC OAS ÷ BB OAS)', 0, 0);
     ctx.restore();
 
     // X-axis ticks (months / quarters).
     ctx.fillStyle = '#4a4a4a';
-    ctx.font = '10px Georgia, serif';
+    ctx.font = '11px Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     const startYear = new Date(series[0].date).getUTCFullYear();
@@ -175,7 +173,7 @@ export const CccBbDispersionChart = () => {
     ctx.lineTo(plotX + plotW, yMedian);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.font = 'italic 10px Georgia, serif';
+    ctx.font = 'italic 11px Georgia, serif';
     ctx.fillStyle = '#4a4a4a';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
@@ -189,7 +187,7 @@ export const CccBbDispersionChart = () => {
     ctx.moveTo(plotX, yThreshold);
     ctx.lineTo(plotX + plotW, yThreshold);
     ctx.stroke();
-    ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+    ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
     ctx.fillStyle = '#c8102e';
     ctx.fillText(`threshold ${CCC_BB_CANARY_THRESHOLD.toFixed(1)}×`, plotX + plotW + 6, yThreshold);
 
@@ -219,7 +217,7 @@ export const CccBbDispersionChart = () => {
       ctx.stroke();
 
       // Endpoint badge.
-      ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+      ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
       const text = `${latest.ratio.toFixed(2)}×`;
       const tw = ctx.measureText(text).width;
       const padX = 5;
@@ -241,10 +239,7 @@ export const CccBbDispersionChart = () => {
 
   useEffect(() => {
     draw();
-    const onResize = () => draw();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, [draw]);
+  }, [draw, dims]);
 
   return (
     <div

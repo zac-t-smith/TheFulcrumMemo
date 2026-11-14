@@ -18,6 +18,7 @@
  */
 
 import { useEffect, useMemo, useRef, useCallback } from 'react';
+import { useCanvasSize } from './chartUtils';
 import { baaSpreadHistory } from '@/data/baaSpreadHistory';
 import { vixHistory } from '@/data/vixHistory';
 import { BAA_EVENT_MARKERS } from '@/data/fulcrumIndex';
@@ -130,6 +131,7 @@ function buildSizeMapper(points: ScatterPoint[]): (vix: number) => number {
 export const BaaHistoricalScatter = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dims = useCanvasSize(containerRef, { aspectRatio: 0.36538461538461536, minHeightPx: 240 });
 
   const { points } = useMemo(() => buildScatterData(), []);
   const sizeOf = useMemo(() => buildSizeMapper(points), [points]);
@@ -143,9 +145,8 @@ export const BaaHistoricalScatter = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const DPR = Math.max(1, window.devicePixelRatio || 1);
-    const cssW = container.clientWidth;
-    const cssH = Math.round(cssW * (980 / 2080));
+    const { cssW, cssH, dpr: DPR } = dims;
+    if (cssW === 0) return;
 
     canvas.style.width = `${cssW}px`;
     canvas.style.height = `${cssH}px`;
@@ -181,7 +182,7 @@ export const BaaHistoricalScatter = () => {
     // Y-axis grid + tick labels.
     ctx.strokeStyle = 'rgba(26,26,26,0.06)';
     ctx.lineWidth = 1;
-    ctx.font = 'bold 10px Georgia, serif';
+    ctx.font = 'bold 11px Georgia, serif';
     ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
@@ -211,7 +212,7 @@ export const BaaHistoricalScatter = () => {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#1a1a1a';
-    ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+    ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
     ctx.fillText('BAA10Y (bps, log, inverted)', 0, 0);
     ctx.restore();
 
@@ -286,7 +287,7 @@ export const BaaHistoricalScatter = () => {
     // don't fight the right-side cluster: event labels (CPI shock, Hormuz
     // closure) dangle from the top edge on the right, and the "today" badge
     // sits near the current dot which is also right-of-center.
-    ctx.font = 'italic 10.5px Georgia, serif';
+    ctx.font = 'italic 11px Georgia, serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillStyle = 'rgba(138, 24, 24, 0.55)';
@@ -338,7 +339,7 @@ export const BaaHistoricalScatter = () => {
       // Endpoint badge.
       const pctlPct = Math.round(latest.pctl * 100);
       const badgeText = `today · ${Math.round(latest.baa)} bps · vix ${Math.round(latest.vix)} · pctl ${pctlPct}`;
-      ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+      ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
       const tw = ctx.measureText(badgeText).width;
       const padX = 6;
       const bw = tw + padX * 2;
@@ -366,10 +367,7 @@ export const BaaHistoricalScatter = () => {
 
   useEffect(() => {
     draw();
-    const onResize = () => draw();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, [draw]);
+  }, [draw, dims]);
 
   return (
     <div className="mb-4">

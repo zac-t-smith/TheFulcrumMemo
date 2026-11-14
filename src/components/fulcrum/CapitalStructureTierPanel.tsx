@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useCallback } from 'react';
+import { useCanvasSize } from './chartUtils';
 import { bbbOasHistory } from '@/data/bbbOasHistory';
 import { bbOasHistory } from '@/data/bbOasHistory';
 import { hyOasHistory } from '@/data/hyOasHistory';
@@ -37,6 +38,7 @@ const TIERS: Tier[] = [
 export const CapitalStructureTierPanel = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dims = useCanvasSize(containerRef, { aspectRatio: 0.3269230769230769, minHeightPx: 240 });
 
   // Derive shared time bounds and y-axis log range.
   const bounds = useMemo(() => {
@@ -67,9 +69,8 @@ export const CapitalStructureTierPanel = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const DPR = Math.max(1, window.devicePixelRatio || 1);
-    const cssW = container.clientWidth;
-    const cssH = Math.round(cssW * (340 / 1040));
+    const { cssW, cssH, dpr: DPR } = dims;
+    if (cssW === 0) return;
 
     canvas.style.width = `${cssW}px`;
     canvas.style.height = `${cssH}px`;
@@ -101,14 +102,14 @@ export const CapitalStructureTierPanel = () => {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText('Capital Structure Tiers', plotX, 8);
-    ctx.font = 'italic 10.5px Georgia, serif';
+    ctx.font = 'italic 11px Georgia, serif';
     ctx.fillStyle = '#4a4a4a';
     ctx.fillText('OAS by tier — log scale, BBB / BB / HY / CCC', plotX, 22);
 
     // Y-axis grid + labels.
     ctx.strokeStyle = 'rgba(26,26,26,0.06)';
     ctx.lineWidth = 1;
-    ctx.font = 'bold 10px Georgia, serif';
+    ctx.font = 'bold 11px Georgia, serif';
     ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
@@ -127,13 +128,13 @@ export const CapitalStructureTierPanel = () => {
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
     ctx.fillStyle = '#1a1a1a';
-    ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+    ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
     ctx.fillText('OAS (bps, log)', 0, 0);
     ctx.restore();
 
     // X-axis ticks (year + half-year labels).
     ctx.fillStyle = '#4a4a4a';
-    ctx.font = '10px Georgia, serif';
+    ctx.font = '11px Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     const startYear = new Date(tMin).getUTCFullYear();
@@ -188,7 +189,7 @@ export const CapitalStructureTierPanel = () => {
       ctx.lineWidth = 1;
       ctx.stroke();
 
-      ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+      ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
       const text = `${tier.label} ${Math.round(last.value)}`;
       const tw = ctx.measureText(text).width;
       const padX = 5;
@@ -210,10 +211,7 @@ export const CapitalStructureTierPanel = () => {
 
   useEffect(() => {
     draw();
-    const onResize = () => draw();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, [draw]);
+  }, [draw, dims]);
 
   return (
     <div
