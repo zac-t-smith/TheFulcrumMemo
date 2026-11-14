@@ -107,6 +107,12 @@ export const SectorHeatMap = () => {
 
   const realizedActive = data.availability.realized.active > 0;
   const fundamentalsActive = data.availability.fundamentals.active > 0;
+  // Composite only means something once a second percentile column is live;
+  // until then it would just repeat Market. Empty columns are hidden so the
+  // table fits a phone without sideways scrolling.
+  const compositeActive = realizedActive || fundamentalsActive;
+  const rank = (r: SectorRow) => (compositeActive ? r.composite : r.market.score) ?? -1;
+  const rows = [...data.rows].sort((a, b) => rank(b) - rank(a));
 
   return (
     <div className="mb-4">
@@ -128,13 +134,16 @@ export const SectorHeatMap = () => {
           className="text-[11.5px] italic mb-3"
           style={{ color: '#4a4a4a', fontFamily: 'Georgia, serif' }}
         >
-          Each column is a percentile against the sector&rsquo;s own history (0 = calm,
-          100 = stressed). Market = 6-month drawdown from the 52-week high plus
-          3-month realized volatility. Shock is a static 1&ndash;5 score for
-          oil/freight sensitivity, colored by sign. Composite is the mean of the
-          available columns. Disagreement flag fires when any pair of columns
-          spreads &gt;40 points &mdash; that&rsquo;s the &ldquo;calm on top, concern
-          at the bottom&rdquo; pattern surfaced row-by-row.
+          Sorted by stress. Market is a percentile against the sector ETF&rsquo;s own
+          history (0 = calm, 100 = stressed): 6-month drawdown from the 52-week high
+          plus 3-month realized volatility, with the 3-month change. Histories start
+          on different dates (shown under each ticker), so a short history has seen
+          fewer cycles. Shock is a static 1&ndash;5 score for oil and freight
+          sensitivity, colored by direction; hover for the rationale.
+          {compositeActive && (
+            <> Composite is the mean of the live percentile columns; &#9888; marks
+            columns more than 40 points apart.</>
+          )}
           {data.asOfDate && <> As of {data.asOfDate}.</>}
         </div>
 
@@ -143,15 +152,15 @@ export const SectorHeatMap = () => {
             <thead>
               <tr style={{ borderBottom: '1px solid #d9d4c7' }}>
                 <th className="py-1.5 pr-3 text-left font-semibold text-[#1a1a1a]">Sector</th>
-                {headerCell('Market', 'drawdown + 3m vol pctl')}
-                {headerCell('Fundamentals', fundamentalsActive ? 'median PD + % flagged' : 'awaits Phase 4')}
-                {headerCell('Realized', realizedActive ? 'manual-input pctl' : 'awaits manual_inputs')}
-                {headerCell('Shock', '1-5, oil/freight sensitivity')}
-                {headerCell('Composite', 'avg of available cols · 3m change')}
+                {headerCell('Market', compositeActive ? 'drawdown + 3m vol' : 'drawdown + 3m vol · 3m chg')}
+                {fundamentalsActive && headerCell('Fundamentals', 'median PD + % flagged')}
+                {realizedActive && headerCell('Realized', 'defaults + bankruptcies')}
+                {headerCell('Shock', '1–5, oil/freight')}
+                {compositeActive && headerCell('Composite', 'mean of live cols · 3m chg')}
               </tr>
             </thead>
             <tbody>
-              {data.rows.map((row: SectorRow) => (
+              {rows.map((row: SectorRow) => (
                 <tr
                   key={row.id}
                   style={{
@@ -161,19 +170,48 @@ export const SectorHeatMap = () => {
                   <td className="py-1.5 pr-3">
                     <div className="font-medium text-[#1a1a1a]">{row.label}</div>
                     <div className="text-[10.5px] text-[#6a6a6a]">
-                      {row.etf ? row.etf : <span className="italic">no sector ETF</span>}
+                      {row.etf ? (
+                        <>
+                          {row.etf}
+                          {row.historyStart && <> &middot; since {row.historyStart.slice(0, 4)}</>}
+                        </>
+                      ) : (
+                        <span className="italic">no clean sector ETF</span>
+                      )}
                     </div>
                   </td>
 
-                  <CellPctl value={row.market.score} />
+                  {compositeActive ? (
+                    <CellPctl value={row.market.score} />
+                  ) : (
+                    <td
+                      className="py-1.5 px-2 text-right tabular-nums whitespace-nowrap"
+                      style={{
+                        background: row.market.score !== null ? stressColor(row.market.score) : 'transparent',
+                        fontWeight: 600,
+                        color: row.market.score !== null ? '#1a1a1a' : '#6a6a6a',
+                      }}
+                    >
+                      {formatPctl(row.market.score)}
+                      {row.market.changeArrow && (
+                        <span
+                          className="ml-1.5 text-[10.5px] font-semibold"
+                          style={{ color: arrowColor(row.market.changeArrow) }}
+                          title={`3-month change: ${formatChange(row.market.change3m)} pts`}
+                        >
+                          {arrowGlyph(row.market.changeArrow)}
+                        </span>
+                      )}
+                    </td>
+                  )}
 
-                  <CellPctl value={row.fundamentals.score} />
+                  {fundamentalsActive && <CellPctl value={row.fundamentals.score} />}
 
-                  <CellPctl value={row.realized.score} />
+                  {realizedActive && <CellPctl value={row.realized.score} />}
 
                   {/* Shock cell — static 1-5 with sign-colored background */}
                   <td
-                    className="py-1.5 px-2 text-right tabular-nums"
+                    className="py-1.5 px-2 text-right tabular-nums whitespace-nowrap"
                     style={{
                       background: shockColor(row.shock.sign, row.shock.score),
                       fontWeight: 600,
@@ -187,6 +225,8 @@ export const SectorHeatMap = () => {
                     </span>
                   </td>
 
+                  {compositeActive && (
+                    <>
                   {/* Composite cell with 3m change arrow */}
                   <td
                     className="py-1.5 px-2 text-right tabular-nums"
@@ -216,6 +256,8 @@ export const SectorHeatMap = () => {
                       </span>
                     )}
                   </td>
+                    </>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -226,22 +268,16 @@ export const SectorHeatMap = () => {
           className="text-[10.5px] italic mt-3"
           style={{ color: '#6a6a6a', fontFamily: 'Georgia, serif' }}
         >
-          {realizedActive ? (
-            <>
-              Realized column is live for{' '}
-              <strong>{data.availability.realized.active}</strong> of{' '}
-              {data.availability.realized.total} sectors.
-            </>
-          ) : (
-            <>
-              Realized column awaits verified sector entries in{' '}
-              <code>manual_inputs.json</code> (<code>fitch_pc_default_ttm_by_sector</code>,{' '}
-              <code>sp_large_co_bankruptcies_by_sector</code>). Market and Shock
-              columns are live now.
-            </>
+          {!realizedActive && (
+            <>Coming next: a Realized column (sector default rates and bankruptcy counts,
+            added once each figure is checked against its primary source). </>
           )}
-          {' '}Fundamentals column fills in once the Phase 4 distress radar ships.
-          Disagreement flags (⚠) will activate once more than one column is populated.
+          {!fundamentalsActive && (
+            <>A Fundamentals column will come from the company-level distress screen. </>
+          )}
+          {!compositeActive && (
+            <>Once two percentile columns are live, a Composite column and disagreement flags appear.</>
+          )}
         </div>
       </div>
     </div>

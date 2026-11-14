@@ -166,7 +166,7 @@ const SECTORS: readonly SectorDef[] = [
   },
   {
     id: 'energy_ep',
-    label: 'Energy — E&P',
+    label: 'Energy — majors & E&P',
     etf: 'XLE',
     etfHistory: xleHistory,
     manualInputSectorTag: 'energy_ep',
@@ -304,6 +304,8 @@ export interface SectorRow {
   id: SectorId;
   label: string;
   etf: string | null;
+  /** First date of the ETF history the percentiles are scored against. */
+  historyStart: string | null;
   market: SectorMarketColumn;
   fundamentals: SectorFundamentalsColumn;
   realized: SectorRealizedColumn;
@@ -490,6 +492,7 @@ export function buildSectorHeatMap(): SectorHeatMapResult {
       id: s.id,
       label: s.label,
       etf: s.etf,
+      historyStart: s.etfHistory && s.etfHistory.length > 0 ? s.etfHistory[0].date : null,
       market,
       fundamentals,
       realized,
