@@ -1055,9 +1055,47 @@ The Fulcrum Index
             </div>
           </div>
 
+          {/* v5 Step 2: sticky sub-nav. Horizontal scroll under 640px so it
+              stays legible on phones; anchors scroll to each section's id. */}
+          <nav
+            aria-label="Fulcrum Index sections"
+            className="sticky top-0 z-20 -mx-4 px-4 mb-4"
+            style={{
+              background: 'var(--paper)',
+              borderBottom: '1px solid var(--rule)',
+            }}
+          >
+            <ul
+              className="flex gap-4 py-2 overflow-x-auto whitespace-nowrap text-[12px] tracking-[0.04em]"
+              style={{ fontFamily: 'var(--font-sans)' }}
+            >
+              {[
+                { id: 'overview', label: 'Overview' },
+                { id: 'cycle', label: 'Cycle' },
+                { id: 'sectors', label: 'Sectors' },
+                { id: 'companies', label: 'Companies' },
+                { id: 'signal-history', label: 'Signal history' },
+                { id: 'positioning', label: 'Positioning' },
+                { id: 'methodology', label: 'Methodology' },
+              ].map(s => (
+                <li key={s.id}>
+                  <a
+                    href={`#${s.id}`}
+                    className="text-[#4a4a4a] hover:text-[#1a1a1a]"
+                  >
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
           {/* Main content */}
           {latestData && (
             <>
+              {/* ===== Overview: readout strip + MD read + Canary ===== */}
+              <section id="overview" className="scroll-mt-16">
+              <h2 className="sr-only">Overview</h2>
               {/* Live readout strip */}
               <div
                 className="grid grid-cols-2 md:grid-cols-4 gap-0 mb-4"
@@ -1242,6 +1280,11 @@ The Fulcrum Index
                 })()}
               </div>
 
+              </section>
+
+              {/* ===== Cycle Risk + Realized Distress ===== */}
+              <section id="cycle" className="scroll-mt-16">
+              <h2 className="sr-only">Cycle</h2>
               {/* v5 Phase 2D: Cycle Risk + Hidden-Stress Gap, side-by-side.
                   Market Stress above is coincident — these two add the "when
                   does the cycle turn?" view (Cycle Risk, EBP + yield curve)
@@ -1300,6 +1343,11 @@ The Fulcrum Index
                 </p>
               </div>
 
+              </section>
+
+              {/* ===== Sectors: WHERE is the stress concentrated ===== */}
+              <section id="sectors" className="scroll-mt-16">
+              <h2 className="sr-only">Sectors</h2>
               {/* v5 Phase 3: Sector heat map. Follows the Reading callout
                   directly because the callout promises "sector layers
                   below" — this is them. Methodology (CycleBacktestTable)
@@ -1328,6 +1376,30 @@ The Fulcrum Index
                 <CycleBacktestTable />
               </div>
 
+              </section>
+
+              {/* ===== Companies: Distress Radar (Phase 4, Step 10) ===== */}
+              <section id="companies" className="scroll-mt-16">
+              <h2 className="sr-only">Companies</h2>
+              <div className="my-6 py-6 px-4 text-[12.5px] italic text-[#4a4a4a] rounded"
+                style={{
+                  border: '1px dashed var(--rule)',
+                  background: 'rgba(0,0,0,0.02)',
+                  fontFamily: 'var(--font-serif)',
+                }}
+              >
+                <span className="text-[9.5px] not-italic tracking-[0.18em] uppercase font-bold mr-2 text-[#4a4a4a]">
+                  Companies — Distress Radar
+                </span>
+                Wiring the top-25 names each quarter with reason codes and reasoned
+                tiers. Step 10 of the v5 UI sprint. The underlying backtest already
+                shipped (<code className="text-[11px]">quant/research/distress_backtest.md</code>).
+              </div>
+              </section>
+
+              {/* ===== Signal history ===== */}
+              <section id="signal-history" className="scroll-mt-16">
+              <h2 className="sr-only">Signal history</h2>
               {/* Sub-section header — historical-distribution scatter */}
               <div className="mt-2 mb-3">
                 <div
@@ -1415,6 +1487,11 @@ Market Stress — Composite Path
               </div>
 
               {/* ================================================================= */}
+              </section>
+
+              {/* ===== Positioning ===== */}
+              <section id="positioning" className="scroll-mt-16">
+              <h2 className="sr-only">Positioning</h2>
               {/* PANEL 2: Position Framework */}
               {/* Backtest metrics temporarily removed — the original sector-
                   rotation workbook and script were lost. Rebuild is scoped
@@ -1773,13 +1850,22 @@ Market Stress — Composite Path
                 ))}
               </div>
 
+              </section>
+
+              {/* ===== Methodology & data status =====
+                  Step 6 will make this a collapsible section with the
+                  backtest tables moved in from above. For now it holds the
+                  Sources attribution so the sub-nav's Methodology anchor
+                  lands somewhere real. */}
+              <section id="methodology" className="scroll-mt-16">
+              <h2 className="sr-only">Methodology &amp; data status</h2>
               {/* Footer */}
               <div
                 className="flex flex-col md:flex-row justify-between items-baseline gap-4 pt-2.5"
                 style={{ borderTop: '1px solid var(--ink)' }}
               >
                 <div
-                  className="text-[10px] text-[#4a4a4a] tracking-[0.04em] max-w-full md:max-w-[75%]"
+                  className="text-[11px] text-[#4a4a4a] tracking-[0.04em] max-w-full md:max-w-[75%]"
                   style={{ fontFamily: 'var(--font-sans)' }}
                 >
                   <strong>Sources:</strong> {FULCRUM_INDEX_ATTRIBUTION}
@@ -1791,6 +1877,7 @@ Market Stress — Composite Path
                   The Fulcrum Memo
                 </div>
               </div>
+              </section>
             </>
           )}
         </main>
