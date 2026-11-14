@@ -29,6 +29,9 @@ import { CccBbDispersionChart, CCC_BB_CANARY_THRESHOLD } from '@/components/fulc
 import { CapitalStructureTierPanel } from '@/components/fulcrum/CapitalStructureTierPanel';
 import { HyIgDispersionChart } from '@/components/fulcrum/HyIgDispersionChart';
 import { BaaHistoricalScatter } from '@/components/fulcrum/BaaHistoricalScatter';
+import { HiddenStressGap } from '@/components/fulcrum/HiddenStressGap';
+import { CycleRiskVsNormalTile } from '@/components/fulcrum/CycleRiskVsNormalTile';
+import { CycleBacktestTable } from '@/components/fulcrum/CycleBacktestTable';
 import {
   buildIndexTimeSeries,
   calculate30DayTrend,
@@ -427,7 +430,7 @@ const FulcrumIndexPage = () => {
     ctx.textAlign = 'center';
     ctx.fillStyle = '#1a1a1a';
     ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
-    ctx.fillText('Fulcrum Index (0-100)', 0, 0);
+    ctx.fillText('Market Stress (0-100)', 0, 0);
     ctx.restore();
 
     // ---------- 6. PLOT BORDER ----------
@@ -587,7 +590,7 @@ const FulcrumIndexPage = () => {
     ctx.moveTo(legX + 8, legY + 30);
     ctx.lineTo(legX + 28, legY + 30);
     ctx.stroke();
-    ctx.fillText('Fulcrum Index (right)', legX + 34, legY + 30);
+    ctx.fillText('Market Stress (right)', legX + 34, legY + 30);
 
     // ---------- 12. ZONE CALLOUTS ----------
     ctx.font = 'italic 9px Georgia, serif';
@@ -933,7 +936,7 @@ const FulcrumIndexPage = () => {
 
     ctx.font = 'italic 10px Georgia, serif';
     ctx.fillStyle = '#4a4a4a';
-    ctx.fillText('Asset performance by Fulcrum Index regime (normalized)', plotX, plotY - 14);
+    ctx.fillText('Asset performance by Market Stress regime (normalized)', plotX, plotY - 14);
 
     // Regime color bar label
     ctx.font = '9px Helvetica Neue, Arial, sans-serif';
@@ -1084,7 +1087,7 @@ The Fulcrum Index
                     className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold"
                     style={{ fontFamily: 'var(--font-sans)' }}
                   >
-                    Fulcrum Index
+                    Market Stress
                   </div>
                   <div
                     className="text-[22px] font-bold text-[#1a1a1a] tracking-tight"
@@ -1252,6 +1255,68 @@ The Fulcrum Index
                 })()}
               </div>
 
+              {/* v5 Phase 2D: Cycle Risk + Hidden-Stress Gap, side-by-side.
+                  Market Stress above is coincident — these two add the "when
+                  does the cycle turn?" view (Cycle Risk, EBP + yield curve)
+                  and the "are defaults running ahead of spreads?" view
+                  (Hidden-Stress Gap). Conclusion callout bridges to the
+                  not-yet-built sector (Phase 3) and company (Phase 4) layers. */}
+              <div className="mt-6 mb-3">
+                <div
+                  className="text-[10px] tracking-[0.18em] uppercase text-[#4a4a4a] font-semibold"
+                  style={{ fontFamily: 'var(--font-sans)' }}
+                >
+                  Cycle Risk &amp; Realized Distress
+                </div>
+                <div
+                  className="text-[12.5px] text-[#4a4a4a] italic mt-1"
+                  style={{ fontFamily: 'var(--font-serif)' }}
+                >
+                  Market Stress tells you how spreads are priced now; these tell you
+                  when the cycle turns and whether realized defaults already run ahead
+                  of spreads.
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+                <div className="md:col-span-2">
+                  <CycleRiskVsNormalTile />
+                </div>
+                <div className="md:col-span-3">
+                  <HiddenStressGap />
+                </div>
+              </div>
+
+              {/* Bridge-to-the-rest-of-the-site callout. Phrasing matches the
+                  current data (cycle probability at base rate, realized
+                  distress elevated). When the regimes shift, edit here. */}
+              <div
+                className="py-2.5 px-3.5 my-4"
+                style={{
+                  borderLeft: '3px solid #c8102e',
+                  background: 'rgba(200, 16, 46, 0.04)',
+                }}
+              >
+                <div
+                  className="text-[9.5px] tracking-[0.18em] uppercase text-[#c8102e] font-bold mb-1"
+                  style={{ fontFamily: 'var(--font-sans)' }}
+                >
+                  Reading
+                </div>
+                <p
+                  className="text-[14px] leading-relaxed text-[#1a1a1a] m-0"
+                  style={{ fontFamily: 'var(--font-serif)' }}
+                >
+                  Leading indicators read normal while realized distress is elevated.
+                  The stress is company- and sector-specific rather than a macro cycle —
+                  the case for the sector and company layers below.
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <CycleBacktestTable />
+              </div>
+
               {/* Sub-section header — historical-distribution scatter */}
               <div className="mt-2 mb-3">
                 <div
@@ -1276,7 +1341,7 @@ The Fulcrum Signal — Historical Distribution
                   className="text-[10px] tracking-[0.18em] uppercase text-[#4a4a4a] font-semibold"
                   style={{ fontFamily: 'var(--font-sans)' }}
                 >
-The Fulcrum Index — Composite Path
+Market Stress — Composite Path
                 </div>
                 <div
                   className="text-[12.5px] text-[#4a4a4a] italic mt-1"
@@ -1517,7 +1582,7 @@ The Fulcrum Index — Composite Path
                     className="text-[13px] text-[#1a1a1a] italic"
                     style={{ fontFamily: 'var(--font-serif)' }}
                   >
-                    Average daily returns by asset class during each Fulcrum Index regime ({Math.round(recentIndexData.length / 252)}-year backtest, ETF window 2007+)
+                    Average daily returns by asset class during each Market Stress regime ({Math.round(recentIndexData.length / 252)}-year backtest, ETF window 2007+)
                   </div>
                 </div>
 
