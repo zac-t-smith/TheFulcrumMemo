@@ -86,6 +86,18 @@ jobs:
         working-directory: quant
         run: cat etf_pull_summary.json
 
+      # Sector heat map — stdlib only. Reads quant/data/etf_*.csv and emits
+      # the small src/data/sectorHeatMap.json consumed by SectorHeatMap.tsx.
+      # Keeps the 13 sector ETF histories out of the page bundle.
+      - name: Build sector heat map JSON
+        if: ${{ !inputs.skip_etfs }}
+        run: |
+          python quant/scripts/build_sector_heatmap.py \
+            --data-dir quant/data \
+            --out src/data/sectorHeatMap.json \
+            --summary-out quant/sector_heatmap_summary.json
+          cat quant/sector_heatmap_summary.json
+
       - name: Check for changes
         id: git_check
         run: |
@@ -120,5 +132,6 @@ jobs:
             quant/fred_pull_summary.json
             quant/ebp_pull_summary.json
             quant/etf_pull_summary.json
+            quant/sector_heatmap_summary.json
           retention-days: 30
           if-no-files-found: warn
