@@ -183,16 +183,13 @@ const RETIRED_POSITIONS: Array<BacktestPosition & { reason: string }> = [
   },
 ];
 
-// Backtest summary metrics. Source: quant/data/fulcrum_sector_rotation_backtest.xlsx
-// Composite portfolio metrics sheet. Window: 2006-2026 (20 years).
-const BACKTEST_METRICS = {
-  window: '2006–2026 (20 years)',
-  portfolio: { sharpe: 0.51, maxDD: -31, cagr: 9.6 },
-  spy:       { sharpe: 0.41, maxDD: -55, cagr: 11.0 },
-  ddEdgePts: 24,    // 55 - 31
-  cagrCostPts: 1.4, // 11.0 - 9.6
-  gfc: { fulcrum: 9.6, spy: -19.8, window: 'Oct 2007 → Mar 2010' },
-};
+// Backtest-summary constants intentionally removed: the original
+// sector-rotation workbook and script were lost, so the hardcoded
+// numbers (Sharpe 0.51 / 0.41, max DD -31% / -55%, CAGR 9.6% / 11.0%,
+// GFC +9.6% vs -19.8%) can't be reproduced right now. The rebuild
+// script will live at quant/scripts/backtest_sector_rotation.py and
+// re-derive them from committed ETF + regime data. See
+// quant/DEFERRED.md.
 
 const FulcrumIndexPage = () => {
   const baaCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -1429,11 +1426,17 @@ Market Stress — Composite Path
               </div>
 
               {/* ================================================================= */}
-              {/* PANEL 2: Backtest-Validated Position Framework */}
-              {/* Phase 4E-2 — restructured from regime-conditional to backtest-
-                  conditional. Positions are categorized by what the 20-year
-                  sector-rotation backtest actually showed; failed theses are
-                  surfaced rather than hidden. */}
+              {/* PANEL 2: Position Framework */}
+              {/* Backtest metrics temporarily removed — the original sector-
+                  rotation workbook and script were lost. Rebuild is scoped
+                  as quant/scripts/backtest_sector_rotation.py; it will
+                  reconstruct the regime-rotation portfolio from committed
+                  ETF and regime data, document the rules, and re-derive
+                  Sharpe / max DD / CAGR / the Oct 2007 → Mar 2010 window
+                  before any number goes back on the page. The Validated /
+                  Conditional / Not retained position lists are kept as the
+                  qualitative framework — those don't depend on the missing
+                  numbers. */}
               {/* ================================================================= */}
               <div
                 className="mb-4 overflow-hidden"
@@ -1462,7 +1465,7 @@ Market Stress — Composite Path
                       className="text-[18px] font-bold text-white tracking-tight"
                       style={{ fontFamily: 'var(--font-serif)' }}
                     >
-                      Validated against {BACKTEST_METRICS.window} backtest
+                      Backtest being rebuilt from committed code
                     </div>
                   </div>
                   <div className="text-white/90 text-right">
@@ -1475,73 +1478,23 @@ Market Stress — Composite Path
                   </div>
                 </div>
 
-                {/* Backtest summary metrics card */}
+                {/* Rebuild note (replaces the hardcoded metrics card + GFC one-liner) */}
                 <div
-                  className="px-4 py-3 grid grid-cols-1 md:grid-cols-3 gap-4"
-                  style={{ borderBottom: '1px solid var(--rule)', background: 'rgba(0,0,0,0.02)' }}
-                >
-                  <div>
-                    <div
-                      className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold mb-1"
-                      style={{ fontFamily: 'var(--font-sans)' }}
-                    >
-                      Fulcrum Rotation Portfolio
-                    </div>
-                    <div
-                      className="text-[12.5px] text-[#1a1a1a] leading-relaxed"
-                      style={{ fontFamily: 'var(--font-serif)' }}
-                    >
-                      Sharpe <strong>{BACKTEST_METRICS.portfolio.sharpe.toFixed(2)}</strong>{' '}
-                      · Max DD <strong className="text-[#1f6b3a]">{BACKTEST_METRICS.portfolio.maxDD}%</strong>{' '}
-                      · CAGR <strong>{BACKTEST_METRICS.portfolio.cagr.toFixed(1)}%</strong>
-                    </div>
-                  </div>
-                  <div>
-                    <div
-                      className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold mb-1"
-                      style={{ fontFamily: 'var(--font-sans)' }}
-                    >
-                      SPY Buy-and-Hold
-                    </div>
-                    <div
-                      className="text-[12.5px] text-[#1a1a1a] leading-relaxed"
-                      style={{ fontFamily: 'var(--font-serif)' }}
-                    >
-                      Sharpe <strong>{BACKTEST_METRICS.spy.sharpe.toFixed(2)}</strong>{' '}
-                      · Max DD <strong className="text-[#c8102e]">{BACKTEST_METRICS.spy.maxDD}%</strong>{' '}
-                      · CAGR <strong>{BACKTEST_METRICS.spy.cagr.toFixed(1)}%</strong>
-                    </div>
-                  </div>
-                  <div>
-                    <div
-                      className="text-[9.5px] tracking-[0.16em] uppercase text-[#4a4a4a] font-semibold mb-1"
-                      style={{ fontFamily: 'var(--font-sans)' }}
-                    >
-                      Edge
-                    </div>
-                    <div
-                      className="text-[12.5px] text-[#1a1a1a] italic leading-relaxed"
-                      style={{ fontFamily: 'var(--font-serif)' }}
-                    >
-                      Regime-aware allocation reduces drawdowns by{' '}
-                      <strong>{BACKTEST_METRICS.ddEdgePts} pts</strong>;
-                      trades <strong>{BACKTEST_METRICS.cagrCostPts.toFixed(1)} pts</strong> of CAGR for risk reduction.
-                    </div>
-                  </div>
-                </div>
-
-                {/* GFC case study one-liner */}
-                <div
-                  className="px-4 py-2 text-[12px] text-[#1a1a1a]"
+                  className="px-4 py-3 text-[12.5px] text-[#1a1a1a] leading-relaxed"
                   style={{
                     fontFamily: 'var(--font-serif)',
                     borderBottom: '1px solid var(--rule)',
-                    background: 'rgba(200, 16, 46, 0.03)',
+                    background: 'rgba(0,0,0,0.02)',
                   }}
                 >
-                  <span className="text-[9.5px] tracking-[0.16em] uppercase text-[#c8102e] font-bold mr-2">GFC case study</span>
-                  Fulcrum {BACKTEST_METRICS.gfc.fulcrum > 0 ? '+' : ''}{BACKTEST_METRICS.gfc.fulcrum.toFixed(1)}%{' '}
-                  vs SPY {BACKTEST_METRICS.gfc.spy.toFixed(1)}% ({BACKTEST_METRICS.gfc.window})
+                  The sector-rotation workbook and its backtest script were lost; the
+                  Sharpe, max-drawdown, CAGR and GFC comparison numbers that previously
+                  sat here have been removed rather than left to rot. Rebuild lives at{' '}
+                  <code className="text-[11.5px]">quant/scripts/backtest_sector_rotation.py</code>{' '}
+                  (in progress) and will reconstruct the portfolio from the repo&rsquo;s ETF
+                  and regime data before any number returns to this panel. The
+                  Validated / Conditional / Not retained lists below are the qualitative
+                  framework and are unaffected.
                 </div>
 
                 {/* Three-category position list */}
@@ -1576,9 +1529,13 @@ Market Stress — Composite Path
                     background: 'rgba(0,0,0,0.02)',
                   }}
                 >
-                  Position theses validated against a 20-year sector-rotation backtest. Methodology
-                  workbook available on request. Some positions revised or removed based on backtest
-                  findings; framework updated to reflect what the data actually showed.
+                  Qualitative Validated / Conditional / Not retained framework kept; the
+                  quantitative Sharpe / drawdown / CAGR panel is being rebuilt from
+                  committed ETF and regime data. See{' '}
+                  <code className="text-[10.5px]">quant/DEFERRED.md</code> for the
+                  rebuild scope and{' '}
+                  <code className="text-[10.5px]">quant/scripts/backtest_sector_rotation.py</code>{' '}
+                  (when landed) for the reproducible backtest.
                 </div>
               </div>
 

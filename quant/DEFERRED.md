@@ -6,38 +6,55 @@ deferred (not just "future work"), and *what triggers* the work.
 
 ---
 
-## Sector rotation backtest re-run cadence
+## Sector rotation backtest — original workbook LOST, rebuild scoped
 
-The Panel 2 backtest summary on the Fulcrum Index page (header bar +
-metrics card + GFC case study) is driven by static constants in
-`src/pages/FulcrumIndex.tsx` — see `BACKTEST_METRICS`. Today's values:
+**Status (2026-11-14):** the original sector-rotation workbook
+(`quant/data/fulcrum_sector_rotation_backtest.xlsx`) and its driver
+script (`quant/scripts/backtest_sector_rotation.py`) are **not present
+on the author's machine and not in the repo history**. A home-directory
+search across `C:\Users\Amber` returned no file matching
+`*sector_rotation*`, `*rotation_backtest*`, or
+`backtest_sector_rotation.py`. The only remaining `.xlsx` in the quant
+tree is `v4_weight_backtest.xlsx`, which does NOT contain the
+Sharpe / drawdown / CAGR / GFC-case-study numbers that previously
+sat on the page.
 
+The Panel 2 hardcoded constants (`BACKTEST_METRICS`) have been
+**removed from `src/pages/FulcrumIndex.tsx`** rather than left to rot
+without a reproducible source. The page copy for Panel 2 now reads
+"Backtest being rebuilt from committed code" and shows only the
+qualitative Validated / Conditional / Not retained position lists.
+
+**Numbers previously displayed (for reference during rebuild):**
 - Window: 2006–2026 (20 years)
 - Fulcrum Rotation Portfolio: Sharpe 0.51 / Max DD -31% / CAGR 9.6%
 - SPY Buy-and-Hold: Sharpe 0.41 / Max DD -55% / CAGR 11.0%
 - GFC case study: Fulcrum +9.6% vs SPY -19.8% (Oct 2007 → Mar 2010)
 
-These are framework-level facts derived from
-`quant/data/fulcrum_sector_rotation_backtest.xlsx` and won't change
-unless the backtest is re-run.
+These are documentation of what was there; the rebuild must re-derive
+them from first principles, not target them.
 
-**Re-run trigger:** when the v4 pipeline accumulates significant new
-data (≥12 months of additional history) or when a new cycle event
-materializes (a new credit shock, recession, or significant Brent
-dislocation), re-run `quant/scripts/backtest_sector_rotation.py` and
-update `BACKTEST_METRICS` if results drift materially (>10% change in
-any of Sharpe, Max DD, CAGR, or GFC case-study numbers).
+**Rebuild scope.** Land `quant/scripts/backtest_sector_rotation.py`.
+It should reconstruct the regime-rotation portfolio from committed
+data (quant/data/etf_*.csv + the regime bands from the composite),
+using the Validated / Conditional positions already on the page.
+Document at the top of the file:
 
-**Why this matters:** without an explicit re-run cadence, the page's
-headline credibility claim ("validated against 20-year backtest") will
-go stale silently. A page that asserts a 2006–2026 backtest in 2030
-without re-validation is exactly the kind of artifact that erodes trust
-when a careful reader notices the date gap.
+- which ETF is held in each regime (Complacency / Latent Stress /
+  Transmission Active / Cycle Imminent)
+- rebalance timing (e.g., end-of-month quarter-trigger, or
+  immediately-on-regime-change)
+- how cash sleeves and transaction costs are handled
 
-**Light-touch alternative:** if a full re-run isn't warranted, at
-minimum extend the window string in the page (e.g., "2006–2027") only
-after running the script with the new end date and confirming the
-metrics still hold within rounding.
+Report Sharpe, max drawdown, CAGR, and the Oct 2007 → Mar 2010 window
+performance against SPY, with the exact start and end dates driving
+the numbers. Zac reviews before any number returns to the page.
+
+**Why removed rather than frozen:** the page's old headline was
+"Validated against 20-year backtest," an accuracy claim tied to a
+workbook that no longer exists. Leaving the claim in place while
+the numbers can't be reproduced is exactly the artifact that erodes
+trust when a careful reader asks to see the workbook.
 
 ---
 
