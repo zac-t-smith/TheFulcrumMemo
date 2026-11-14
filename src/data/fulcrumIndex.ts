@@ -360,11 +360,12 @@ export function getRiskRegime(idx: number): RiskRegimeInfo {
       posture: 'Build dry powder. Identify weak credits.',
       bandMin: 0,
       bandMax: 25,
-      // Amber, not green: complacency is a WARNING state (reach-for-yield + unpriced
-      // covenant erosion). Darkened to #8A5A17 so caption-size pill text hits AA.
-      color: '#8A5A17',
-      swatchColor: '#8A5A17',
-      pillBg: 'bg-[#8A5A17]',
+      // v5 UI audit: calm = cool/neutral. Complacency is the calmest-reading
+      // band on the composite; the "warning" nuance belongs in the text,
+      // not in a swapped color. Teal-leaning slate keeps AA on cream.
+      color: '#4A7A6B',
+      swatchColor: '#4A7A6B',
+      pillBg: 'bg-[#4A7A6B]',
     };
   }
   if (idx < 50) {
@@ -375,9 +376,11 @@ export function getRiskRegime(idx: number): RiskRegimeInfo {
       posture: 'Selective shorts. Stress-test exposures.',
       bandMin: 25,
       bandMax: 50,
-      // Darkened from #6fb487 (fails AA on cream) to --pos #2E7D4F.
-      color: '#2E7D4F',
-      swatchColor: '#2E7D4F',
+      // v5 UI audit: was green (#2E7D4F) — reversed semantically for a
+      // stress-rising band. Amber matches v5 convention (warm up from
+      // cool complacency into amber latent stress).
+      color: '#8A5A17',
+      swatchColor: '#8A5A17',
       pillBg: 'bg-[#8A5A17]',
     };
   }

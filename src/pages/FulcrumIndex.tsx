@@ -33,6 +33,7 @@ import { HiddenStressGap } from '@/components/fulcrum/HiddenStressGap';
 import { CycleRiskVsNormalTile } from '@/components/fulcrum/CycleRiskVsNormalTile';
 import { CycleBacktestTable } from '@/components/fulcrum/CycleBacktestTable';
 import { SectorHeatMap } from '@/components/fulcrum/SectorHeatMap';
+import { useCanvasSize } from '@/components/fulcrum/chartUtils';
 import {
   buildIndexTimeSeries,
   calculate30DayTrend,
@@ -194,10 +195,13 @@ const RETIRED_POSITIONS: Array<BacktestPosition & { reason: string }> = [
 const FulcrumIndexPage = () => {
   const baaCanvasRef = useRef<HTMLCanvasElement>(null);
   const baaContainerRef = useRef<HTMLDivElement>(null);
+  const baaDims = useCanvasSize(baaContainerRef, { aspectRatio: 550 / 1040, minHeightPx: 320 });
   const hyCanvasRef = useRef<HTMLCanvasElement>(null);
   const hyContainerRef = useRef<HTMLDivElement>(null);
+  const hyDims = useCanvasSize(hyContainerRef, { aspectRatio: 320 / 520, minHeightPx: 240 });
   const correlationCanvasRef = useRef<HTMLCanvasElement>(null);
   const correlationContainerRef = useRef<HTMLDivElement>(null);
+  const correlationDims = useCanvasSize(correlationContainerRef, { aspectRatio: 400 / 1040, minHeightPx: 260 });
 
   // Composite index, fed by BAA10Y (credit) + Brent (energy) + VIX (vol).
   // Truncate to the last day all three series share — without this the
@@ -287,15 +291,12 @@ const FulcrumIndexPage = () => {
 
   const drawBaaChart = useCallback(() => {
     const canvas = baaCanvasRef.current;
-    const container = baaContainerRef.current;
-    if (!canvas || !container || indexData.length === 0) return;
+    if (!canvas || indexData.length === 0 || baaDims.cssW === 0) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const DPR = Math.max(1, window.devicePixelRatio || 1);
-    const cssW = container.clientWidth;
-    const cssH = Math.round(cssW * (550 / 1040));
+    const { cssW, cssH, dpr: DPR } = baaDims;
 
     canvas.style.width = `${cssW}px`;
     canvas.style.height = `${cssH}px`;
@@ -383,7 +384,7 @@ const FulcrumIndexPage = () => {
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#1a1a1a';
-    ctx.font = 'bold 10px Georgia, serif';
+    ctx.font = 'bold 11px Georgia, serif';
     const baaTicks = [100, 150, 200, 300, 500, 700];
     baaTicks.forEach((v) => {
       const yy = yLeftOf(v);
@@ -401,14 +402,14 @@ const FulcrumIndexPage = () => {
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
     ctx.fillStyle = '#1a1a1a';
-    ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+    ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
     ctx.fillText('BAA10Y (bps, log)', 0, 0);
     ctx.restore();
 
     // ---------- 5. RIGHT Y-AXIS LABELS (Fulcrum Index 0-100) ----------
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.font = 'bold 10px Georgia, serif';
+    ctx.font = 'bold 11px Georgia, serif';
     ctx.fillStyle = '#1a1a1a';
     for (let i = 0; i <= 10; i++) {
       const v = i * 10;
@@ -427,7 +428,7 @@ const FulcrumIndexPage = () => {
     ctx.rotate(Math.PI / 2);
     ctx.textAlign = 'center';
     ctx.fillStyle = '#1a1a1a';
-    ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+    ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
     ctx.fillText('Market Stress (0-100)', 0, 0);
     ctx.restore();
 
@@ -440,7 +441,7 @@ const FulcrumIndexPage = () => {
     ctx.setLineDash([3, 3]);
     ctx.strokeStyle = 'rgba(26,26,26,0.45)';
     ctx.lineWidth = 1;
-    ctx.font = 'italic 10px Georgia, serif';
+    ctx.font = 'italic 11px Georgia, serif';
     ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
@@ -536,7 +537,7 @@ const FulcrumIndexPage = () => {
       fill: string,
       textColor: string
     ) => {
-      ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+      ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
       const tw = ctx.measureText(text).width;
       const padX = 5;
       const bw = tw + padX * 2;
@@ -568,7 +569,7 @@ const FulcrumIndexPage = () => {
     ctx.lineWidth = 0.75;
     ctx.strokeRect(legX + 0.5, legY + 0.5, legW - 1, legH - 1);
 
-    ctx.font = 'bold 10px Helvetica Neue, Arial, sans-serif';
+    ctx.font = 'bold 11px Helvetica Neue, Arial, sans-serif';
     ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
@@ -613,7 +614,7 @@ const FulcrumIndexPage = () => {
       const labelColor = r.bandMin >= 50 ? '#8a1818' : '#1f6b3a';
       zoneLabel(center, r.regime, labelColor);
     });
-  }, [indexData]);
+  }, [indexData, baaDims]);
 
   // =============================================================================
   // HY OAS COMPANION CHART (current-cycle, half-width)
@@ -621,15 +622,12 @@ const FulcrumIndexPage = () => {
 
   const drawHyOasChart = useCallback(() => {
     const canvas = hyCanvasRef.current;
-    const container = hyContainerRef.current;
-    if (!canvas || !container || hyOasHistory.length === 0) return;
+    if (!canvas || hyOasHistory.length === 0 || hyDims.cssW === 0) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const DPR = Math.max(1, window.devicePixelRatio || 1);
-    const cssW = container.clientWidth;
-    const cssH = Math.round(cssW * (320 / 520));
+    const { cssW, cssH, dpr: DPR } = hyDims;
 
     canvas.style.width = `${cssW}px`;
     canvas.style.height = `${cssH}px`;
@@ -688,7 +686,7 @@ const FulcrumIndexPage = () => {
     ctx.strokeRect(plotX, plotY, plotW, plotH);
 
     ctx.fillStyle = '#4a4a4a';
-    ctx.font = '10px Georgia, serif';
+    ctx.font = '11px Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     const startYr = new Date(data[0].date).getUTCFullYear();
@@ -720,7 +718,7 @@ const FulcrumIndexPage = () => {
     ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
     ctx.stroke();
-  }, []);
+  }, [hyDims]);
 
   // =============================================================================
   // CORRELATION CHART DRAWING
@@ -728,15 +726,12 @@ const FulcrumIndexPage = () => {
 
   const drawCorrelationChart = useCallback(() => {
     const canvas = correlationCanvasRef.current;
-    const container = correlationContainerRef.current;
-    if (!canvas || !container || recentIndexData.length === 0 || etfData.length === 0) return;
+    if (!canvas || recentIndexData.length === 0 || etfData.length === 0 || correlationDims.cssW === 0) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const DPR = Math.max(1, window.devicePixelRatio || 1);
-    const cssW = container.clientWidth;
-    const cssH = Math.round(cssW * (400 / 1040));
+    const { cssW, cssH, dpr: DPR } = correlationDims;
 
     canvas.style.width = `${cssW}px`;
     canvas.style.height = `${cssH}px`;
@@ -932,7 +927,7 @@ const FulcrumIndexPage = () => {
     ctx.textBaseline = 'top';
     ctx.fillText('REGIME POSITIONING MAP', plotX, plotY - 28);
 
-    ctx.font = 'italic 10px Georgia, serif';
+    ctx.font = 'italic 11px Georgia, serif';
     ctx.fillStyle = '#4a4a4a';
     ctx.fillText('Asset performance by Market Stress regime (normalized)', plotX, plotY - 14);
 
@@ -943,7 +938,7 @@ const FulcrumIndexPage = () => {
     ctx.textBaseline = 'middle';
     ctx.fillText('Regime →', plotX - 8, barY + barHeight / 2);
 
-  }, [indexData, etfData]);
+  }, [indexData, etfData, correlationDims]);
 
   // =============================================================================
   // EFFECTS
@@ -955,18 +950,12 @@ const FulcrumIndexPage = () => {
       drawHyOasChart();
       drawCorrelationChart();
     }
-
-    const handleResize = () => {
-      if (indexData.length > 0) {
-        drawBaaChart();
-        drawHyOasChart();
-        drawCorrelationChart();
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [drawBaaChart, drawHyOasChart, drawCorrelationChart, indexData]);
+    // Each canvas's draw depends on its own `*Dims` through useCallback,
+    // so re-running the effect when any of them change (ResizeObserver
+    // fires) is enough. The old `window.addEventListener('resize')`
+    // fallback is unnecessary — useCanvasSize already owns that path.
+  }, [drawBaaChart, drawHyOasChart, drawCorrelationChart, indexData,
+      baaDims, hyDims, correlationDims]);
 
   // =============================================================================
   // RENDER HELPERS

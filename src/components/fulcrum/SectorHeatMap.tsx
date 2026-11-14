@@ -147,7 +147,114 @@ export const SectorHeatMap = () => {
           {data.asOfDate && <> As of {data.asOfDate}.</>}
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Mobile: stacked cards under 640px. v5 UI audit calls for this
+            because the full 6-column table forces horizontal scroll on
+            phones, which hides the percentile numbers that matter. */}
+        <div className="sm:hidden space-y-2.5">
+          {rows.map((row: SectorRow) => (
+            <div
+              key={row.id}
+              className="p-3"
+              style={{
+                border: '1px solid #d9d4c7',
+                background: '#fbf9f3',
+              }}
+            >
+              <div className="flex items-baseline justify-between mb-2">
+                <div>
+                  <div className="font-semibold text-[#1a1a1a] text-[13px]">{row.label}</div>
+                  <div className="text-[11px] text-[#6a6a6a]">
+                    {row.etf ? (
+                      <>
+                        {row.etf}
+                        {row.historyStart && <> · since {row.historyStart.slice(0, 4)}</>}
+                      </>
+                    ) : (
+                      <span className="italic">no sector ETF</span>
+                    )}
+                  </div>
+                </div>
+                {row.composite !== null && (
+                  <div
+                    className="text-right tabular-nums"
+                    style={{
+                      background: stressColor(row.composite),
+                      padding: '2px 8px',
+                      minWidth: 56,
+                      fontWeight: 700,
+                      color: stressTextColor(row.composite),
+                    }}
+                  >
+                    {formatPctl(row.composite)}
+                    {row.market.changeArrow && (
+                      <span
+                        className="ml-1 text-[11px]"
+                        style={{ color: arrowColor(row.market.changeArrow) }}
+                      >
+                        {arrowGlyph(row.market.changeArrow)}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-1.5 text-[11.5px]">
+                <div className="flex justify-between">
+                  <span className="text-[#6a6a6a]">Market</span>
+                  <span
+                    className="tabular-nums font-semibold"
+                    style={row.market.score !== null
+                      ? { background: stressColor(row.market.score), padding: '0 6px' }
+                      : { color: '#6a6a6a' }}
+                  >
+                    {formatPctl(row.market.score)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#6a6a6a]">Shock</span>
+                  <span
+                    className="tabular-nums font-semibold"
+                    style={{
+                      background: shockColor(row.shock.sign, row.shock.score),
+                      padding: '0 6px',
+                    }}
+                    title={row.shock.rationale}
+                  >
+                    {row.shock.score} <span className="text-[10px] italic">{shockLabel(row.shock.sign)}</span>
+                  </span>
+                </div>
+                {realizedActive && (
+                  <div className="flex justify-between">
+                    <span className="text-[#6a6a6a]">Realized</span>
+                    <span
+                      className="tabular-nums font-semibold"
+                      style={row.realized.score !== null
+                        ? { background: stressColor(row.realized.score), padding: '0 6px' }
+                        : { color: '#6a6a6a' }}
+                    >
+                      {formatPctl(row.realized.score)}
+                    </span>
+                  </div>
+                )}
+                {fundamentalsActive && (
+                  <div className="flex justify-between">
+                    <span className="text-[#6a6a6a]">Fundamentals</span>
+                    <span
+                      className="tabular-nums font-semibold"
+                      style={row.fundamentals.score !== null
+                        ? { background: stressColor(row.fundamentals.score), padding: '0 6px' }
+                        : { color: '#6a6a6a' }}
+                    >
+                      {formatPctl(row.fundamentals.score)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: full table at >= 640px. */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-[12.5px] border-collapse" style={{ fontFamily: 'var(--font-sans)' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #d9d4c7' }}>

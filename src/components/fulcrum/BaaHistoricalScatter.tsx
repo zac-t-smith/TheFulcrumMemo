@@ -5,7 +5,8 @@
  *   • y position: BAA10Y in bps, log-inverted (top = tight, bottom = wide)
  *   • x position: linear time, 1990-present
  *   • color: BAA10Y percentile against the full historical distribution
- *           (red = tightest decile, green = widest decile, yellow = median)
+ *           (green = tightest decile, red = widest decile, yellow = median)
+ *           — matches the site's unified stress palette (red = stress).
  *   • size: VIX level scaled into 1.6 → 6.4 px
  *   • alpha: 0.65 — additive opacity exposes density
  *
@@ -31,14 +32,19 @@ interface ScatterPoint {
   ts: number;          // cached Date.parse for x-mapping
 }
 
-// Same 5-stop palette as the v3 reference HTML's tradingSignalColor.
-// Stops at p ∈ {0.00, 0.25, 0.50, 0.75, 1.00}, RGB triples.
+// v5 UI audit: one diverging scale across the site. Low pctl (tight
+// spreads) = cool/green; high pctl (wide spreads = realized credit
+// stress) = red. v3's HTML palette was reversed because it read as a
+// TRADING signal (red = 'don't buy here, spreads are tight'); the rest
+// of the v5 site uses the stress semantic (red = stress), so this
+// chart falls in line. The caption below the chart carries the
+// cycle-top nuance that tight spreads are themselves a setup.
 const COLOR_STOPS: Array<{ p: number; rgb: [number, number, number] }> = [
-  { p: 0.00, rgb: [138, 24, 24] },
-  { p: 0.25, rgb: [217, 132, 132] },
+  { p: 0.00, rgb: [31, 107, 58] },
+  { p: 0.25, rgb: [111, 180, 135] },
   { p: 0.50, rgb: [230, 200, 90] },
-  { p: 0.75, rgb: [111, 180, 135] },
-  { p: 1.00, rgb: [31, 107, 58] },
+  { p: 0.75, rgb: [217, 132, 132] },
+  { p: 1.00, rgb: [138, 24, 24] },
 ];
 
 function tradingSignalColor(p: number): string {
@@ -387,9 +393,10 @@ export const BaaHistoricalScatter = () => {
         style={{ fontFamily: 'Georgia, serif' }}
       >
         Forty years of BAA-Treasury spreads, plotted with each day as a dot — color encoding where
-        that day sits in the historical distribution (red = tightest decile, green = widest decile),
-        size encoding VIX. Density reveals time spent: the long red cluster from 2003–2007 = “tight
-        spreads sustained for years before GFC”; the brief deep-green cluster in late 2008 = “the
+        that day sits in the historical distribution (green = tightest decile, red = widest decile),
+        size encoding VIX. Tight spreads are a cycle-top setup even when the chart reads green;
+        density reveals time spent: the long green cluster from 2003–2007 = “tight spreads sustained
+        for years before GFC”; the brief deep-red cluster in late 2008 = “the
         dislocation that didn’t last.”{' '}
         {latest && (
           <>
