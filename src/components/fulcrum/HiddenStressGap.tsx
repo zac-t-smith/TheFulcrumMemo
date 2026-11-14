@@ -249,7 +249,7 @@ export const HiddenStressGap = () => {
                   .filter(a => a.obsCount === 0)
                   .map(a => a.label)
                   .join(', ')}
-                {' '}(edit <code>quant/data/manual_inputs.json</code> and set <code>verified: true</code>).
+                {' '}(added once each figure is checked against its primary source).
               </>
             )}
           </div>
@@ -261,9 +261,9 @@ export const HiddenStressGap = () => {
         >
           Hidden-Stress Gap requires at least two realized-distress components. Only{' '}
           <strong>{activeComponents.length}</strong> is currently available
-          {activeComponents[0] && <> ({activeComponents[0].label})</>}. Add verified entries to{' '}
-          <code>quant/data/manual_inputs.json</code> for Fitch private-credit defaults and
-          S&P large-company bankruptcies to activate the full view.
+          {activeComponents[0] && <> ({activeComponents[0].label})</>}. Fitch private-credit
+          defaults and S&amp;P large-company bankruptcies are added once each figure is checked
+          against its primary source.
         </div>
       )}
     </div>

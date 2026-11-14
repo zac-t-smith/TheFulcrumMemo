@@ -429,33 +429,30 @@ def score_run(
             "p_max_prior_6m": round(prior_max, 3),
         })
 
-    # False-alarm stretches: contiguous P≥threshold spans with no onset inside.
+    # False-alarm stretches: contiguous runs of months where P >= threshold
+    # AND the label is a known 0 (no onset ahead, not already in an event).
+    # Months whose label is NaN (already inside a rising run, or horizon not
+    # yet closed) end a run instead of extending it, so the downturns
+    # themselves (2001, 2008, 2020) are never counted as false alarms.
     false_alarms: list[dict] = []
-    in_fa = False
-    fa_start = 0
-    for i in range(len(preds)):
-        above = preds[i] >= threshold
-        if above and not in_fa:
-            fa_start = i
-            in_fa = True
-        elif (not above) and in_fa:
-            fa_end = i - 1
-            if not any(fa_start <= e <= fa_end for e in events_idx):
-                false_alarms.append({
-                    "start": out_dates[fa_start].isoformat()[:7],
-                    "end": out_dates[fa_end].isoformat()[:7],
-                    "peak_prob": round(float(preds[fa_start:fa_end + 1].max()), 3),
-                })
-            in_fa = False
-    if in_fa:
-        fa_end = len(preds) - 1
-        if not any(fa_start <= e <= fa_end for e in events_idx):
-            false_alarms.append({
-                "start": out_dates[fa_start].isoformat()[:7],
-                "end": out_dates[fa_end].isoformat()[:7],
-                "peak_prob": round(float(preds[fa_start:fa_end + 1].max()), 3),
-                "ongoing": True,
-            })
+    clear_alarm = (preds >= threshold) & (actuals == 0)
+    run_start = None
+    for i in range(len(preds) + 1):
+        on = i < len(preds) and bool(clear_alarm[i])
+        if on and run_start is None:
+            run_start = i
+        elif not on and run_start is not None:
+            run_end = i - 1
+            fa = {
+                "start": out_dates[run_start].isoformat()[:7],
+                "end": out_dates[run_end].isoformat()[:7],
+                "months": run_end - run_start + 1,
+                "peak_prob": round(float(preds[run_start:run_end + 1].max()), 3),
+            }
+            if run_end == len(preds) - 1:
+                fa["ongoing"] = True
+            false_alarms.append(fa)
+            run_start = None
 
     tp_months = int(((preds >= threshold) & (actuals == 1)).sum())
     fa_months = int(((preds >= threshold) & (actuals == 0)).sum())

@@ -18,9 +18,9 @@
  *
  * Events list each CORBLACBS onset with the probability at the onset
  * month and the max probability in the prior 6 months. False-alarm
- * stretches show every span where the model stayed above 2× base rate
- * without a new onset starting in it — explicitly including the long
- * 2022–2024 stretch which the user asked to keep visible.
+ * stretches show every run where the model stayed above the threshold
+ * while the label was a known 0 (in-event months end a run). The long
+ * 2022–25 run stays visible on purpose.
  */
 
 import cycleModel from '@/data/cycleModel.json';
@@ -113,7 +113,8 @@ export const CycleBacktestTable = () => {
       >
         Primary target: CORBLACBS rise onset (business-loan charge-offs rising ≥0.25pp
         over the next 4Q, dropping months already in a rising run). Expanding-window
-        OOS from 2000-01, threshold = 2× base rate ({formatPct(baseRate)}).
+        OOS from 2000-01. Alarm threshold {formatPct(threshold)}: the greater of 30% and 2× the{' '}
+        {formatPct(baseRate)} base rate.
       </div>
 
       {/* Feature-set comparison */}
@@ -264,11 +265,14 @@ export const CycleBacktestTable = () => {
           className="text-[10.5px] italic mt-2"
           style={{ color: '#6a6a6a', fontFamily: 'Georgia, serif' }}
         >
-          A false alarm is a contiguous span where the predicted probability stayed at or
-          above 2× the base rate without a new cycle onset starting inside the span.
-          The 2022–2026 stretch spans the current cycle; stress has in fact appeared, but
-          not as a new macro onset by the CORBLACBS definition — which is why the Hidden-
-          Stress Gap and sector views exist.
+          A false alarm is a run of months where the probability sat at or above the
+          threshold while the outcome was a known &ldquo;no&rdquo;: no charge-off onset in the
+          next 12 months and not already inside a rising run. Months inside a downturn end
+          a run rather than extend it, so the 2001 and 2008 downturns are not counted
+          here. None of the six onsets crossed the threshold beforehand: the model ranks
+          risk; it does not call turns. The 2022&ndash;25 run is the long yield-curve
+          inversion, which never produced a new charge-off onset. That is why the
+          Hidden-Stress Gap and sector views exist.
         </div>
       </div>
     </div>

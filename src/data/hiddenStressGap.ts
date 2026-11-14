@@ -252,7 +252,10 @@ export function buildHiddenStressGap(): HiddenStressGapResult {
     if (Number.isFinite(ms) && Number.isFinite(rd)) {
       const availableComponents = (Object.keys(components) as ComponentId[]).filter(id => {
         const arr = components[id];
-        return arr.length > 0 && arr[arr.length - 1].date <= marketStress[i].date;
+        // Contributing = has at least one observation on or before this date
+        // (it is forward-filled after that). Checking the LAST observation
+        // wrongly dropped series whose newest point postdates the display date.
+        return arr.length > 0 && arr[0].date <= marketStress[i].date;
       });
       current = {
         date: marketStress[i].date,

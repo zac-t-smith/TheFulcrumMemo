@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "fit_date": "2026-11-12",
+  "fit_date": "2026-11-13",
   "primary_target": "corblacbs_rise_onset",
   "robustness_targets": [
     "nber_onset_12m"
@@ -2597,33 +2597,27 @@
           ],
           "false_alarms": [
             {
-              "start": "2000-03",
+              "start": "2002-10",
               "end": "2003-03",
-              "peak_prob": 1.0
-            },
-            {
-              "start": "2006-11",
-              "end": "2006-12",
-              "peak_prob": 0.331
-            },
-            {
-              "start": "2007-04",
-              "end": "2007-05",
-              "peak_prob": 0.348
-            },
-            {
-              "start": "2007-07",
-              "end": "2009-06",
+              "months": 6,
               "peak_prob": 0.999
             },
             {
-              "start": "2019-01",
+              "start": "2019-07",
+              "end": "2019-12",
+              "months": 6,
+              "peak_prob": 0.626
+            },
+            {
+              "start": "2020-07",
               "end": "2021-02",
-              "peak_prob": 0.945
+              "months": 8,
+              "peak_prob": 0.691
             },
             {
               "start": "2022-10",
-              "end": "2026-01",
+              "end": "2025-06",
+              "months": 33,
               "peak_prob": 0.973
             }
           ]
@@ -2669,18 +2663,27 @@
           ],
           "false_alarms": [
             {
-              "start": "2001-01",
-              "end": "2002-06",
-              "peak_prob": 0.724
+              "start": "2006-07",
+              "end": "2006-08",
+              "months": 2,
+              "peak_prob": 0.414
             },
             {
-              "start": "2019-03",
+              "start": "2019-07",
+              "end": "2019-12",
+              "months": 6,
+              "peak_prob": 0.595
+            },
+            {
+              "start": "2020-07",
               "end": "2021-08",
+              "months": 14,
               "peak_prob": 0.649
             },
             {
               "start": "2022-10",
-              "end": "2026-02",
+              "end": "2025-06",
+              "months": 33,
               "peak_prob": 0.927
             }
           ]
@@ -2726,19 +2729,34 @@
           ],
           "false_alarms": [
             {
-              "start": "2000-08",
+              "start": "2002-10",
               "end": "2003-03",
-              "peak_prob": 0.998
-            },
-            {
-              "start": "2007-08",
-              "end": "2009-08",
-              "peak_prob": 1.0
+              "months": 6,
+              "peak_prob": 0.98
             },
             {
               "start": "2019-09",
+              "end": "2019-12",
+              "months": 4,
+              "peak_prob": 0.609
+            },
+            {
+              "start": "2020-07",
               "end": "2021-02",
+              "months": 8,
               "peak_prob": 1.0
+            },
+            {
+              "start": "2022-07",
+              "end": "2022-08",
+              "months": 2,
+              "peak_prob": 0.519
+            },
+            {
+              "start": "2022-10",
+              "end": "2025-06",
+              "months": 33,
+              "peak_prob": 0.987
             }
           ]
         },
@@ -2778,48 +2796,33 @@
           ],
           "false_alarms": [
             {
-              "start": "2000-10",
-              "end": "2001-01",
-              "peak_prob": 0.472
-            },
-            {
               "start": "2002-03",
               "end": "2002-03",
+              "months": 1,
               "peak_prob": 0.423
             },
             {
               "start": "2002-05",
               "end": "2003-02",
+              "months": 10,
               "peak_prob": 0.998
             },
             {
-              "start": "2008-02",
-              "end": "2009-05",
-              "peak_prob": 0.993
-            },
-            {
-              "start": "2019-08",
-              "end": "2019-09",
-              "peak_prob": 0.327
-            },
-            {
-              "start": "2019-12",
-              "end": "2019-12",
-              "peak_prob": 0.301
-            },
-            {
-              "start": "2020-03",
+              "start": "2020-05",
               "end": "2020-08",
-              "peak_prob": 0.606
+              "months": 4,
+              "peak_prob": 0.481
             },
             {
               "start": "2020-10",
               "end": "2020-10",
+              "months": 1,
               "peak_prob": 0.335
             },
             {
               "start": "2022-11",
-              "end": "2026-02",
+              "end": "2025-09",
+              "months": 35,
               "peak_prob": 0.951
             }
           ]
@@ -2850,13 +2853,15 @@
           ],
           "false_alarms": [
             {
-              "start": "2019-08",
+              "start": "2020-05",
               "end": "2021-02",
+              "months": 10,
               "peak_prob": 0.376
             },
             {
               "start": "2022-11",
-              "end": "2026-03",
+              "end": "2025-09",
+              "months": 35,
               "peak_prob": 0.957
             }
           ]
@@ -2887,38 +2892,33 @@
           ],
           "false_alarms": [
             {
-              "start": "2001-04",
-              "end": "2001-07",
-              "peak_prob": 0.623
-            },
-            {
               "start": "2001-12",
               "end": "2001-12",
+              "months": 1,
               "peak_prob": 0.519
             },
             {
               "start": "2002-03",
               "end": "2002-05",
+              "months": 3,
               "peak_prob": 0.563
             },
             {
               "start": "2002-07",
               "end": "2003-02",
+              "months": 8,
               "peak_prob": 0.988
             },
             {
-              "start": "2007-08",
-              "end": "2009-06",
-              "peak_prob": 1.0
-            },
-            {
-              "start": "2020-03",
+              "start": "2020-05",
               "end": "2021-02",
+              "months": 10,
               "peak_prob": 1.0
             },
             {
               "start": "2022-10",
-              "end": "2026-03",
+              "end": "2025-09",
+              "months": 36,
               "peak_prob": 0.987
             }
           ]
