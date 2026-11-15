@@ -235,7 +235,7 @@ export const CccBbDispersionChart = () => {
       ctx.textBaseline = 'middle';
       ctx.fillText(text, bx + padX, by + bh / 2 + 0.5);
     }
-  }, [series, median, latest]);
+  }, [series, median, latest, dims]);
 
   useEffect(() => {
     draw();

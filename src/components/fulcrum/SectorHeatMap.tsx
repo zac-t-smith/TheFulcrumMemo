@@ -139,7 +139,7 @@ export const SectorHeatMap = () => {
           plus 3-month realized volatility, with the 3-month change. Histories start
           on different dates (shown under each ticker), so a short history has seen
           fewer cycles. Shock is a static 1&ndash;5 score for oil and freight
-          sensitivity, colored by direction; hover for the rationale.
+          sensitivity, colored by direction; hover (or tap on a phone) for the rationale.
           {compositeActive && (
             <> Composite is the mean of the live percentile columns; &#9888; marks
             columns more than 40 points apart.</>
@@ -197,7 +197,10 @@ export const SectorHeatMap = () => {
                   </div>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-1.5 text-[11.5px]">
+              <div className="grid grid-cols-2 gap-1.5 text-[12px]">
+                {/* The badge above already is the Market score until a second
+                    column goes live, so only repeat it once Composite differs. */}
+                {compositeActive && (
                 <div className="flex justify-between">
                   <span className="text-[#6a6a6a]">Market</span>
                   <span
@@ -209,8 +212,9 @@ export const SectorHeatMap = () => {
                     {formatPctl(row.market.score)}
                   </span>
                 </div>
+                )}
                 <div className="flex justify-between">
-                  <span className="text-[#6a6a6a]">Shock</span>
+                  <span className="text-[#6a6a6a]">Oil/freight shock</span>
                   <span
                     className="tabular-nums font-semibold"
                     style={{
@@ -249,6 +253,14 @@ export const SectorHeatMap = () => {
                   </div>
                 )}
               </div>
+              {row.shock.rationale && (
+                <details className="mt-1.5 text-[12px] text-[#4a4a4a]">
+                  <summary className="cursor-pointer select-none">Why this shock score?</summary>
+                  <p className="mt-1 mb-0 italic" style={{ fontFamily: 'var(--font-serif)' }}>
+                    {row.shock.rationale}
+                  </p>
+                </details>
+              )}
             </div>
           ))}
         </div>

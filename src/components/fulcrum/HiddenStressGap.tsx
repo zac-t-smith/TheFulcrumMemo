@@ -195,7 +195,7 @@ export const HiddenStressGap = () => {
       ctx.lineWidth = 0.75;
       ctx.stroke();
     }
-  }, [data]);
+  }, [data, dims]);
 
   useEffect(() => {
     draw();

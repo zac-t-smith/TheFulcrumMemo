@@ -369,7 +369,7 @@ export const BaaHistoricalScatter = () => {
       ctx.textBaseline = 'middle';
       ctx.fillText(badgeText, bx + padX, by + bh / 2 + 0.5);
     }
-  }, [points, sizeOf, latest]);
+  }, [points, sizeOf, latest, dims]);
 
   useEffect(() => {
     draw();

@@ -207,7 +207,7 @@ export const CapitalStructureTierPanel = () => {
       ctx.textBaseline = 'middle';
       ctx.fillText(text, bx + padX, by + bh / 2 + 0.5);
     });
-  }, [bounds]);
+  }, [bounds, dims]);
 
   useEffect(() => {
     draw();

@@ -13,7 +13,7 @@
 
 import { useEffect, useRef, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DataFreshnessBadge from '@/components/fulcrum/DataFreshnessBadge';
@@ -109,6 +109,28 @@ interface RiskBand {
 // Numbers below are framework-level facts derived from that workbook,
 // not live data. They will only change if the backtest is re-run.
 
+// Sub-nav sections. Links stay inside the hash route
+// (#/fulcrum-index?section=id); a bare #id would replace the route and 404.
+const SECTIONS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'cycle', label: 'Cycle' },
+  { id: 'sectors', label: 'Sectors' },
+  { id: 'signal-history', label: 'Signal history' },
+  { id: 'positioning', label: 'Positioning' },
+  { id: 'methodology', label: 'Methodology' },
+];
+
+function goToSection(id: string, behavior: ScrollBehavior = 'smooth') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior, block: 'start' });
+  try {
+    window.history.replaceState(null, '', `#/fulcrum-index?section=${id}`);
+  } catch {
+    /* history can be unavailable in some embeds */
+  }
+}
+
 interface BacktestPosition {
   asset: string;
   instrument: string;
@@ -121,14 +143,14 @@ const VALIDATED_POSITIONS: BacktestPosition[] = [
   {
     asset: 'Defense',
     instrument: 'ITA',
-    edge: '+2.1% vs SPY in Active+Imminent — clean win',
+    edge: 'Defense spending holds up as credit stress builds',
     thesis: 'Part I',
     thesisLink: '/memos/asymmetric-restructuring#defense',
   },
   {
     asset: 'Crude Oil',
     instrument: 'USO',
-    edge: '+2.8% vs SPY in stress — modest but consistent edge',
+    edge: 'Hedges the energy-shock route into credit stress',
     thesis: 'Part I',
     thesisLink: '/memos/asymmetric-restructuring',
   },
@@ -145,14 +167,14 @@ const CONDITIONAL_POSITIONS: BacktestPosition[] = [
   {
     asset: 'Treasuries',
     instrument: 'TLT',
-    edge: '+1.4 pt edge in credit-led stress; fails during inflation cycles',
+    edge: 'Works in credit-led stress; fails in inflation-led cycles',
     thesis: 'Fed trap',
     thesisLink: '/memos/portfolio-contagion#rates',
   },
   {
     asset: 'HY Credit short',
     instrument: 'HYG puts',
-    edge: '−22.4% vs SPY in stress — works only in credit-led regimes',
+    edge: 'Works only in credit-led regimes',
     thesis: 'Part II',
     thesisLink: '/memos/portfolio-contagion',
   },
@@ -169,16 +191,16 @@ const RETIRED_POSITIONS: Array<BacktestPosition & { reason: string }> = [
   {
     asset: 'Gold long during stress',
     instrument: 'GLD',
-    edge: '−4.6% vs SPY in stress',
-    reason: 'Failed backtest — GLD underperformed in stress vs calm; safe-haven thesis not supported',
+    edge: 'Safe-haven long in stress regimes',
+    reason: 'Removed from the framework; under review',
     thesis: '',
     thesisLink: '',
   },
   {
     asset: 'Airlines short during stress',
     instrument: 'JETS short',
-    edge: '−44.3% vs SPY',
-    reason: 'Stimulus-era rally killed the short — backtest invalidated the thesis',
+    edge: 'Short airlines in stress regimes',
+    reason: 'Removed from the framework; under review',
     thesis: '',
     thesisLink: '',
   },
@@ -237,6 +259,30 @@ const FulcrumIndexPage = () => {
   }, [recentIndexData, etfData]);
 
   const latestData = indexData.length > 0 ? indexData[indexData.length - 1] : null;
+
+  // Keep the sticky sub-nav directly under the fixed site header, whose
+  // height changes when it condenses on scroll.
+  useEffect(() => {
+    const header = document.querySelector('nav.fixed') as HTMLElement | null;
+    if (!header) return;
+    const set = () =>
+      document.documentElement.style.setProperty('--site-nav-h', `${header.offsetHeight}px`);
+    set();
+    const ro = new ResizeObserver(set);
+    // border-box: the header condenses by changing padding, not content size.
+    ro.observe(header, { box: 'border-box' });
+    return () => ro.disconnect();
+  }, []);
+
+  // Deep links: #/fulcrum-index?section=sectors scrolls to that section.
+  const location = useLocation();
+  const hasData = latestData !== null;
+  useEffect(() => {
+    const id = new URLSearchParams(location.search).get('section');
+    if (!id || !hasData) return;
+    const t = window.setTimeout(() => goToSection(id, 'auto'), 50);
+    return () => window.clearTimeout(t);
+  }, [location.search, hasData]);
   const stats = getDatasetStats(indexData);
   const trend = calculate30DayTrend(indexData);
 
@@ -1059,42 +1105,46 @@ The Fulcrum Index
               stays legible on phones; anchors scroll to each section's id. */}
           <nav
             aria-label="Fulcrum Index sections"
-            className="sticky top-0 z-20 -mx-4 px-4 mb-4"
+            className="sticky z-40 -mx-4 px-4 mb-4"
             style={{
+              top: 'var(--site-nav-h, 56px)',
               background: 'var(--paper)',
               borderBottom: '1px solid var(--rule)',
             }}
           >
-            <ul
-              className="flex gap-4 py-2 overflow-x-auto whitespace-nowrap text-[12px] tracking-[0.04em]"
-              style={{ fontFamily: 'var(--font-sans)' }}
-            >
-              {[
-                { id: 'overview', label: 'Overview' },
-                { id: 'cycle', label: 'Cycle' },
-                { id: 'sectors', label: 'Sectors' },
-                { id: 'companies', label: 'Companies' },
-                { id: 'signal-history', label: 'Signal history' },
-                { id: 'positioning', label: 'Positioning' },
-                { id: 'methodology', label: 'Methodology' },
-              ].map(s => (
-                <li key={s.id}>
-                  <a
-                    href={`#${s.id}`}
-                    className="text-[#4a4a4a] hover:text-[#1a1a1a]"
-                  >
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <div className="relative">
+              <ul
+                className="flex gap-5 py-2.5 pr-8 overflow-x-auto whitespace-nowrap text-[13px] tracking-[0.04em] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                style={{ fontFamily: 'var(--font-sans)' }}
+              >
+                {SECTIONS.map(s => (
+                  <li key={s.id}>
+                    <a
+                      href={`#/fulcrum-index?section=${s.id}`}
+                      onClick={e => {
+                        e.preventDefault();
+                        goToSection(s.id);
+                      }}
+                      className="text-[#4a4a4a] hover:text-[#1a1a1a]"
+                    >
+                      {s.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute right-0 top-0 h-full w-8 md:hidden"
+                style={{ background: 'linear-gradient(to right, rgba(247,244,238,0), var(--paper))' }}
+              />
+            </div>
           </nav>
 
           {/* Main content */}
           {latestData && (
             <>
               {/* ===== Overview: readout strip + MD read + Canary ===== */}
-              <section id="overview" className="scroll-mt-16">
+              <section id="overview" className="scroll-mt-[112px]">
               <h2 className="sr-only">Overview</h2>
               {/* Live readout strip */}
               <div
@@ -1283,7 +1333,7 @@ The Fulcrum Index
               </section>
 
               {/* ===== Cycle Risk + Realized Distress ===== */}
-              <section id="cycle" className="scroll-mt-16">
+              <section id="cycle" className="scroll-mt-[112px]">
               <h2 className="sr-only">Cycle</h2>
               {/* v5 Phase 2D: Cycle Risk + Hidden-Stress Gap, side-by-side.
                   Market Stress above is coincident — these two add the "when
@@ -1339,14 +1389,14 @@ The Fulcrum Index
                 >
                   Leading indicators read normal while realized distress is elevated.
                   The stress is company- and sector-specific rather than a macro cycle —
-                  the case for the sector and company layers below.
+                  the case for the sector view below.
                 </p>
               </div>
 
               </section>
 
               {/* ===== Sectors: WHERE is the stress concentrated ===== */}
-              <section id="sectors" className="scroll-mt-16">
+              <section id="sectors" className="scroll-mt-[112px]">
               <h2 className="sr-only">Sectors</h2>
               {/* v5 Phase 3: Sector heat map. Follows the Reading callout
                   directly because the callout promises "sector layers
@@ -1378,27 +1428,10 @@ The Fulcrum Index
 
               </section>
 
-              {/* ===== Companies: Distress Radar (Phase 4, Step 10) ===== */}
-              <section id="companies" className="scroll-mt-16">
-              <h2 className="sr-only">Companies</h2>
-              <div className="my-6 py-6 px-4 text-[12.5px] italic text-[#4a4a4a] rounded"
-                style={{
-                  border: '1px dashed var(--rule)',
-                  background: 'rgba(0,0,0,0.02)',
-                  fontFamily: 'var(--font-serif)',
-                }}
-              >
-                <span className="text-[9.5px] not-italic tracking-[0.18em] uppercase font-bold mr-2 text-[#4a4a4a]">
-                  Companies — Distress Radar
-                </span>
-                Wiring the top-25 names each quarter with reason codes and reasoned
-                tiers. Step 10 of the v5 UI sprint. The underlying backtest already
-                shipped (<code className="text-[11px]">quant/research/distress_backtest.md</code>).
-              </div>
-              </section>
+              {/* Companies (Distress Radar) section returns here when the radar ships. */}
 
               {/* ===== Signal history ===== */}
-              <section id="signal-history" className="scroll-mt-16">
+              <section id="signal-history" className="scroll-mt-[112px]">
               <h2 className="sr-only">Signal history</h2>
               {/* Sub-section header — historical-distribution scatter */}
               <div className="mt-2 mb-3">
@@ -1490,7 +1523,7 @@ Market Stress — Composite Path
               </section>
 
               {/* ===== Positioning ===== */}
-              <section id="positioning" className="scroll-mt-16">
+              <section id="positioning" className="scroll-mt-[112px]">
               <h2 className="sr-only">Positioning</h2>
               {/* PANEL 2: Position Framework */}
               {/* Backtest metrics temporarily removed — the original sector-
@@ -1531,7 +1564,7 @@ Market Stress — Composite Path
                       className="text-[18px] font-bold text-white tracking-tight"
                       style={{ fontFamily: 'var(--font-serif)' }}
                     >
-                      Backtest being rebuilt from committed code
+                      Regime positioning
                     </div>
                   </div>
                   <div className="text-white/90 text-right">
@@ -1544,29 +1577,23 @@ Market Stress — Composite Path
                   </div>
                 </div>
 
-                {/* Rebuild note (replaces the hardcoded metrics card + GFC one-liner) */}
+                {/* Reader-facing status line (performance panel removed pending review) */}
                 <div
-                  className="px-4 py-3 text-[12.5px] text-[#1a1a1a] leading-relaxed"
+                  className="px-4 py-3 text-[13px] text-[#1a1a1a] leading-relaxed"
                   style={{
                     fontFamily: 'var(--font-serif)',
                     borderBottom: '1px solid var(--rule)',
                     background: 'rgba(0,0,0,0.02)',
                   }}
                 >
-                  The sector-rotation workbook and its backtest script were lost; the
-                  Sharpe, max-drawdown, CAGR and GFC comparison numbers that previously
-                  sat here have been removed rather than left to rot. Rebuild lives at{' '}
-                  <code className="text-[11.5px]">quant/scripts/backtest_sector_rotation.py</code>{' '}
-                  (in progress) and will reconstruct the portfolio from the repo&rsquo;s ETF
-                  and regime data before any number returns to this panel. The
-                  Validated / Conditional / Not retained lists below are the qualitative
-                  framework and are unaffected.
+                  Positions the framework favors in each regime. Performance figures
+                  are being re-verified and are not shown until that review is done.
                 </div>
 
                 {/* Three-category position list */}
                 <div className="px-4 py-3 grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3">
                   <PositionCategory
-                    label="Validated"
+                    label="Core"
                     badge="✓"
                     color="#1f6b3a"
                     positions={VALIDATED_POSITIONS}
@@ -1586,23 +1613,6 @@ Market Stress — Composite Path
                   />
                 </div>
 
-                {/* Methodology footnote */}
-                <div
-                  className="px-4 py-2 text-[11px] text-[#4a4a4a] italic leading-relaxed"
-                  style={{
-                    fontFamily: 'var(--font-serif)',
-                    borderTop: '1px solid var(--rule)',
-                    background: 'rgba(0,0,0,0.02)',
-                  }}
-                >
-                  Qualitative Validated / Conditional / Not retained framework kept; the
-                  quantitative Sharpe / drawdown / CAGR panel is being rebuilt from
-                  committed ETF and regime data. See{' '}
-                  <code className="text-[10.5px]">quant/DEFERRED.md</code> for the
-                  rebuild scope and{' '}
-                  <code className="text-[10.5px]">quant/scripts/backtest_sector_rotation.py</code>{' '}
-                  (when landed) for the reproducible backtest.
-                </div>
               </div>
 
               {/* ================================================================= */}
@@ -1857,7 +1867,7 @@ Market Stress — Composite Path
                   backtest tables moved in from above. For now it holds the
                   Sources attribution so the sub-nav's Methodology anchor
                   lands somewhere real. */}
-              <section id="methodology" className="scroll-mt-16">
+              <section id="methodology" className="scroll-mt-[112px]">
               <h2 className="sr-only">Methodology &amp; data status</h2>
               {/* Footer */}
               <div

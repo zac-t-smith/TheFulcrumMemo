@@ -225,7 +225,7 @@ export const HyIgDispersionChart = () => {
       drawBadge(latest.hy, '#1f4a6b', 'HY');
       drawBadge(latest.bbb, '#4a4a4a', 'BBB');
     }
-  }, [data, latest]);
+  }, [data, latest, dims]);
 
   useEffect(() => {
     draw();
