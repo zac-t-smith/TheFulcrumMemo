@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-17T19:58:17.068285Z",
-  "as_of_date": "2026-11-17",
+  "generated_at": "2026-11-18T19:29:22.356882Z",
+  "as_of_date": "2026-11-18",
   "config": {
     "trading_days_52w": 252,
     "trading_days_3m": 63,
@@ -15,13 +15,13 @@
       "history_start": "1998-12-22",
       "manual_input_sector_tag": "healthcare_providers",
       "market": {
-        "drawdown_6m": -0.025993883792048922,
-        "drawdown_pctl": 37.1,
-        "vol_3m": 0.17922077170624479,
-        "vol_pctl": 72.5,
-        "score": 54.8,
-        "score_3m_ago": 41.2,
-        "change_3m": 13.7,
+        "drawdown_6m": -0.04497521881261202,
+        "drawdown_pctl": 52.0,
+        "vol_3m": 0.1799195469211148,
+        "vol_pctl": 72.8,
+        "score": 62.4,
+        "score_3m_ago": 55.2,
+        "change_3m": 7.2,
         "change_arrow": "up"
       },
       "shock": {
@@ -37,13 +37,13 @@
       "history_start": "1998-12-22",
       "manual_input_sector_tag": "industrials_manufacturing",
       "market": {
-        "drawdown_6m": -0.11848872722502701,
-        "drawdown_pctl": 81.3,
-        "vol_3m": 0.18083981940889216,
-        "vol_pctl": 59.5,
-        "score": 70.4,
-        "score_3m_ago": 50.4,
-        "change_3m": 19.9,
+        "drawdown_6m": -0.11381156184529762,
+        "drawdown_pctl": 80.5,
+        "vol_3m": 0.17893326015001418,
+        "vol_pctl": 58.6,
+        "score": 69.5,
+        "score_3m_ago": 55.9,
+        "change_3m": 13.6,
         "change_arrow": "up"
       },
       "shock": {
@@ -59,14 +59,14 @@
       "history_start": "1998-12-22",
       "manual_input_sector_tag": "consumer_discretionary",
       "market": {
-        "drawdown_6m": -0.05588412833220335,
-        "drawdown_pctl": 60.2,
-        "vol_3m": 0.19979794838016085,
-        "vol_pctl": 60.6,
-        "score": 60.4,
-        "score_3m_ago": 61.6,
-        "change_3m": -1.2,
-        "change_arrow": "flat"
+        "drawdown_6m": -0.035520607156161454,
+        "drawdown_pctl": 46.9,
+        "vol_3m": 0.2002789284849163,
+        "vol_pctl": 60.9,
+        "score": 53.9,
+        "score_3m_ago": 65.5,
+        "change_3m": -11.6,
+        "change_arrow": "down"
       },
       "shock": {
         "score": 3,
@@ -81,14 +81,14 @@
       "history_start": "2006-06-22",
       "manual_input_sector_tag": "retail",
       "market": {
-        "drawdown_6m": -0.05953905249679892,
-        "drawdown_pctl": 46.4,
-        "vol_3m": 0.24626424169563987,
-        "vol_pctl": 66.0,
-        "score": 56.2,
-        "score_3m_ago": 41.8,
-        "change_3m": 14.4,
-        "change_arrow": "up"
+        "drawdown_6m": -0.035104566794707526,
+        "drawdown_pctl": 32.5,
+        "vol_3m": 0.24559078982925248,
+        "vol_pctl": 65.7,
+        "score": 49.1,
+        "score_3m_ago": 48.2,
+        "change_3m": 0.9,
+        "change_arrow": "flat"
       },
       "shock": {
         "score": 3,
@@ -116,13 +116,13 @@
       "history_start": "1998-12-22",
       "manual_input_sector_tag": "chemicals",
       "market": {
-        "drawdown_6m": -0.05584415584415581,
-        "drawdown_pctl": 50.5,
-        "vol_3m": 0.1674742846653115,
-        "vol_pctl": 39.6,
-        "score": 45.1,
-        "score_3m_ago": 37.2,
-        "change_3m": 7.9,
+        "drawdown_6m": -0.0645640074211502,
+        "drawdown_pctl": 55.0,
+        "vol_3m": 0.1684575235585327,
+        "vol_pctl": 40.5,
+        "score": 47.8,
+        "score_3m_ago": 37.6,
+        "change_3m": 10.2,
         "change_arrow": "up"
       },
       "shock": {
@@ -138,13 +138,13 @@
       "history_start": "2001-07-17",
       "manual_input_sector_tag": "software",
       "market": {
-        "drawdown_6m": -0.14950741102334253,
-        "drawdown_pctl": 81.1,
-        "vol_3m": 0.3389852634865303,
-        "vol_pctl": 85.0,
-        "score": 83.1,
-        "score_3m_ago": 82.3,
-        "change_3m": 0.8,
+        "drawdown_6m": -0.13730363007011626,
+        "drawdown_pctl": 79.6,
+        "vol_3m": 0.3405011701417035,
+        "vol_pctl": 85.2,
+        "score": 82.4,
+        "score_3m_ago": 82.8,
+        "change_3m": -0.4,
         "change_arrow": "flat"
       },
       "shock": {
@@ -160,13 +160,13 @@
       "history_start": "2018-06-19",
       "manual_input_sector_tag": "telecom_media",
       "market": {
-        "drawdown_6m": -0.11378852778218973,
-        "drawdown_pctl": 78.7,
-        "vol_3m": 0.20077494240609567,
-        "vol_pctl": 64.8,
-        "score": 71.7,
-        "score_3m_ago": 66.4,
-        "change_3m": 5.3,
+        "drawdown_6m": -0.10866227489657154,
+        "drawdown_pctl": 78.0,
+        "vol_3m": 0.20170737536535846,
+        "vol_pctl": 65.0,
+        "score": 71.5,
+        "score_3m_ago": 67.4,
+        "change_3m": 4.0,
         "change_arrow": "up"
       },
       "shock": {
@@ -182,13 +182,13 @@
       "history_start": "2011-05-10",
       "manual_input_sector_tag": "autos_parts",
       "market": {
-        "drawdown_6m": -0.28407891532028895,
-        "drawdown_pctl": 96.1,
-        "vol_3m": 0.30074329102269826,
+        "drawdown_6m": -0.2888682309003815,
+        "drawdown_pctl": 96.4,
+        "vol_3m": 0.30073025144797444,
         "vol_pctl": 83.5,
-        "score": 89.8,
-        "score_3m_ago": 85.6,
-        "change_3m": 4.2,
+        "score": 89.9,
+        "score_3m_ago": 85.2,
+        "change_3m": 4.8,
         "change_arrow": "up"
       },
       "shock": {
@@ -204,13 +204,13 @@
       "history_start": "2004-01-02",
       "manual_input_sector_tag": "transportation",
       "market": {
-        "drawdown_6m": -0.08214690548885717,
-        "drawdown_pctl": 63.4,
-        "vol_3m": 0.19937567088468797,
-        "vol_pctl": 57.2,
-        "score": 60.3,
-        "score_3m_ago": 45.3,
-        "change_3m": 15.0,
+        "drawdown_6m": -0.0760238020474927,
+        "drawdown_pctl": 60.5,
+        "vol_3m": 0.20041118606272143,
+        "vol_pctl": 57.9,
+        "score": 59.2,
+        "score_3m_ago": 44.9,
+        "change_3m": 14.3,
         "change_arrow": "up"
       },
       "shock": {
@@ -226,14 +226,14 @@
       "history_start": "2006-02-06",
       "manual_input_sector_tag": "building_products",
       "market": {
-        "drawdown_6m": -0.1752637383216462,
-        "drawdown_pctl": 72.7,
-        "vol_3m": 0.287029586200819,
-        "vol_pctl": 68.3,
-        "score": 70.5,
-        "score_3m_ago": 64.9,
-        "change_3m": 5.6,
-        "change_arrow": "up"
+        "drawdown_6m": -0.1621548513285752,
+        "drawdown_pctl": 70.7,
+        "vol_3m": 0.2851299644584534,
+        "vol_pctl": 67.7,
+        "score": 69.2,
+        "score_3m_ago": 66.8,
+        "change_3m": 2.4,
+        "change_arrow": "flat"
       },
       "shock": {
         "score": 3,
@@ -248,13 +248,13 @@
       "history_start": "1998-12-22",
       "manual_input_sector_tag": "energy_ep",
       "market": {
-        "drawdown_6m": -0.09868608968866033,
-        "drawdown_pctl": 59.0,
-        "vol_3m": 0.2419465785050516,
-        "vol_pctl": 56.6,
-        "score": 57.8,
-        "score_3m_ago": 31.3,
-        "change_3m": 26.5,
+        "drawdown_6m": -0.12417880605541265,
+        "drawdown_pctl": 66.5,
+        "vol_3m": 0.25008151720250654,
+        "vol_pctl": 59.8,
+        "score": 63.1,
+        "score_3m_ago": 28.2,
+        "change_3m": 34.9,
         "change_arrow": "up"
       },
       "shock": {
@@ -270,13 +270,13 @@
       "history_start": "2015-08-20",
       "manual_input_sector_tag": "energy_refiners",
       "market": {
-        "drawdown_6m": -0.17872340425531918,
-        "drawdown_pctl": 78.7,
-        "vol_3m": 0.2466661904999516,
-        "vol_pctl": 83.4,
-        "score": 81.0,
-        "score_3m_ago": 43.1,
-        "change_3m": 37.9,
+        "drawdown_6m": -0.201320616287601,
+        "drawdown_pctl": 81.8,
+        "vol_3m": 0.25289825338510213,
+        "vol_pctl": 83.8,
+        "score": 82.8,
+        "score_3m_ago": 51.0,
+        "change_3m": 31.8,
         "change_arrow": "up"
       },
       "shock": {
@@ -292,13 +292,13 @@
       "history_start": "2004-09-29",
       "manual_input_sector_tag": "commercial_real_estate",
       "market": {
-        "drawdown_6m": -0.04898083571471379,
-        "drawdown_pctl": 44.7,
-        "vol_3m": 0.1479870960939808,
-        "vol_pctl": 36.4,
-        "score": 40.5,
-        "score_3m_ago": 34.9,
-        "change_3m": 5.6,
+        "drawdown_6m": -0.05057852560900056,
+        "drawdown_pctl": 45.4,
+        "vol_3m": 0.14903705947368512,
+        "vol_pctl": 37.2,
+        "score": 41.3,
+        "score_3m_ago": 34.3,
+        "change_3m": 7.0,
         "change_arrow": "up"
       },
       "shock": {

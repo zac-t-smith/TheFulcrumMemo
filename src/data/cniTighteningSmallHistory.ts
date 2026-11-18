@@ -2,7 +2,7 @@
 // Source: FRED series DRTSCIS (SLOOS: Net % of banks tightening C&I standards (small firms))
 // Units: percent
 // Coverage: 1990-04-01 → 2026-10-01 (147 obs)
-// Generated: 2026-11-17T19:57:56.722532Z
+// Generated: 2026-11-18T19:29:07.126928Z
 
 import type { DailyDataPoint } from "./types";
 
