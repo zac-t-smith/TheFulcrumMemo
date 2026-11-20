@@ -2,7 +2,7 @@
 // Source: FRED series ICSA (Initial Claims, Unemployment Insurance (weekly))
 // Units: percent
 // Coverage: 1976-12-04 → 2026-11-14 (2607 obs)
-// Generated: 2026-11-19T19:34:08.070966Z
+// Generated: 2026-11-20T19:12:14.495859Z
 
 import type { DailyDataPoint } from "./types";
 

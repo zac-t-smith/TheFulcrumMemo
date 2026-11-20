@@ -3,7 +3,7 @@
 //   "Updating the Recession Risk and the Excess Bond Premium"
 //   CSV endpoint: https://www.federalreserve.gov/econres/notes/feds-notes/ebp_csv.csv
 // Coverage: 1973-01-01 → 2026-10-01 (646 obs)
-// Generated: 2026-11-19T19:34:10.781421Z
+// Generated: 2026-11-20T19:12:17.661811Z
 
 export interface EbpMonthlyPoint {
   /** First of month, YYYY-MM-DD. */

@@ -2,7 +2,7 @@
 // Source: FRED series CORBLACBS (Charge-off rate on business loans, all commercial banks (quarterly))
 // Units: percent
 // Coverage: 1985-01-01 → 2026-04-01 (166 obs)
-// Generated: 2026-11-19T19:34:08.408807Z
+// Generated: 2026-11-20T19:12:14.779732Z
 
 import type { DailyDataPoint } from "./types";
 
