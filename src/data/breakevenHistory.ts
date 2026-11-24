@@ -2,7 +2,7 @@
 // Source: FRED series T10YIE (10-Year Breakeven Inflation Rate)
 // Units: percent
 // Coverage: 2003-01-02 → 2026-11-23 (5977 obs)
-// Generated: 2026-11-23T22:48:06.630618Z
+// Generated: 2026-11-24T21:26:49.297790Z
 
 import type { DailyDataPoint } from "./types";
 
