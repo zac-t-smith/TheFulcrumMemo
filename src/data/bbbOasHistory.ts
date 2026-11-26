@@ -2,7 +2,7 @@
 // Source: FRED series BAMLC0A4CBBB (ICE BofA BBB OAS (IG floor))
 // Units: bps
 // Coverage: 2023-11-27 → 2026-11-24 (785 obs)
-// Generated: 2026-11-25T20:33:24.887665Z
+// Generated: 2026-11-26T20:21:38.559292Z
 
 import type { DailyDataPoint } from "./types";
 

@@ -2,7 +2,7 @@
 // Source: FRED series NFCI (Chicago Fed National Financial Conditions Index)
 // Units: percent
 // Coverage: 1976-12-10 → 2026-11-20 (2607 obs)
-// Generated: 2026-11-25T20:33:20.857948Z
+// Generated: 2026-11-26T20:21:34.023441Z
 
 import type { DailyDataPoint } from "./types";
 

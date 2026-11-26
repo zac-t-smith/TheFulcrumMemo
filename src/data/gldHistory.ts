@@ -2,7 +2,7 @@
 // Source: Yahoo Finance via yfinance — ticker GLD (SPDR Gold Shares)
 // Units: USD (split- and dividend-adjusted close)
 // Coverage: 2004-11-18 → 2026-11-25 (5540 obs)
-// Generated: 2026-11-25T20:33:26.526466Z
+// Generated: 2026-11-26T20:21:40.524995Z
 
 import type { DailyDataPoint } from "./types";
 
@@ -5546,7 +5546,7 @@ export const gldHistory: DailyDataPoint[] = [
   { date: "2026-11-20", value: 322.8700 },
   { date: "2026-11-23", value: 333.0200 },
   { date: "2026-11-24", value: 325.4500 },
-  { date: "2026-11-25", value: 327.3100 },
+  { date: "2026-11-25", value: 327.4500 },
 ];
 
 export const gldHistoryMeta = {

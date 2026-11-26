@@ -2,7 +2,7 @@
 // Source: Yahoo Finance via yfinance — ticker USO (United States Oil Fund LP)
 // Units: USD (split- and dividend-adjusted close)
 // Coverage: 2006-04-10 → 2026-11-25 (5191 obs)
-// Generated: 2026-11-25T20:33:26.280514Z
+// Generated: 2026-11-26T20:21:40.187825Z
 
 import type { DailyDataPoint } from "./types";
 
@@ -5197,7 +5197,7 @@ export const usoHistory: DailyDataPoint[] = [
   { date: "2026-11-20", value: 139.6300 },
   { date: "2026-11-23", value: 133.3600 },
   { date: "2026-11-24", value: 135.4300 },
-  { date: "2026-11-25", value: 139.4500 },
+  { date: "2026-11-25", value: 139.8900 },
 ];
 
 export const usoHistoryMeta = {

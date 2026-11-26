@@ -2,7 +2,7 @@
 // Source: FRED series BAMLH0A0HYM2 (ICE BofA US High Yield Index OAS)
 // Units: bps
 // Coverage: 2023-11-27 → 2026-11-24 (785 obs)
-// Generated: 2026-11-25T20:33:22.696908Z
+// Generated: 2026-11-26T20:21:36.615828Z
 
 import type { DailyDataPoint } from "./types";
 

@@ -2,7 +2,7 @@
 // Source: FRED series USREC (NBER-based Recession Indicator (US))
 // Units: percent
 // Coverage: 1976-12-01 → 2026-10-01 (599 obs)
-// Generated: 2026-11-25T20:33:22.456760Z
+// Generated: 2026-11-26T20:21:36.276321Z
 
 import type { DailyDataPoint } from "./types";
 

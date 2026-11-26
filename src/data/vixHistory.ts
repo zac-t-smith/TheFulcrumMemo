@@ -2,7 +2,7 @@
 // Source: FRED series VIXCLS (VIX (CBOE Volatility Index))
 // Units: percent
 // Coverage: 1990-01-02 → 2026-11-24 (9324 obs)
-// Generated: 2026-11-25T20:33:17.844383Z
+// Generated: 2026-11-26T20:21:27.341285Z
 
 import type { DailyDataPoint } from "./types";
 
