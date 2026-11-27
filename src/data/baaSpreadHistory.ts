@@ -2,7 +2,7 @@
 // Source: FRED series BAA10Y (Moody's Baa Corporate over 10Y Treasury)
 // Units: bps
 // Coverage: 1986-01-02 → 2026-11-24 (10224 obs)
-// Generated: 2026-11-26T20:21:25.753937Z
+// Generated: 2026-11-27T20:07:40.788365Z
 
 import type { DailyDataPoint } from "./types";
 

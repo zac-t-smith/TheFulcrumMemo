@@ -2,7 +2,7 @@
 // Source: FRED series T10Y3M (10Y minus 3M Treasury (yield curve, short-rate basis))
 // Units: percent
 // Coverage: 1982-01-04 → 2026-11-25 (11227 obs)
-// Generated: 2026-11-26T20:21:34.805467Z
+// Generated: 2026-11-27T20:07:48.237582Z
 
 import type { DailyDataPoint } from "./types";
 

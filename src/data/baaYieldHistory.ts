@@ -2,7 +2,7 @@
 // Source: FRED series DBAA (Moody's Baa Corporate Bond Yield (daily))
 // Units: percent
 // Coverage: 1986-01-02 → 2026-11-24 (10260 obs)
-// Generated: 2026-11-26T20:21:26.855148Z
+// Generated: 2026-11-27T20:07:42.674435Z
 
 import type { DailyDataPoint } from "./types";
 
